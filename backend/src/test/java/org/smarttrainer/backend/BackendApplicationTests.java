@@ -1,4 +1,4 @@
-package org.project.backend;
+package org.smarttrainer.backend;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
