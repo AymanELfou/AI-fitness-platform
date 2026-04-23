@@ -10,6 +10,6 @@ public class TestController {
 
     @GetMapping
     public String test() {
-        return "Backend is working 🚀";
+        return "Backend is working successfully 🚀";
     }
 }
