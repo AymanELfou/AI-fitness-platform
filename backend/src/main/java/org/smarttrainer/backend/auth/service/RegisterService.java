@@ -17,7 +17,7 @@ import java.util.List;
 public class RegisterService{
 
     private final UserRepository userRepository;
-    private PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
     public void register(RegistrationRequest request) {
         Role selectedRole = request.getRole();
