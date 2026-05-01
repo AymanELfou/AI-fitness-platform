@@ -1,4 +1,4 @@
-package org.smarttrainer.backend.security;
+package org.smarttrainer.backend.security.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
