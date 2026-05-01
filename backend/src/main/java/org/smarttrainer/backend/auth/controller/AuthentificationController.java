@@ -17,6 +17,7 @@ public class AuthentificationController {
 
     private final RegisterService registerService;
 
+    //Register end point
     @PostMapping(value = "/register")
     @ResponseStatus(HttpStatus.ACCEPTED)
     public ResponseEntity<?> register(
@@ -25,4 +26,6 @@ public class AuthentificationController {
         registerService.register(request);
         return ResponseEntity.accepted().build();
     }
+
+    //Login end point
 }
