@@ -1,13 +1,11 @@
 package org.smarttrainer.backend.auth.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smarttrainer.backend.domain.user.Role;
 
 @Data
 @Builder
@@ -29,4 +27,6 @@ public class RegistrationRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "the password should be 8 characters long minimum")
     private String password;
+    @NotNull
+    private Role role;
 }
