@@ -17,8 +17,8 @@ import java.util.HashMap;
 @Service
 public class LoginService {
 
-    AuthenticationManager authenticationManager;
-    JwtService jwtService;
+    final AuthenticationManager authenticationManager;
+    final JwtService jwtService;
 
     public AuthenticationResponse login(AuthenticationRequest request){
         try{
