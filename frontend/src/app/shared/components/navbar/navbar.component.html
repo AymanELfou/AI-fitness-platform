@@ -1,0 +1,62 @@
+<nav class="bg-white/80 backdrop-blur-md fixed w-full z-50 border-b border-gray-100">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a routerLink="/" class="text-2xl font-black text-primary tracking-tight">
+          SMART<span class="text-dark">TRAINER</span>
+        </a>
+      </div>
+
+      <!-- Links (desktop) -->
+      <div class="hidden md:flex space-x-8">
+        <a routerLink="/" 
+           routerLinkActive="text-primary font-semibold" 
+           [routerLinkActiveOptions]="{exact: true}"
+           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+          Home
+        </a>
+        <a routerLink="/about" 
+           routerLinkActive="text-primary font-semibold"
+           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+          About
+        </a>
+        <a routerLink="/exercises" 
+           routerLinkActive="text-primary font-semibold"
+           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+          Exercises
+        </a>
+        <a routerLink="/clubs" 
+           routerLinkActive="text-primary font-semibold"
+           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+          Clubs
+        </a>
+      </div>
+
+      <!-- CTA Buttons -->
+    <div class="hidden md:flex items-center gap-3">
+        <a routerLink="/login" 
+            class="text-gray-600 hover:text-primary px-4 py-2.5 text-sm font-semibold transition-colors duration-200">
+             Log In
+        </a>
+        <a routerLink="/signup" 
+            class="bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50">
+            Join Now
+        </a>
+    </div>
+      
+    </div>
+  </div>
+
+  <!-- Mobile menu -->
+  <div *ngIf="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100">
+    <div class="px-4 pt-2 pb-4 space-y-1">
+      <a routerLink="/" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Home</a>
+      <a routerLink="/about" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">About</a>
+      <a routerLink="/exercises" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Exercises</a>
+      <a routerLink="/clubs" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Clubs</a>
+      <a routerLink="/signup" (click)="mobileMenuOpen = false" class="block mt-4 text-center bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold">Join Now</a>
+    </div>
+  </div>
+</nav>
