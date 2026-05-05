@@ -1,0 +1,334 @@
+// ============================================================
+// DESIGN TOKENS (matches platform)
+// ============================================================
+$primary-blue: #2563EB;
+$accent-blue: #1E40AF;
+$dark: #0F172A;
+$dark-card: #1E293B;
+$dark-border: rgba(255, 255, 255, 0.08);
+$text-muted-dark: rgba(255, 255, 255, 0.5);
+$text-body-dark: rgba(255, 255, 255, 0.75);
+$white: #FFFFFF;
+
+// ============================================================
+// FOOTER BASE
+// ============================================================
+.footer {
+  position: relative;
+  background: $dark;
+  color: $white;
+  margin-top: 0;
+}
+
+// SVG wave separator at top
+.footer-wave {
+  width: 100%;
+  height: 60px;
+  overflow: hidden;
+  line-height: 0;
+  margin-bottom: -2px;
+
+  svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+}
+
+.footer-body {
+  padding: 3rem 2rem 2rem;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+// ============================================================
+// MAIN GRID
+// ============================================================
+.footer-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 3rem;
+  padding-bottom: 3rem;
+}
+
+// ============================================================
+// BRAND COLUMN
+// ============================================================
+.footer-brand-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-logo {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: $white;
+  text-decoration: none;
+  letter-spacing: -0.02em;
+  transition: opacity 0.2s ease;
+  width: fit-content;
+
+  &:hover { opacity: 0.85; }
+}
+
+.footer-logo-accent {
+  color: $primary-blue;
+}
+
+.footer-tagline {
+  color: $text-muted-dark;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 300px;
+}
+
+// Social buttons
+.footer-socials {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+}
+
+.footer-social-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid $dark-border;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: $text-muted-dark;
+  text-decoration: none;
+  transition: all 0.25s ease;
+
+  &:hover {
+    background: $primary-blue;
+    border-color: $primary-blue;
+    color: $white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+  }
+}
+
+// ============================================================
+// LINK COLUMNS
+// ============================================================
+.footer-links-col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer-col-title {
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: $white;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin: 0;
+}
+
+.footer-link-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.footer-link {
+  font-size: 0.85rem;
+  color: $text-muted-dark;
+  text-decoration: none;
+  transition: color 0.2s ease, padding-left 0.2s ease;
+  display: inline-block;
+
+  &:hover {
+    color: $white;
+    padding-left: 4px;
+  }
+}
+
+// ============================================================
+// NEWSLETTER STRIP
+// ============================================================
+.footer-newsletter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid $dark-border;
+  border-radius: 16px;
+  padding: 1.5rem 2rem;
+  flex-wrap: wrap;
+}
+
+.newsletter-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.newsletter-label {
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: $primary-blue;
+  text-transform: uppercase;
+}
+
+.newsletter-desc {
+  font-size: 0.875rem;
+  color: $text-body-dark;
+  margin: 0;
+}
+
+.newsletter-form {
+  display: flex;
+  gap: 0.6rem;
+  flex: 1;
+  max-width: 420px;
+}
+
+.newsletter-input {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid $dark-border;
+  border-radius: 10px;
+  padding: 0.7rem 1rem;
+  font-size: 0.85rem;
+  color: $white;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease, background 0.2s ease;
+
+  &::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+
+  &:focus {
+    border-color: $primary-blue;
+    background: rgba(37, 99, 235, 0.08);
+  }
+}
+
+.newsletter-btn {
+  background: $primary-blue;
+  color: $white;
+  border: none;
+  border-radius: 10px;
+  padding: 0.7rem 1.4rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+
+  &:hover {
+    background: $accent-blue;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// ============================================================
+// DIVIDER
+// ============================================================
+.footer-divider {
+  height: 1px;
+  background: $dark-border;
+  margin: 2rem 0;
+}
+
+// ============================================================
+// BOTTOM BAR
+// ============================================================
+.footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.footer-copy {
+  font-size: 0.78rem;
+  color: $text-muted-dark;
+  margin: 0;
+}
+
+.footer-legal-links {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.footer-legal-link {
+  font-size: 0.78rem;
+  color: $text-muted-dark;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $white;
+  }
+}
+
+.footer-legal-dot {
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 0.8rem;
+}
+
+// ============================================================
+// RESPONSIVE
+// ============================================================
+@media (max-width: 1024px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .footer-brand-col {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-brand-col {
+    grid-column: span 1;
+  }
+
+  .footer-newsletter {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .newsletter-form {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
