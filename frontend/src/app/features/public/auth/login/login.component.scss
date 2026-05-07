@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap');
+
+.login-page-container {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  overflow: hidden;
+
+  .visual-side {
+    flex: 1.1;
+    background: url("/images/login-bg.jpg.png") no-repeat center center;
+    background-size: cover;
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 80px;
+
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.4); 
+    }
+
+    .brand-overlay {
+      position: relative;
+      z-index: 10;
+      color: #ffffff;
+      .app-name { 
+        font-size: 5.5rem; 
+        font-weight: 900; 
+        line-height: 0.85; 
+        margin: 0; 
+        letter-spacing: -3px;
+        text-transform: uppercase;
+      }
+      .tagline { 
+        font-size: 1.1rem; 
+        margin-top: 25px; 
+        opacity: 0.9; 
+        max-width: 400px; 
+        border-left: 3px solid #2563eb; 
+        padding-left: 20px; 
+      }
+      .accent-slider {
+        margin-top: 40px; display: flex; gap: 8px;
+        .dot { width: 30px; height: 3px; background: rgba(255,255,255,0.3); }
+        .dot.active { background: #2563eb; width: 50px; }
+      }
+    }
+  }
+
+  .form-side {
+    flex: 0.9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    position: relative;
+
+    .login-box {
+      width: 100%;
+      max-width: 400px;
+      .welcome-title { font-size: 2.5rem; font-weight: 800; color: #1e293b; margin-bottom: 8px; }
+      .subtitle { color: #64748b; margin-bottom: 40px; font-size: 0.95rem; }
+
+      .input-group {
+        margin-bottom: 24px;
+        label { display: block; font-weight: 700; font-size: 0.65rem; color: #94a3b8; margin-bottom: 8px; letter-spacing: 1px; }
+        input {
+          width: 100%; padding: 16px; border: 1px solid #f1f5f9; border-radius: 8px; background: #f8fafc;
+          transition: all 0.3s ease;
+          &:focus { outline: none; border-color: #2563eb; background: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.1); }
+        }
+        .label-row { display: flex; justify-content: space-between; align-items: center; }
+        .forgot-link { font-size: 0.75rem; color: #2563eb; font-weight: 700; text-decoration: none; }
+      }
+
+      .checkbox-group {
+        display: flex; align-items: center; margin-bottom: 25px;
+        label { font-size: 0.85rem; color: #64748b; margin-left: 10px; cursor: pointer; }
+      }
+
+      .btn-signin {
+        width: 100%; padding: 18px; 
+        background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); 
+        color: #fff; border: none; border-radius: 8px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;
+        cursor: pointer; box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        &:hover { transform: translateY(-2px); box-shadow: 0 12px 24px -5px rgba(37, 99, 235, 0.5); }
+        &:disabled { background: #cbd5e1; cursor: not-allowed; box-shadow: none; }
+      }
+
+      .divider {
+        display: flex; align-items: center; margin: 30px 0; color: #cbd5e1; font-size: 0.65rem; font-weight: 800;
+        &::before, &::after { content: ''; flex: 1; border-bottom: 1px solid #f1f5f9; }
+        span { padding: 0 15px; }
+      }
+
+      .social-auth-buttons {
+        display: flex; gap: 15px;
+        .btn-social {
+          flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px;
+          padding: 14px; border: 1px solid #f1f5f9; border-radius: 8px; background: #fff;
+          font-weight: 700; font-size: 0.85rem; cursor: pointer; transition: background 0.2s;
+          &:hover { background: #f8fafc; }
+          .social-icon { width: 18px; height: 18px; object-fit: contain; }
+        }
+      }
+
+      .signup-prompt {
+        text-align: center; margin-top: 40px; font-size: 0.85rem; color: #64748b;
+        a { color: #2563eb; font-weight: 800; text-decoration: none; &:hover { text-decoration: underline; } }
+      }
+    }
+  }
+}

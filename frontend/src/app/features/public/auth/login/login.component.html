@@ -1,0 +1,71 @@
+<div class="login-page-container">
+  
+  <div class="visual-side">
+    <div class="brand-overlay">
+      <h1 class="app-name">SMART<br>TRAINER</h1>
+      <p class="tagline">High-performance tracking for the modern athlete. Engineered for speed.</p>
+      <div class="accent-slider">
+        <span class="dot active"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="form-side">
+    <div class="login-box">
+      <h2 class="welcome-title">Welcome back</h2>
+
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div class="input-group">
+          <label for="email">EMAIL ADDRESS</label>
+          <input 
+            id="email" 
+            type="email" 
+            formControlName="email" 
+            placeholder="name@smart-trainer.com">
+        </div>
+
+        <div class="input-group">
+          <div class="label-row">
+            <label for="password">PASSWORD</label>
+            <a routerLink="/forgot-password" class="forgot-link">Forgot Password?</a>
+          </div>
+          <input 
+            id="password" 
+            type="password" 
+            formControlName="password" 
+            placeholder="••••••••">
+        </div>
+
+        <div class="checkbox-group">
+          <input type="checkbox" id="remember" formControlName="rememberMe">
+          <label for="remember">Keep me logged in</label>
+        </div>
+
+        <button type="submit" class="btn-signin" [disabled]="loginForm.invalid">
+          SIGN IN
+        </button>
+
+        <div class="divider">
+          <span>OR CONTINUE WITH</span>
+        </div>
+
+        <div class="social-auth-buttons">
+          <button type="button" class="btn-social">
+            <img src="/images/Google-icon.png" alt="Google" class="social-icon">
+            Google
+          </button>
+          <button type="button" class="btn-social">
+            <img src="/images/Appel-icon.png" alt="Apple" class="social-icon">
+            Apple
+          </button>
+        </div>
+
+        <p class="signup-prompt">
+          Don't have an account? <a routerLink="/register">Create an account</a>
+        </p>
+      </form>
+    </div>
+  </div>
+</div>
