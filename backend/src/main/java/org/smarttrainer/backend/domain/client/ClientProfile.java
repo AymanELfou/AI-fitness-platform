@@ -29,6 +29,10 @@ public class ClientProfile extends BaseEntity {
     private String niveau;
     private Double imc;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;
+
     //Auto calculate the IMC id data available
     @PrePersist
     protected void onCreate() {
