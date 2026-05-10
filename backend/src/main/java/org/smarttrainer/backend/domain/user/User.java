@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.smarttrainer.backend.domain.client.ClientProfile;
+import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -54,6 +55,10 @@ public class User implements UserDetails, Principal {
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private ClientProfile client;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private CoachProfile coach;
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
