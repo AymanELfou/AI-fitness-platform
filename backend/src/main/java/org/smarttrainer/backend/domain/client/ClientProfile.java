@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.club.ClubProfile;
+import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.user.User;
 
@@ -32,6 +34,17 @@ public class ClientProfile extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;
+
+    //The relationship between client and coach
+    @ManyToOne
+    @JoinColumn(name = "coach_id")
+    private CoachProfile coach;
+
+    //The relationship between client and club
+    @ManyToOne
+    @JoinColumn(name = "club_id")
+    private ClubProfile club;
+
 
     //Auto calculate the IMC id data available
     @PrePersist

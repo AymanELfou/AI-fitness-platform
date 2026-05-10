@@ -5,7 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.smarttrainer.backend.domain.admin.AdminProfile;
 import org.smarttrainer.backend.domain.client.ClientProfile;
+import org.smarttrainer.backend.domain.club.ClubProfile;
+import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -47,13 +50,23 @@ public class User implements UserDetails, Principal {
     @CreatedDate
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdDate;
+
+
     @LastModifiedDate
     @Column(insertable = true)
     private LocalDateTime modifiedDate;
 
-
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private ClientProfile client;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private CoachProfile coach;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private AdminProfile admin;
+
+    @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private ClubProfile club;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
