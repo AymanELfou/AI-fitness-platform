@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.user.User;
 
@@ -31,4 +32,8 @@ public class CoachProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "coach",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CoachProfile> clients;
+
+    @ManyToOne
+    @JoinColumn(name = "club_id",nullable = false)
+    private ClubProfile club;
 }
