@@ -29,9 +29,9 @@ public class CoachProfile extends BaseEntity {
     private int experience;
     private String certifications;
     private double rating;
-    private boolean disponibilite;
-    private String specialite;
-    private double tarif;
+    private boolean availability;
+    private String speciality;
+    private double tariff;
 
     @OneToMany(mappedBy = "coach",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientProfile> clients;

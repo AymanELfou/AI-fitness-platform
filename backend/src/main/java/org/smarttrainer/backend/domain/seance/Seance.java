@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.programme.Programme;
 
 import java.util.List;
 
@@ -19,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Seance extends BaseEntity {
 
-    private String statut;
+    private String status;
     private int duration;
     private String notes;
 
@@ -29,4 +30,8 @@ public class Seance extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "coach_id")
     private CoachProfile coach;
+
+    @ManyToOne
+    @JoinColumn(name = "programme_id")
+    private Programme programme;
 }

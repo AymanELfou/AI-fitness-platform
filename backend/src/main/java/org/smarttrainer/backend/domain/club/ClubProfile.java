@@ -24,9 +24,9 @@ public class ClubProfile extends BaseEntity {
     @JoinColumn(name = "user_id",nullable = false, updatable = true)
     private User user;
 
-    private String nomClub;
+    private String clubName;
     private String localisation;
-    private int capacite;
+    private int capacity;
     private String contactEmail;
     private String phone;
 
