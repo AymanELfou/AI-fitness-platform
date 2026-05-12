@@ -12,21 +12,19 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout scm
-            }
-        }
+        stage('Build & Test Backend') {
+    steps {
+        sh 'mvn -f backend/pom.xml clean install -DskipTests'
+    }
+}
 
-        stage('Backend Analysis (SonarQube)') {
-            steps {
-                withSonarQubeEnv('SonarQube-Server') {
-                    sh "${SONAR_SCANNER}/bin/sonar-scanner \
-                    -Dsonar.projectKey=Smart-Trainer-Backend \
-                    -Dsonar.sources=backend/src \
-                    -Dsonar.java.binaries=backend/target/classes"
-                }
-            }
+stage('Backend Analysis (SonarQube)') {
+    steps {
+        withSonarQubeEnv('SonarQube-Server') {
+            sh 'sonar-scanner -Dsonar.projectKey=Smart-Trainer-Backend -Dsonar.sources=backend/src -Dsonar.java.binaries=backend/target/classes'
+        }
+    }
+}
         }
 
         stage('Build & Test Backend') {
