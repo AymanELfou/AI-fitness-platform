@@ -4,6 +4,7 @@ pipeline {
     tools {
         maven 'maven-3.9.6'
         jdk 'jdk-17'
+        nodejs 'node-20'
     }
 
     environment {
@@ -43,7 +44,7 @@ pipeline {
             steps {
                 dir('frontend') {
                     sh 'npm install'
-                    sh 'npm run build'
+                    sh 'npm run build --prod'
                 }
             }
         }
