@@ -8,9 +8,11 @@ import lombok.Setter;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.seance.Seance;
 import org.smarttrainer.backend.domain.user.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "client_profiles")
@@ -45,6 +47,13 @@ public class ClientProfile extends BaseEntity {
     @JoinColumn(name = "club_id")
     private ClubProfile club;
 
+    @ManyToMany
+    @JoinTable(
+            name="client_seance",
+            joinColumns = @JoinColumn(name = "client_id"),
+            inverseJoinColumns = @JoinColumn(name = "seance_id")
+    )
+    private List<Seance> seances;
 
     //Auto calculate the IMC id data available
     @PrePersist

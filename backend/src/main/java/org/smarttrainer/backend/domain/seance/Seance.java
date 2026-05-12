@@ -1,12 +1,15 @@
 package org.smarttrainer.backend.domain.seance;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.client.ClientProfile;
+import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+
+import java.util.List;
 
 @Entity
 @Table(name = "seance")
@@ -20,4 +23,10 @@ public class Seance extends BaseEntity {
     private int duration;
     private String notes;
 
+    @ManyToMany(mappedBy = "seances")
+    private List<ClientProfile> clients;
+
+    @ManyToOne
+    @JoinColumn(name = "coach_id")
+    private CoachProfile coach;
 }

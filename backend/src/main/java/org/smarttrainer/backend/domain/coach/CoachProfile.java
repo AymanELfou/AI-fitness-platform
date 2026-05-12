@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.seance.Seance;
 import org.smarttrainer.backend.domain.user.User;
 
 import java.util.List;
@@ -36,4 +37,7 @@ public class CoachProfile extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "club_id",nullable = false)
     private ClubProfile club;
+
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Seance> seances;
 }
