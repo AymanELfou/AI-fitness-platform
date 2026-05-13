@@ -24,5 +24,8 @@ export class NavbarComponent {
     this.showUpgradeModal = false;
   }
 
-  
+  logout() {
+    this.AuthService.logout();
+    this.router.navigate(['/login']);
+  }
 }
