@@ -1,7 +1,8 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
 import { NotificationService } from '../../services/notification.service';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,10 +11,14 @@ import { NotificationService } from '../../services/notification.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
+
+  AuthService = inject(AuthService);
+
+
   mobileMenuOpen = false;
   showUpgradeModal = false;
 
-  constructor(private router: Router, private notificationService: NotificationService) {}
+  constructor(private router: Router) { }
 
   openUpgradeModal() {
     this.showUpgradeModal = true;
@@ -23,9 +28,5 @@ export class NavbarComponent {
     this.showUpgradeModal = false;
   }
 
-  goToClubs() {
-    this.showUpgradeModal = false;
-    this.notificationService.showPremiumNotification();
-    this.router.navigate(['/clubs']);
-  }
+  
 }

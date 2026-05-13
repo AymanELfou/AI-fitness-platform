@@ -1,18 +1,26 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../../core/services/auth.service';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, CommonModule],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
+  isLoading = false;
+  errorMessage = '';
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -24,7 +32,20 @@ export class LoginComponent implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.valid) {
-      console.log('Smart Trainer Login Attempt:', this.loginForm.value);
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.authService.login(this.loginForm.value).subscribe({
+        next: () => {
+          this.isLoading = false;
+          // Navigate to home or dashboard after successful login
+          this.router.navigate(['/']);
+          alert('Login successful');
+        },
+        error: (err) => {
+          this.isLoading = false;
+          this.errorMessage = err.message || 'Login failed';
+        }
+      });
     }
   }
 }
