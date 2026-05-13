@@ -9,6 +9,7 @@ import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.programme.Programme;
+import org.smarttrainer.backend.domain.progress.Progress;
 import org.smarttrainer.backend.domain.seance.Seance;
 import org.smarttrainer.backend.domain.user.User;
 
@@ -64,9 +65,12 @@ public class ClientProfile extends BaseEntity {
     )
     private List<Programme> programmes;
 
+    @OneToMany(mappedBy = "client")
+    private List<Progress> progresses;
 
     //Auto calculate the IMC id data available
     @PrePersist
+    @PreUpdate
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
         if(poids != null && taille != null && taille > 0){
@@ -75,7 +79,7 @@ public class ClientProfile extends BaseEntity {
         }
     }
 
-    public Double calculerIMC(){
+    public Double calculateIMC(){
         if (poids == null || taille == null || taille == 0) return null ;
         double tailleEnMetres = taille / 100.0;
         return poids / (tailleEnMetres * tailleEnMetres);

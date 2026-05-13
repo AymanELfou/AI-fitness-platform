@@ -29,7 +29,7 @@ public class Exercise extends BaseEntity {
     private int duration;
     private int calories;
 
-    @ManyToMany(mappedBy = "exercices")
+    @ManyToMany(mappedBy = "exercises")
     private List<Programme> programmes;
 
 
