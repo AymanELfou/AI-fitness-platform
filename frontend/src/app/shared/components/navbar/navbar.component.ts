@@ -1,8 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
-import { NotificationService } from '../../services/notification.service';
-import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -11,8 +9,6 @@ import { AuthService } from '../../../core/services/auth.service';
   styleUrl: './navbar.component.scss'
 })
 export class NavbarComponent {
-
-  AuthService = inject(AuthService);
 
 
   mobileMenuOpen = false;
