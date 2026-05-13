@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, Router } from '@angular/router';
 import { NgIf } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -14,7 +15,7 @@ export class NavbarComponent {
   mobileMenuOpen = false;
   showUpgradeModal = false;
 
-  constructor(private router: Router) { }
+  constructor(private router: Router, public AuthService: AuthService) { }
 
   openUpgradeModal() {
     this.showUpgradeModal = true;

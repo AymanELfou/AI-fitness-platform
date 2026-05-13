@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../../shared/services/auth.service'; // Checki l-path!
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +22,7 @@ export class RegisterComponent {
     { id: 'Client', name: 'Client', icon: '👤', description: 'Train, compete, and track your metrics.' }
   ];
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, public authService: AuthService) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -40,11 +40,11 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       console.log('Sending data to backend...', this.registerForm.value);
       this.authService.register(this.registerForm.value).subscribe({
-        next: (res) => {
+        next: (res: any) => {
           console.log('Registration Successful!', res);
           alert('Account created successfully!');
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Registration Failed!', err);
           alert('Error during registration. Check console.');
         }

@@ -4,13 +4,14 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
-
+import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+  
 export const appConfig: ApplicationConfig = {
   providers: [provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
-      withInterceptors([])  // ← Ton intercepteur JWT ici
+      withInterceptors([jwtInterceptor])  // ← Ton intercepteur JWT ici
     )
   ]
 };
