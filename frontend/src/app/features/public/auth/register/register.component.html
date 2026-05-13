@@ -1,0 +1,88 @@
+<div class="register-page">
+  <header class="header">
+    <div class="logo">SMARTTRAINER</div>
+    <div class="header-right">
+      <span>ALREADY HAVE AN ACCOUNT?</span>
+      <a routerLink="/login" class="signin-link">SIGN IN</a>
+    </div>
+  </header>
+
+  <main class="content-wrapper">
+    <section class="hero-section">
+      <div class="hero-text-content">
+        <span class="precision-badge">PRECISION PERFORMANCE</span>
+        <h1 class="hero-title">JOIN THE <br><span class="blue-text">ELITE.</span></h1>
+        <p class="hero-desc">
+          Access high-performance analytics, community-driven coaching, and technical precision for your athletic journey.
+        </p>
+      </div>
+
+      <div class="preview-grid">
+        <div class="preview-card analytics-card">
+          <img src="images/performance_analytics.png" alt="Analytics">
+          <div class="card-overlay">
+            <p class="card-label">PERFORMANCE ANALYTICS</p>
+          </div>
+        </div>
+
+        <div class="preview-card pulse-card">
+          <div class="pulse-img-wrapper">
+            <img src="/images/live_pulse_tracking.png" alt="Pulse">
+          </div>
+          <div class="pulse-footer">
+            <p class="pulse-text">LIVE PULSE TRACKING</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="glass-card">
+        <h2 class="form-heading">Create your profile</h2>
+        
+        <label class="section-label">SELECT YOUR ROLE</label>
+        <div class="roles-container">
+          <div *ngFor="let role of roles" 
+               class="role-item" 
+               [class.active]="selectedRole === role.id"
+               (click)="selectRole(role.id)">
+            <div class="role-main">
+              <span class="role-icon">{{ role.icon }}</span>
+              <span class="role-name">{{ role.name }}</span>
+            </div>
+            <p class="role-sub">{{ role.description }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
+          <div class="input-field">
+            <label>FULL NAME</label>
+            <input type="text" formControlName="fullName" placeholder="Alex Rivera">
+          </div>
+
+          <div class="input-field">
+            <label>EMAIL ADDRESS</label>
+            <input type="email" formControlName="email" placeholder="alex@kinetic.com">
+          </div>
+
+          <div class="input-field password-group">
+            <label>PASSWORD</label>
+            <div class="password-wrapper">
+              <input type="password" formControlName="password" placeholder="••••••••">
+              <span class="eye-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              </span>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" [disabled]="registerForm.invalid">
+            INITIALIZE PROFILE →
+          </button>
+        </form>
+        <p class="terms">
+          By signing up, you agree to the <a href="#">Terms of Precision</a> and our <a href="#">Data Privacy Protocol</a>.
+        </p>
+      </div>
+    </section>
+  </main>
+</div>
