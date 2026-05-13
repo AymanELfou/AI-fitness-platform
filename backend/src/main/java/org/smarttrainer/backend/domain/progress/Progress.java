@@ -21,7 +21,6 @@ import java.util.Date;
 @Table(name = "progress")
 public class Progress extends BaseEntity {
 
-    private Date date;
     private String performance;
     private Double muscleMasse;
     private Double fatMasse;
