@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.community.Community;
 import org.smarttrainer.backend.domain.user.User;
 
 import java.util.List;
@@ -35,4 +36,7 @@ public class ClubProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "club",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientProfile> clients;
+
+    @OneToOne(mappedBy = "club",cascade = CascadeType.ALL,orphanRemoval = true)
+    private Community community;
 }
