@@ -1,7 +1,7 @@
 <nav class="bg-white/80 backdrop-blur-md fixed w-full z-50 border-b border-gray-100">
   <div class="w-full px-4 sm:px-6 lg:px-12">
     <div class="flex justify-between items-center h-16">
-      
+
       <!-- Logo -->
       <div class="flex-shrink-0">
         <a routerLink="/" class="text-2xl font-black text-primary tracking-tight">
@@ -11,92 +11,110 @@
 
       <!-- Links (desktop) -->
       <div class="hidden md:flex space-x-8">
-        <a routerLink="/" 
-           routerLinkActive="text-primary font-semibold" 
-           [routerLinkActiveOptions]="{exact: true}"
-           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+        <a routerLink="/" routerLinkActive="text-primary font-semibold" [routerLinkActiveOptions]="{exact: true}"
+          class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
           Home
         </a>
-        <a routerLink="/about" 
-           routerLinkActive="text-primary font-semibold"
-           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+        <a routerLink="/about" routerLinkActive="text-primary font-semibold"
+          class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
           About
         </a>
-        <a routerLink="/exercises" 
-           routerLinkActive="text-primary font-semibold"
-           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+        <a routerLink="/exercises" routerLinkActive="text-primary font-semibold"
+          class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
           Workouts
         </a>
-        <a routerLink="/nutrition" 
-           routerLinkActive="text-primary font-semibold"
-           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+        <a routerLink="/nutrition" routerLinkActive="text-primary font-semibold"
+          class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
           Nutrition
         </a>
-        <a routerLink="/clubs" 
-           routerLinkActive="text-primary font-semibold"
-           class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
+        <a routerLink="/clubs" routerLinkActive="text-primary font-semibold"
+          class="text-gray-600 hover:text-primary transition-colors duration-200 text-sm font-medium">
           Clubs
         </a>
       </div>
 
+      
       <!-- User Actions -->
       <div class="hidden md:flex items-center gap-4">
-        <!-- Log In Button -->
-        <a routerLink="/login" 
+        <!-- ================= ÉTAT : NON CONNECTÉ ================= -->
+        <ng-container *ngIf="!AuthService.isLoggedIn()">
+          <!-- Log In Button -->
+          <a routerLink="/login"
             class="bg-primary hover:bg-secondary text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50">
             Log In
-        </a>
+          </a>
 
-        <!-- Guest Badge -->
-        <div class="flex items-center gap-2 bg-[#FFF3E0] text-[#E65100] px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#FFE0B2]">
-          <span class="w-2 h-2 rounded-full bg-[#E65100]"></span>
-          Guest
-        </div>
+          <!-- Guest Badge -->
+          <div
+            class="flex items-center gap-2 bg-[#FFF3E0] text-[#E65100] px-3.5 py-1.5 rounded-full text-xs font-bold border border-[#FFE0B2]">
+            <span class="w-2 h-2 rounded-full bg-[#E65100]"></span>
+            Guest
+          </div>
+        </ng-container>
+
+        <!-- ================= ÉTAT : CONNECTÉ ================= -->
+        <ng-container *ngIf="AuthService.isLoggedIn()">
+          <!-- Log Out Button (Rouge) -->
+          <button (click)="logout()"
+            class="bg-red-600 hover:bg-red-700 text-white px-6 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 shadow-lg shadow-red-600/30 hover:shadow-red-600/50">
+            Log Out
+          </button>
+
+          <!-- Profile Avatar -->
+          <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm hover:ring-4 hover:ring-primary/20 transition-all shadow-sm">
+            JD
+          </button>
+        </ng-container>
+
+        <!-- ================= TOUJOURS VISIBLE ================= -->
 
         <!-- Upgrade Button (now triggers modal) -->
-        <button (click)="openUpgradeModal()" class="flex items-center gap-2 bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm">
+        <button (click)="openUpgradeModal()"
+          class="flex items-center gap-2 bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 px-5 py-2 rounded-lg text-sm font-bold transition-colors shadow-sm">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z"/>
+            <path d="M5 16L3 5l5.5 5L12 4l3.5 6L21 5l-2 11H5zm14 3c0 .6-.4 1-1 1H6c-.6 0-1-.4-1-1v-1h14v1z" />
           </svg>
           Upgrade
         </button>
 
-        <!-- Profile Avatar -->
-        <button class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm hover:ring-4 hover:ring-primary/20 transition-all shadow-sm">
-          JD
-        </button>
+       
       </div>
-      
+
     </div>
   </div>
 
   <!-- Mobile menu -->
   <div *ngIf="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100">
     <div class="px-4 pt-2 pb-5 space-y-1">
-      <a routerLink="/" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Home</a>
-      <a routerLink="/about" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">About</a>
-      <a routerLink="/exercises" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Workouts</a>
-      <a routerLink="/nutrition" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Nutrition</a>
-      <a routerLink="/clubs" (click)="mobileMenuOpen = false" class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Clubs</a>
-      <a routerLink="/signup" (click)="mobileMenuOpen = false" class="block mt-4 text-center bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold">Join Now</a>
+      <a routerLink="/" (click)="mobileMenuOpen = false"
+        class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Home</a>
+      <a routerLink="/about" (click)="mobileMenuOpen = false"
+        class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">About</a>
+      <a routerLink="/exercises" (click)="mobileMenuOpen = false"
+        class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Workouts</a>
+      <a routerLink="/nutrition" (click)="mobileMenuOpen = false"
+        class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Nutrition</a>
+      <a routerLink="/clubs" (click)="mobileMenuOpen = false"
+        class="block px-3 py-2 text-gray-600 hover:text-primary hover:bg-gray-50 rounded-md text-base font-medium">Clubs</a>
+      <a routerLink="/signup" (click)="mobileMenuOpen = false"
+        class="block mt-4 text-center bg-primary text-white px-6 py-2.5 rounded-lg text-sm font-semibold">Join Now</a>
     </div>
   </div>
 </nav>
 
 <!-- ======================== PREMIUM UPGRADE MODAL ======================== -->
-<div *ngIf="showUpgradeModal" 
-     class="fixed inset-0 z-[999] flex items-center justify-center px-4"
-     (click)="closeUpgradeModal()">
+<div *ngIf="showUpgradeModal" class="fixed inset-0 z-[999] flex items-center justify-center px-4"
+  (click)="closeUpgradeModal()">
   <!-- Backdrop -->
   <div class="absolute inset-0 bg-black/50 backdrop-blur-sm"></div>
 
   <!-- Modal Card -->
   <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-8 z-10 animate-[fadeInScale_0.25s_ease-out]"
-       (click)="$event.stopPropagation()">
-    
+    (click)="$event.stopPropagation()">
+
     <!-- Close Button -->
-    <button (click)="closeUpgradeModal()" 
-            class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 text-2xl font-light leading-none transition-colors">
+    <button (click)="closeUpgradeModal()"
+      class="absolute top-4 right-5 text-gray-400 hover:text-gray-700 text-2xl font-light leading-none transition-colors">
       &times;
     </button>
 
@@ -115,10 +133,12 @@
     <!-- Feature Grid -->
     <div class="grid grid-cols-2 gap-4 mb-8">
       <!-- Communauté -->
-      <div class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
+      <div
+        class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-blue-50 flex items-center justify-center">
           <svg class="w-6 h-6 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
         </div>
         <h4 class="font-bold text-gray-900 text-sm">Communauté</h4>
@@ -126,10 +146,13 @@
       </div>
 
       <!-- Coachs Pro -->
-      <div class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
+      <div
+        class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-emerald-50 flex items-center justify-center">
-          <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+          <svg class="w-6 h-6 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+            stroke-width="1.8">
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
           </svg>
         </div>
         <h4 class="font-bold text-gray-900 text-sm">Coachs Pro</h4>
@@ -137,10 +160,12 @@
       </div>
 
       <!-- IA Avancée -->
-      <div class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
+      <div
+        class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-purple-50 flex items-center justify-center">
           <svg class="w-6 h-6 text-purple-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H3a2 2 0 01-2-2V5a2 2 0 012-2h14a2 2 0 012 2v10a2 2 0 01-2 2h-2" />
           </svg>
         </div>
         <h4 class="font-bold text-gray-900 text-sm">IA Avancée</h4>
@@ -148,10 +173,12 @@
       </div>
 
       <!-- Stats Avancées -->
-      <div class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
+      <div
+        class="border border-gray-100 rounded-xl p-5 flex flex-col items-center text-center gap-2 hover:shadow-md transition-shadow">
         <div class="w-12 h-12 rounded-full bg-amber-50 flex items-center justify-center">
           <svg class="w-6 h-6 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+            <path stroke-linecap="round" stroke-linejoin="round"
+              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
         <h4 class="font-bold text-gray-900 text-sm">Stats Avancées</h4>
@@ -161,9 +188,10 @@
 
     <!-- CTA Button -->
     <a routerLink="/clubs" (click)="closeUpgradeModal()"
-            class="w-full flex items-center justify-center gap-2 bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 font-bold py-4 rounded-xl text-base transition-colors shadow-lg shadow-amber-200">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"/>
+      class="w-full flex items-center justify-center gap-2 bg-[#FFB300] hover:bg-[#FFA000] text-gray-900 font-bold py-4 rounded-xl text-base transition-colors shadow-lg shadow-amber-200">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+        stroke-width="2.5">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18" />
       </svg>
       Choisir un club et souscrire
     </a>

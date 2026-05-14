@@ -50,9 +50,30 @@ pipeline {
         }
 
         stage('Deploy with Docker Compose') {
-            steps {
-                sh 'docker compose up -d --build'
+    steps {
+        
+        withCredentials([
+            string(credentialsId: 'smart-db-host', variable: 'DB_HOST'),
+            string(credentialsId: 'smart-db-port', variable: 'DB_PORT'),
+            string(credentialsId: 'smart-db-name', variable: 'DB_NAME'),
+            string(credentialsId: 'smart-db-user', variable: 'DB_USER'),
+            string(credentialsId: 'smart-db-pass', variable: 'DB_PASSWORD')
+        ]) {
+            script {
+                
+                sh """
+                echo "DB_HOST=${DB_HOST}" > .env
+                echo "DB_PORT=${DB_PORT}" >> .env
+                echo "DB_NAME=${DB_NAME}" >> .env
+                echo "DB_USER=${DB_USER}" >> .env
+                echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
+                
+                
+                docker compose up -d --build
+                """
             }
         }
+    }
+}
     }
 }
