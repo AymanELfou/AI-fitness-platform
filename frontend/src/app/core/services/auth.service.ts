@@ -72,7 +72,7 @@ export class AuthService {
    * Save token and user information in localStorage
    */
   private handleAuthSuccess(response: AuthResponse): void {
-    if (response.token) {
+    if (response && response.token) {
       // Store JWT token
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem(this.TOKEN_KEY, response.token);
@@ -87,6 +87,8 @@ export class AuthService {
              const user: any = { email: payload.sub, roles: payload.roles || [] };
              localStorage.setItem(this.USER_KEY, JSON.stringify(user));
              this._currentUser.set(user);
+             console.log(user);
+             
           } catch (e) {}
         }
       }
@@ -107,10 +109,8 @@ export class AuthService {
   }
 
   /** REGISTER */
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.api.AUTH.REGISTER, data).pipe(
-      // Automatically authenticate user after registration
-      tap((response: AuthResponse) => this.handleAuthSuccess(response)),
+  register(data: RegisterRequest): Observable<any> {
+    return this.http.post(this.api.AUTH.REGISTER, data).pipe(
       catchError(error => {
         console.error('Register error:', error);
         return throwError(() => new Error(error.error?.message || 'Registration failed'));
