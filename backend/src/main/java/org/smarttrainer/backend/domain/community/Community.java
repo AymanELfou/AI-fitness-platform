@@ -1,9 +1,6 @@
 package org.smarttrainer.backend.domain.community;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,5 +22,9 @@ public class Community extends BaseEntity {
     @OneToOne
     @JoinColumn(name="club_id",nullable = false)
     private ClubProfile club;
+
+    @ManyToOne
+    @JoinColumn(name = "community_id")
+    private Community community;
 
 }

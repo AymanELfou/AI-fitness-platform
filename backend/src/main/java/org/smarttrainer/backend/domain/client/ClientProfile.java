@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.post.Post;
 import org.smarttrainer.backend.domain.programme.Programme;
 import org.smarttrainer.backend.domain.progress.Progress;
 import org.smarttrainer.backend.domain.seance.Seance;
