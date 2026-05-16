@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.abonnement.Abonnement;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
@@ -35,9 +36,9 @@ public class ClientProfile extends BaseEntity {
     private String niveau;
     private Double imc;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;
+    @ManyToOne
+    @JoinColumn(name = "abonnement_id")
+    private Abonnement abonnement;
 
     //The relationship between client and coach
     @ManyToOne
