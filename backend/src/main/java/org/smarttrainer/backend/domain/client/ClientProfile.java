@@ -12,6 +12,7 @@ import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.programme.Programme;
 import org.smarttrainer.backend.domain.progress.Progress;
 import org.smarttrainer.backend.domain.seance.Seance;
+import org.smarttrainer.backend.domain.subscription.Subscription;
 import org.smarttrainer.backend.domain.user.User;
 
 import java.time.LocalDateTime;
@@ -36,9 +37,8 @@ public class ClientProfile extends BaseEntity {
     private String niveau;
     private Double imc;
 
-    @ManyToOne
-    @JoinColumn(name = "abonnement_id")
-    private Abonnement abonnement;
+    @OneToMany(mappedBy = "client")
+    private List<Subscription> subscriptions;
 
     //The relationship between client and coach
     @ManyToOne
