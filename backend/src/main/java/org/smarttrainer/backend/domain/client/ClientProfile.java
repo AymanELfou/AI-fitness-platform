@@ -71,9 +71,6 @@ public class ClientProfile extends BaseEntity {
     @OneToMany(mappedBy = "client")
     private List<Progress> progresses;
 
-    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL,orphanRemoval = true)
-    private List<Comment> comments;
-
     //Auto calculate the IMC id data available
     @PrePersist
     @PreUpdate
