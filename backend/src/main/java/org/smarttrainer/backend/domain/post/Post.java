@@ -9,10 +9,12 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.comment.Comment;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.user.User;
-import java.util.List;
 import org.smarttrainer.backend.domain.community.Community;
+
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -31,4 +33,8 @@ public class Post extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Comment> comments;
+
 }

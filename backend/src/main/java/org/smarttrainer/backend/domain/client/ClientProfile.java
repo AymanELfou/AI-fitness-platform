@@ -8,6 +8,7 @@ import lombok.Setter;
 import org.smarttrainer.backend.domain.abonnement.Abonnement;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
+import org.smarttrainer.backend.domain.comment.Comment;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.post.Post;
 import org.smarttrainer.backend.domain.programme.Programme;
@@ -69,6 +70,9 @@ public class ClientProfile extends BaseEntity {
 
     @OneToMany(mappedBy = "client")
     private List<Progress> progresses;
+
+    @OneToMany(mappedBy = "client",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Comment> comments;
 
     //Auto calculate the IMC id data available
     @PrePersist
