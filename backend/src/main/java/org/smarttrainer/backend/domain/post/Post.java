@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.smarttrainer.backend.domain.comment.Comment;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.like.Like;
 import org.smarttrainer.backend.domain.user.User;
 import org.smarttrainer.backend.domain.community.Community;
 
@@ -37,4 +38,6 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments;
 
+    @OneToMany(mappedBy = "post",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Like> likes;
 }
