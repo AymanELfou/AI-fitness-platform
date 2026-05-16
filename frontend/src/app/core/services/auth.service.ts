@@ -59,7 +59,7 @@ export class AuthService {
           // If no userStr but token exists, we can still try to decode basic info from token
           try {
              const payload = JSON.parse(atob(token.split('.')[1]));
-             const user: any = { email: payload.sub, roles: payload.roles || [] };
+             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
              this._currentUser.set(user);
           } catch (e) {}
         }
@@ -72,7 +72,7 @@ export class AuthService {
    * Save token and user information in localStorage
    */
   private handleAuthSuccess(response: AuthResponse): void {
-    if (response.token) {
+    if (response && response.token) {
       // Store JWT token
       if (isPlatformBrowser(this.platformId)) {
         localStorage.setItem(this.TOKEN_KEY, response.token);
@@ -84,9 +84,15 @@ export class AuthService {
           // Backend might only return a token, try to decode user from token
           try {
              const payload = JSON.parse(atob(response.token.split('.')[1]));
-             const user: any = { email: payload.sub, roles: payload.roles || [] };
+             console.log('JWT Payload complet:', payload);
+             
+             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
              localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+
+             
              this._currentUser.set(user);
+             console.log(user);
+             
           } catch (e) {}
         }
       }
@@ -107,10 +113,8 @@ export class AuthService {
   }
 
   /** REGISTER */
-  register(data: RegisterRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.api.AUTH.REGISTER, data).pipe(
-      // Automatically authenticate user after registration
-      tap((response: AuthResponse) => this.handleAuthSuccess(response)),
+  register(data: RegisterRequest): Observable<any> {
+    return this.http.post(this.api.AUTH.REGISTER, data).pipe(
       catchError(error => {
         console.error('Register error:', error);
         return throwError(() => new Error(error.error?.message || 'Registration failed'));
@@ -184,7 +188,7 @@ export class AuthService {
     } else if (user.roles.includes(Role.ROLE_COACH)) {
       this.router.navigate(['/coach/dashboard']);
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/']);
     }
   }
 
