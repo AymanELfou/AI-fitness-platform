@@ -1,15 +1,15 @@
 package org.smarttrainer.backend.domain.community;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.post.Post;
+
+import java.util.List;
 
 @Entity
 @Table(name = "community")
@@ -25,5 +25,8 @@ public class Community extends BaseEntity {
     @OneToOne
     @JoinColumn(name="club_id",nullable = false)
     private ClubProfile club;
+
+    @OneToMany(mappedBy = "community")
+    private List<Post> posts;
 
 }
