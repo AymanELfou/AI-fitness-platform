@@ -26,13 +26,8 @@ public class Community extends BaseEntity {
     @JoinColumn(name="club_id",nullable = false)
     private ClubProfile club;
 
-<<<<<<< HEAD
-    @ManyToOne
-    @JoinColumn(name = "community_id")
-    private Community community;
-=======
+
     @OneToMany(mappedBy = "community")
     private List<Post> posts;
->>>>>>> iman
 
 }
