@@ -59,7 +59,7 @@ export class AuthService {
           // If no userStr but token exists, we can still try to decode basic info from token
           try {
              const payload = JSON.parse(atob(token.split('.')[1]));
-             const user: any = { email: payload.sub, roles: payload.roles || [] };
+             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
              this._currentUser.set(user);
           } catch (e) {}
         }
@@ -84,8 +84,12 @@ export class AuthService {
           // Backend might only return a token, try to decode user from token
           try {
              const payload = JSON.parse(atob(response.token.split('.')[1]));
-             const user: any = { email: payload.sub, roles: payload.roles || [] };
+             console.log('JWT Payload complet:', payload);
+             
+             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
              localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+
+             
              this._currentUser.set(user);
              console.log(user);
              
@@ -184,7 +188,7 @@ export class AuthService {
     } else if (user.roles.includes(Role.ROLE_COACH)) {
       this.router.navigate(['/coach/dashboard']);
     } else {
-      this.router.navigate(['/home']);
+      this.router.navigate(['/']);
     }
   }
 

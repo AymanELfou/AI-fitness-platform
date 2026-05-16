@@ -18,8 +18,6 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent }, 
   { path: 'nutrition', component: NutritionComponent },
   { path: 'clubs', component: ClubsComponent },
-  { path: '**', redirectTo: '' },
-
 
 
   // 🏢 CLUB ROUTES
@@ -31,6 +29,7 @@ export const routes: Routes = [
      { path: 'coaches', component: CoachesComponent },
     
     ] 
-  }
+  },
 
+  { path: '**', redirectTo: '' }
 ];
