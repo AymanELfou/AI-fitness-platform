@@ -20,9 +20,16 @@ public class Token {
     @GeneratedValue
     private Long id;
     private String token;
+
     private LocalDateTime createdAt;
     private LocalDateTime expiredAt;
     private LocalDateTime validatedAt;
+
+    @Enumerated(EnumType.STRING)
+    private TokenType tokenType = TokenType.BEARER;
+
+    private boolean revoked;
+    private boolean expired;
 
     @ManyToOne
     @JoinColumn(name = "userId",nullable = false)

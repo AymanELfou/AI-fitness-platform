@@ -2,7 +2,10 @@ import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { AuthService } from '../../../../shared/services/auth.service'; // Checki l-path!
+import { AuthService } from '../../../../core/services/auth.service';
+import { User } from '../../../../core/models/user.model';
+import { Role } from '../../../../core/models/user.model';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -22,7 +25,7 @@ export class RegisterComponent {
     { id: 'Client', name: 'Client', icon: '👤', description: 'Train, compete, and track your metrics.' }
   ];
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(private fb: FormBuilder, public authService: AuthService,private router:Router) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -38,15 +41,50 @@ export class RegisterComponent {
 
   onRegister(): void {
     if (this.registerForm.valid) {
-      console.log('Sending data to backend...', this.registerForm.value);
-      this.authService.register(this.registerForm.value).subscribe({
-        next: (res) => {
-          console.log('Registration Successful!', res);
-          alert('Account created successfully!');
+      const formValue = this.registerForm.value;
+      
+      // Split fullName to firstname and lastname
+      const nameParts = formValue.fullName.trim().split(' ');
+      const firstname = nameParts[0];
+      const lastname = nameParts.slice(1).join(' ') || ' ';
+
+      // Map UI role to backend Role enum
+      const roleMapping: { [key: string]: string } = {
+        'Admin': 'ROLE_ADMIN',
+        'Club': 'ROLE_CLUB',
+        'Coach': 'ROLE_COACH',
+        'Client': 'ROLE_CLIENT'
+      };
+
+      const payload = {
+        firstname,
+        lastname,
+        email: formValue.email,
+        password: formValue.password,
+        role: roleMapping[formValue.role] || 'ROLE_CLIENT'
+      };
+
+      console.log('Sending data to backend...', payload);
+      this.authService.register(payload).subscribe({
+        next: () => {
+          console.log('Registration Successful!');
+          // After successful registration, auto-login to get the token
+          this.authService.login({ email: payload.email, password: payload.password }).subscribe({
+            next: () => {
+              alert('Compte créé et connecté avec succès !');
+              //this.authService.redirectByRole();
+              this.router.navigate(['/']);
+
+            },
+            error: (err: any) => {
+              console.error('Auto-login Failed!', err);
+              alert('Compte créé, mais la connexion automatique a échoué. Veuillez vous connecter.');
+            }
+          });
         },
-        error: (err) => {
+        error: (err: any) => {
           console.error('Registration Failed!', err);
-          alert('Error during registration. Check console.');
+          alert('Erreur lors de la création du compte. Vérifiez la console.');
         }
       });
     }

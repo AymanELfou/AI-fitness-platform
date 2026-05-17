@@ -17,6 +17,9 @@
       <h2 class="welcome-title">Welcome back</h2>
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div *ngIf="errorMessage" class="error-alert" style="color: red; margin-bottom: 1rem; text-align: center; background-color: #ffcccc; padding: 0.5rem; border-radius: 4px;">
+          {{ errorMessage }}
+        </div>
         <div class="input-group">
           <label for="email">EMAIL ADDRESS</label>
           <input 
@@ -43,8 +46,9 @@
           <label for="remember">Keep me logged in</label>
         </div>
 
-        <button type="submit" class="btn-signin" [disabled]="loginForm.invalid">
-          SIGN IN
+        <button type="submit" class="btn-signin" [disabled]="loginForm.invalid || isLoading">
+          <span *ngIf="isLoading">SIGNING IN...</span>
+          <span *ngIf="!isLoading">SIGN IN</span>
         </button>
 
         <div class="divider">

@@ -1,0 +1,256 @@
+<div class="dashboard-wrapper">
+
+  <!-- ===================== PAGE HEADER ===================== -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Statistique Globale</h2>
+      <p class="page-subtitle">Bienvenue sur <strong>SmartTTrainer</strong> — voici l'aperçu de votre club</p>
+    </div>
+    <div class="header-actions">
+      <div class="date-badge">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span>{{ currentDate | date:'MMMM yyyy' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== STAT CARDS ===================== -->
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-card">
+        <div class="stat-icon" [style.background]="stat.bg">
+          <!-- Members Icon -->
+          @if (stat.icon === 'members') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          }
+          <!-- Coaches Icon -->
+          @if (stat.icon === 'coaches') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+            </svg>
+          }
+          <!-- Subscriptions Icon -->
+          @if (stat.icon === 'subscriptions') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
+            </svg>
+          }
+          <!-- Revenue Icon -->
+          @if (stat.icon === 'revenue') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+          }
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">{{ stat.label }}</p>
+          <p class="stat-value">{{ stat.value }}</p>
+          <span class="stat-change" [class.positive]="stat.positive" [class.negative]="!stat.positive">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" [attr.d]="stat.positive ? 'M5 10l7-7 7 7' : 'M19 14l-7 7-7-7'"/>
+            </svg>
+            {{ stat.change }} ce mois
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ===================== MAIN CONTENT ROW ===================== -->
+  <div class="main-row">
+
+    <!-- Revenue Chart -->
+    <div class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Revenus Mensuels</h3>
+          <p class="card-subtitle">Évolution sur 12 mois</p>
+        </div>
+        <span class="badge badge-green">+18% vs an dernier</span>
+      </div>
+      <div class="bar-chart">
+        @for (month of revenueMonths; track month; let i = $index) {
+          <div class="bar-item">
+            <div class="bar-tooltip">{{ revenueData[i] | number:'1.0-0' }} €</div>
+            <div class="bar-fill" [style.height.%]="getBarHeight(revenueData[i])"
+                 [class.bar-active]="i === revenueMonths.length - 1">
+            </div>
+            <span class="bar-label">{{ month }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Plan Distribution -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Répartition des Abonnements</h3>
+          <p class="card-subtitle">986 abonnements actifs</p>
+        </div>
+      </div>
+      <div class="donut-wrapper">
+        <div class="donut-chart">
+          <svg viewBox="0 0 120 120" class="donut-svg">
+            <!-- Background circle -->
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#f3f4f6" stroke-width="18"/>
+            <!-- Premium 45% -->
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#6366f1" stroke-width="18"
+                    stroke-dasharray="127.2 155.8" stroke-dashoffset="0"
+                    transform="rotate(-90 60 60)"/>
+            <!-- Standard 35% -->
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#10b981" stroke-width="18"
+                    stroke-dasharray="98.9 184.1" stroke-dashoffset="-127.2"
+                    transform="rotate(-90 60 60)"/>
+            <!-- Basic 20% -->
+            <circle cx="60" cy="60" r="45" fill="none" stroke="#f59e0b" stroke-width="18"
+                    stroke-dasharray="56.5 226.5" stroke-dashoffset="-226.1"
+                    transform="rotate(-90 60 60)"/>
+            <!-- Center text -->
+            <text x="60" y="55" text-anchor="middle" class="donut-center-label">Total</text>
+            <text x="60" y="72" text-anchor="middle" class="donut-center-value">986</text>
+          </svg>
+        </div>
+        <div class="donut-legend">
+          @for (plan of planDistribution; track plan.label) {
+            <div class="legend-item">
+              <div class="legend-dot" [style.background]="plan.color"></div>
+              <div class="legend-info">
+                <span class="legend-label">{{ plan.label }}</span>
+                <span class="legend-pct">{{ plan.value }}%</span>
+              </div>
+              <div class="legend-bar-bg">
+                <div class="legend-bar-fill" [style.width.%]="plan.value" [style.background]="plan.color"></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== BOTTOM ROW ===================== -->
+  <div class="bottom-row">
+    <!-- Recent Members -->
+    <div class="card members-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Membres Récents</h3>
+          <p class="card-subtitle">Derniers inscrits sur SmartTTrainer</p>
+        </div>
+        <button class="btn-link">Voir tout →</button>
+      </div>
+      <div class="members-list">
+        @for (member of recentMembers; track member.name) {
+          <div class="member-row">
+            <div class="member-avatar" [style.background]="member.color">{{ member.initials }}</div>
+            <div class="member-info">
+              <p class="member-name">{{ member.name }}</p>
+              <p class="member-meta">{{ member.plan }} · {{ member.joined }}</p>
+            </div>
+            <span class="status-badge" [class.status-active]="member.status === 'Actif'" [class.status-pending]="member.status !== 'Actif'">
+              {{ member.status }}
+            </span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Top Coaches -->
+    <div class="card coaches-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Top Coachs</h3>
+          <p class="card-subtitle">Performance du mois</p>
+        </div>
+        <button class="btn-link">Voir tout →</button>
+      </div>
+      <div class="coaches-list">
+        @for (coach of topCoaches; track coach.name; let i = $index) {
+          <div class="coach-row">
+            <span class="coach-rank" [class.rank-gold]="i===0" [class.rank-silver]="i===1" [class.rank-bronze]="i===2">#{{ i + 1 }}</span>
+            <div class="coach-avatar" [style.background]="coach.color">{{ coach.initials }}</div>
+            <div class="coach-info">
+              <p class="coach-name">{{ coach.name }}</p>
+              <p class="coach-specialty">{{ coach.specialty }}</p>
+            </div>
+            <div class="coach-stats">
+              <span class="coach-members">{{ coach.members }} membres</span>
+              <span class="coach-rating">⭐ {{ coach.rating }}</span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card alerts-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Notifications</h3>
+          <p class="card-subtitle">Alertes & activités récentes</p>
+        </div>
+        <span class="notif-badge">{{ alerts.length }}</span>
+      </div>
+      <div class="alerts-list">
+        @for (alert of alerts; track alert.message) {
+          <div class="alert-item" [class.alert-warning]="alert.type==='warning'" [class.alert-info]="alert.type==='info'" [class.alert-success]="alert.type==='success'">
+            <div class="alert-icon-wrap">
+              @if (alert.icon === 'alert') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              }
+              @if (alert.icon === 'user') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+              }
+              @if (alert.icon === 'check') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              }
+            </div>
+            <p class="alert-message">{{ alert.message }}</p>
+          </div>
+        }
+      </div>
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <p class="qa-title">Actions Rapides</p>
+        <div class="qa-grid">
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Ajouter Coach
+          </button>
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Nouveau Plan
+          </button>
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+            </svg>
+            Rapports
+          </button>
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
+            </svg>
+            Communauté
+          </button>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>
