@@ -9,6 +9,8 @@ import org.smarttrainer.backend.domain.admin.AdminProfile;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
+import org.smarttrainer.backend.domain.comment.Comment;
+import org.smarttrainer.backend.domain.post.Post;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -67,6 +69,12 @@ public class User implements UserDetails, Principal {
 
     @OneToOne(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private ClubProfile club;
+
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Comment> comments;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
