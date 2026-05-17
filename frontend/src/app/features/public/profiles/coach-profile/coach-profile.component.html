@@ -1,0 +1,51 @@
+<h2 class="section-form-title">💪 Coach Credentials Registration</h2>
+<form [formGroup]="coachForm" (ngSubmit)="submit()">
+  <div class="form-grid-layout">
+    
+    <div class="form-ctrl">
+      <label>Experience (Par ans)</label>
+      <input type="number" formControlName="experience" placeholder="e.g., 4"
+             [ngClass]="{'invalid-touched': isInvalid('experience')}">
+      <div *ngIf="isInvalid('experience')" class="error-msg">⚠️ Years of experience is required.</div>
+    </div>
+
+    <div class="form-ctrl">
+      <label>Core Speciality</label>
+      <input type="text" formControlName="speciality" placeholder="e.g., Yoga, Bodybuilding"
+             [ngClass]="{'invalid-touched': isInvalid('speciality')}">
+      <div *ngIf="isInvalid('speciality')" class="error-msg">⚠️ Please specify your main track.</div>
+    </div>
+
+    <div class="form-ctrl">
+      <label>Tariff (Dh/mois)</label>
+      <input type="number" formControlName="tariff" placeholder="e.g., 500"
+             [ngClass]="{'invalid-touched': isInvalid('tariff')}">
+      <div *ngIf="isInvalid('tariff')" class="error-msg">⚠️ Tariff rate must be 0 or higher.</div>
+    </div>
+
+    <div class="form-ctrl">
+      <label>Weekly Availability</label>
+      <input type="text" formControlName="availability" placeholder="Mornings, Weekends"
+             [ngClass]="{'invalid-touched': isInvalid('availability')}">
+      <div *ngIf="isInvalid('availability')" class="error-msg">⚠️ Availability note is required.</div>
+    </div>
+    
+    <div class="form-ctrl span-2">
+      <label>Certifications Documents (PDF)</label>
+      <div class="custom-pdf-uploader">
+        <input type="file" id="pdfFile" (change)="onFileSelected($event)" accept="application/pdf">
+        <label for="pdfFile" [style.border-color]="isInvalid('certification') ? '#EF4444' : ''">
+          📁 {{ fileName ? fileName : 'Choose certification diploma (PDF Only)' }}
+        </label>
+      </div>
+      <div *ngIf="isInvalid('certification')" class="error-msg">⚠️ Uploading your credential PDF is mandatory.</div>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Initial Rank Status</label>
+      <div class="stars-preview">★ ★ ★ ★ ★ <span class="rating-badge">(5.0 Verified Account)</span></div>
+    </div>
+
+  </div>
+  <button type="submit" [disabled]="coachForm.invalid" class="btn-primary-submit">Register Coach Profile</button>
+</form>

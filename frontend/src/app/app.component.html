@@ -1,5 +1,5 @@
-<app-navbar></app-navbar>
-<main>
+<app-navbar *ngIf="showPublicLayout()"></app-navbar>
+<main [class.min-h-screen]="!showPublicLayout()">
     <router-outlet></router-outlet>
 </main>
-<app-footer></app-footer>
+<app-footer *ngIf="showPublicLayout()"></app-footer>
