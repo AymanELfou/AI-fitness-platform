@@ -1,0 +1,39 @@
+$bg-light-gray: #F8FAFC; 
+$brand-blue: #3B6BF8;
+$text-dark: #0C0D17;
+$text-muted: #4A5568;
+$card-white: #FFFFFF;
+
+.profile-page-wrapper {
+  min-height: calc(100vh - 80px);
+  background-color: $bg-light-gray;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+.form-container-wrapper {
+  width: 100%;
+  max-width: 750px;
+}
+
+.dynamic-component-box {
+  background: $card-white;
+  border: 1px solid #E2E8F0;
+  border-radius: 20px;
+  padding: 40px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+}
+
+.error-no-role-box {
+  background: $card-white;
+  border: 1px solid #FCA5A5;
+  border-radius: 16px;
+  padding: 40px;
+  text-align: center;
+  
+  h2 { color: #DC2626; font-size: 22px; margin-bottom: 10px; font-weight: 700; }
+  p { color: $text-muted; font-size: 15px; }
+}

@@ -1,0 +1,77 @@
+$brand-blue: #3B6BF8;
+$text-dark: #0C0D17;
+$text-muted: #4A5568;
+$error-red: #EF4444;
+
+.section-form-title {
+  font-size: 24px; font-weight: 700; color: $text-dark;
+  margin-bottom: 28px; border-left: 4px solid $brand-blue; padding-left: 12px;
+}
+
+.form-grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; }
+
+.form-ctrl {
+  display: flex; flex-direction: column; gap: 6px;
+  position: relative;
+  &.span-2 { grid-column: span 2; }
+
+  label { font-size: 12px; font-weight: 700; color: $text-muted; text-transform: uppercase; letter-spacing: 0.5px; }
+  
+  input, select {
+    background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 8px;
+    padding: 12px 14px; color: $text-dark; font-size: 15px; outline: none; 
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &:focus { 
+      border-color: $brand-blue; 
+      box-shadow: 0 0 0 4px rgba($brand-blue, 0.1); 
+      background-color: #FFFFFF;
+      transform: translateY(-1px);
+    }
+
+    &.invalid-touched {
+      border-color: $error-red;
+      background-color: rgba($error-red, 0.01);
+      &:focus { box-shadow: 0 0 0 4px rgba($error-red, 0.1); }
+    }
+  }
+
+  .error-msg {
+    color: $error-red; font-size: 11px; font-weight: 600; margin-top: 2px;
+    display: flex; align-items: center; gap: 4px;
+    animation: fadeIn 0.2s ease-in-out;
+  }
+}
+
+.imc-highlight-box {
+  background-color: rgba(#10B981, 0.04); padding: 20px; border-radius: 12px; border: 1px solid rgba(#10B981, 0.2);
+  transition: all 0.3s ease;
+  &:hover { background-color: rgba(#10B981, 0.07); }
+  .imc-clean-input { border-color: rgba(#10B981, 0.4); color: #10B981; font-size: 24px; font-weight: 800; text-align: center; background-color: #FFFFFF; }
+}
+
+.custom-pdf-uploader {
+  input { display: none; }
+  label {
+    display: block; background: #F8FAFC; border: 2px dashed #CBD5E1; padding: 18px;
+    border-radius: 8px; text-align: center; cursor: pointer; font-weight: 600; transition: all 0.2s;
+    &:hover { border-color: $brand-blue; color: $brand-blue; background: rgba($brand-blue, 0.02); }
+  }
+}
+
+.stars-preview {
+  font-size: 22px; color: #F59E0B; display: flex; align-items: center; gap: 6px;
+  background: rgba(#F59E0B, 0.05); padding: 12px; border-radius: 8px; border: 1px solid rgba(#F59E0B, 0.2);
+}
+
+.btn-primary-submit {
+  width: 100%; background-color: $brand-blue; color: white; border: none;
+  padding: 14px; font-size: 16px; font-weight: 700; border-radius: 8px; cursor: pointer; 
+  margin-top: 30px; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  &:disabled { background: #E2E8F0; color: #94A3B8; cursor: not-allowed; opacity: 0.9; }
+  &:not(:disabled):hover { opacity: 0.95; transform: translateY(-2px); box-shadow: 0 10px 20px rgba($brand-blue, 0.25); }
+  &:not(:disabled):active { transform: translateY(0); }
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-2px); } to { opacity: 1; transform: translateY(0); } }

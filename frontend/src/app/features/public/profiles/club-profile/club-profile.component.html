@@ -1,0 +1,42 @@
+<h2 class="section-form-title">🏢 Club Facility Registration</h2>
+<form [formGroup]="clubForm" (ngSubmit)="submit()">
+  <div class="form-grid-layout">
+    
+    <div class="form-ctrl span-2">
+      <label>Club / Gym Name</label>
+      <input type="text" formControlName="clubName" placeholder="e.g., Titanium Gym Center"
+             [ngClass]="{'invalid-touched': isInvalid('clubName')}">
+      <div *ngIf="isInvalid('clubName')" class="error-msg">⚠️ Club name title is required.</div>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Physical Address</label>
+      <input type="text" formControlName="address" placeholder="Street Address, City Location"
+             [ngClass]="{'invalid-touched': isInvalid('address')}">
+      <div *ngIf="isInvalid('address')" class="error-msg">⚠️ Verified location address is required.</div>
+    </div>
+
+    <div class="form-ctrl">
+      <label>Daily Occupant Capacity</label>
+      <input type="number" formControlName="capacity" placeholder="e.g., 150"
+             [ngClass]="{'invalid-touched': isInvalid('capacity')}">
+      <div *ngIf="isInvalid('capacity')" class="error-msg">⚠️ Capacity must be at least 1 person.</div>
+    </div>
+
+    <div class="form-ctrl">
+      <label>Phone Number Line</label>
+      <input type="text" formControlName="phone" placeholder="e.g., +212600000000"
+             [ngClass]="{'invalid-touched': isInvalid('phone')}">
+      <div *ngIf="isInvalid('phone')" class="error-msg">⚠️ Contact phone line is required.</div>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Contact Email Address</label>
+      <input type="email" formControlName="contactEmail" placeholder="management@facility.com"
+             [ngClass]="{'invalid-touched': isInvalid('contactEmail')}">
+      <div *ngIf="isInvalid('contactEmail')" class="error-msg">⚠️ Please provide a valid office email.</div>
+    </div>
+
+  </div>
+  <button type="submit" [disabled]="clubForm.invalid" class="btn-primary-submit">Register Gym Facility</button>
+</form>

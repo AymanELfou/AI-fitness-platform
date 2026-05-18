@@ -1,0 +1,16 @@
+<div class="profile-page-wrapper">
+  
+  <div class="form-container-wrapper">
+    <div class="dynamic-component-box" *ngIf="activeRole">
+      <app-client-profile *ngIf="activeRole === 'client'"></app-client-profile>
+      <app-coach-profile *ngIf="activeRole === 'coach'"></app-coach-profile>
+      <app-club-profile *ngIf="activeRole === 'club'"></app-club-profile>
+    </div>
+
+    <div class="error-no-role-box" *ngIf="!activeRole">
+      <h2>⚠️ Profile Type Missing</h2>
+      <p>Please complete your registration from the sign-up process first to access this page properly.</p>
+    </div>
+  </div>
+
+</div>
