@@ -1,0 +1,80 @@
+$primary: #6366f1; $primary-light: #eef2ff; $dark: #0f172a; $muted: #64748b; $border: #e2e8f0; $white: #fff;
+
+.page-wrapper { display: flex; flex-direction: column; gap: 1.5rem; }
+
+.page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+.page-title { font-size: 1.6rem; font-weight: 800; color: $dark; letter-spacing: -0.5px; margin: 0; }
+.page-subtitle { font-size: 0.875rem; color: $muted; margin: 0.25rem 0 0; strong { color: $primary; } }
+
+.btn-primary {
+  display: flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, $primary, #818cf8);
+  color: white; border: none; border-radius: 10px; padding: 0.55rem 1.2rem; font-size: 0.82rem; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+  &:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(99,102,241,0.4); }
+}
+
+.filters-bar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+.search-box {
+  display: flex; align-items: center; gap: 0.5rem; background: $white; border: 1px solid $border;
+  border-radius: 10px; padding: 0.55rem 1rem; color: #94a3b8; flex: 1; max-width: 320px;
+  &:focus-within { border-color: $primary; box-shadow: 0 0 0 3px rgba(99,102,241,0.08); }
+}
+.search-input { border: none; outline: none; font-size: 0.85rem; color: $dark; width: 100%; background: transparent; &::placeholder { color: #94a3b8; } }
+
+.filter-tabs { display: flex; gap: 0.35rem; }
+.filter-tab {
+  padding: 0.45rem 0.9rem; border-radius: 8px; border: 1px solid $border; background: $white;
+  font-size: 0.78rem; font-weight: 500; color: $muted; cursor: pointer; transition: all 0.2s;
+  &:hover { background: #f1f5f9; }
+  &.tab-active { background: $primary-light; border-color: #c7d2fe; color: $primary; font-weight: 600; }
+}
+
+.clients-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem; }
+
+.client-card {
+  background: $white; border-radius: 18px; border: 1px solid $border; padding: 1.4rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: all 0.25s;
+  &:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+}
+
+.client-card-header { display: flex; align-items: flex-start; gap: 0.85rem; margin-bottom: 1.1rem; }
+
+.client-avatar-lg {
+  width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 0.9rem; font-weight: 700; flex-shrink: 0;
+}
+
+.client-card-info { flex: 1; }
+.client-card-name { font-size: 0.92rem; font-weight: 700; color: $dark; margin: 0; }
+.client-card-goal { font-size: 0.75rem; color: $muted; margin: 0.15rem 0 0.35rem; }
+.plan-badge { font-size: 0.68rem; font-weight: 600; padding: 0.12rem 0.45rem; border-radius: 20px; background: $primary-light; color: $primary; }
+
+.status-badge {
+  font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 20px; white-space: nowrap; height: fit-content;
+  &.status-active { background: #ecfdf5; color: #10b981; }
+  &.status-paused { background: #fffbeb; color: #f59e0b; }
+}
+
+.client-progress-section { margin-bottom: 1rem; }
+.progress-header { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+.progress-label { font-size: 0.72rem; color: $muted; font-weight: 500; }
+.progress-value { font-size: 0.72rem; font-weight: 700; color: $dark; }
+.progress-bar-bg { height: 6px; background: #f1f5f9; border-radius: 10px; overflow: hidden; }
+.progress-bar-fill { height: 100%; border-radius: 10px; transition: width 0.6s; }
+
+.client-stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; padding: 0.85rem 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; margin-bottom: 0.85rem; }
+.client-stat { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+.cs-value { font-size: 0.88rem; font-weight: 700; color: $dark; }
+.next-session-val { font-size: 0.72rem; }
+.cs-label { font-size: 0.65rem; color: $muted; }
+
+.client-card-footer { display: flex; align-items: center; justify-content: space-between; }
+.joined-date { font-size: 0.72rem; color: $muted; }
+.client-actions { display: flex; gap: 0.4rem; }
+.action-btn {
+  width: 30px; height: 30px; border-radius: 8px; border: 1px solid $border; background: $white;
+  color: $muted; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s;
+  &.action-chat:hover { background: #eff6ff; color: $primary; border-color: #c7d2fe; }
+  &.action-profile:hover { background: #ecfdf5; color: #10b981; border-color: #a7f3d0; }
+}

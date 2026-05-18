@@ -1,0 +1,119 @@
+<div class="page-wrapper">
+
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Mon Profil</h2>
+      <p class="page-subtitle">Consultez et modifiez vos <strong>informations personnelles</strong></p>
+    </div>
+    <div class="header-actions">
+      @if (saved) {
+        <span class="save-success">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          Profil sauvegardé
+        </span>
+      }
+      @if (!isEditing) {
+        <button class="btn-primary" (click)="toggleEdit()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Modifier
+        </button>
+      } @else {
+        <button class="btn-cancel" (click)="cancelEdit()">Annuler</button>
+        <button class="btn-primary" (click)="saveProfile()">
+          <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          Sauvegarder
+        </button>
+      }
+    </div>
+  </div>
+
+  <div class="profile-layout">
+
+    <!-- Left: Avatar & Quick Info -->
+    <div class="profile-sidebar-card">
+      <div class="profile-avatar-lg">
+        {{ profile.firstname?.[0] || 'C' }}{{ profile.lastname?.[0] || '' }}
+      </div>
+      <h3 class="profile-fullname">{{ profile.firstname }} {{ profile.lastname }}</h3>
+      <p class="profile-email">{{ profile.email }}</p>
+      <span class="profile-role-badge">Coach</span>
+
+      <div class="profile-quick-stats">
+        <div class="pq-stat">
+          <span class="pq-val">18</span>
+          <span class="pq-label">Clients</span>
+        </div>
+        <div class="pq-stat">
+          <span class="pq-val">64</span>
+          <span class="pq-label">Séances/mois</span>
+        </div>
+        <div class="pq-stat">
+          <span class="pq-val">4.9</span>
+          <span class="pq-label">Note</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right: Form -->
+    <div class="profile-form-card">
+      <h3 class="form-section-title">Informations Personnelles</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.firstname" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.lastname" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email</label>
+          <input class="form-input" type="email" [disabled]="!isEditing" [(ngModel)]="profile.email" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Téléphone</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.phone" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ville</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.city" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Disponibilité</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.availability" />
+        </div>
+      </div>
+
+      <h3 class="form-section-title section-mt">Profil Professionnel</h3>
+
+      <div class="form-grid">
+        <div class="form-group">
+          <label class="form-label">Spécialité</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.speciality" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Expérience</label>
+          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.experience" />
+        </div>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Bio</label>
+        <textarea class="form-textarea" [disabled]="!isEditing" [(ngModel)]="profile.bio" rows="3"></textarea>
+      </div>
+
+      <div class="form-group form-full">
+        <label class="form-label">Certifications</label>
+        <textarea class="form-textarea" [disabled]="!isEditing" [(ngModel)]="profile.certifications" rows="2"></textarea>
+      </div>
+
+    </div>
+  </div>
+</div>

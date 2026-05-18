@@ -1,0 +1,36 @@
+<div class="page-wrapper">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Programmes d'Entraînement</h2>
+      <p class="page-subtitle">Gérez et créez des <strong>plans personnalisés</strong> pour vos clients</p>
+    </div>
+    <button class="btn-primary">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Nouveau Programme
+    </button>
+  </div>
+
+  <div class="programs-grid">
+    @for (prog of programs; track prog.title) {
+      <div class="program-card">
+        <div class="program-card-top" [style.background]="prog.color + '18'">
+          <span class="prog-icon">{{ prog.icon }}</span>
+          <span class="prog-status" [class.stat-active]="prog.status === 'Actif'">{{ prog.status }}</span>
+        </div>
+        <div class="program-card-body">
+          <h3 class="prog-title">{{ prog.title }}</h3>
+          <p class="prog-client">👤 {{ prog.client }}</p>
+          <div class="prog-meta-row">
+            <span class="prog-meta"><strong>{{ prog.weeks }}</strong> semaines</span>
+            <span class="prog-meta"><strong>{{ prog.sessions }}j</strong>/semaine</span>
+            <span class="prog-level" [style.color]="prog.color" [style.background]="prog.color + '18'">{{ prog.level }}</span>
+          </div>
+          <div class="prog-actions">
+            <button class="prog-btn-edit">Modifier</button>
+            <button class="prog-btn-view">Voir →</button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

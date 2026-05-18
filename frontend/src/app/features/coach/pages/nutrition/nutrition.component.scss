@@ -1,0 +1,18 @@
+$primary: #6366f1; $dark: #0f172a; $muted: #64748b; $border: #e2e8f0; $white: #fff;
+.page-wrapper { display: flex; flex-direction: column; gap: 1.5rem; }
+.page-header { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.page-title { font-size: 1.6rem; font-weight: 800; color: $dark; letter-spacing: -0.5px; margin: 0; }
+.page-subtitle { font-size: 0.875rem; color: $muted; margin: 0.25rem 0 0; strong { color: $primary; } }
+.btn-primary { background: linear-gradient(135deg, $primary, #818cf8); color: white; border: none; border-radius: 10px; padding: 0.55rem 1.2rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99,102,241,0.3); &:hover { transform: translateY(-1px); } }
+.nutri-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
+.nutri-card { background: $white; border-radius: 18px; border: 1px solid $border; padding: 1.4rem; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: all 0.25s; &:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); } }
+.nutri-card-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.1rem; }
+.n-avatar { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.82rem; font-weight: 700; flex-shrink: 0; }
+.n-client { font-size: 0.88rem; font-weight: 700; color: $dark; margin: 0; }
+.n-goal { font-size: 0.72rem; color: $muted; }
+.n-status { margin-left: auto; font-size: 0.68rem; font-weight: 600; padding: 0.2rem 0.55rem; border-radius: 20px; background: #ecfdf5; color: #10b981; }
+.macros-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-bottom: 1rem; padding: 0.85rem 0; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+.macro-item { display: flex; flex-direction: column; align-items: center; gap: 0.2rem; }
+.macro-val { font-size: 0.9rem; font-weight: 800; }
+.macro-label { font-size: 0.62rem; color: $muted; }
+.n-btn { width: 100%; padding: 0.6rem; border: 1px solid #c7d2fe; border-radius: 10px; background: #eef2ff; color: $primary; font-size: 0.8rem; font-weight: 600; cursor: pointer; transition: all 0.2s; &:hover { background: $primary; color: white; } }

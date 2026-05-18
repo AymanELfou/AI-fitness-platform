@@ -1,0 +1,28 @@
+<div class="page-wrapper">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Planning Hebdomadaire</h2>
+      <p class="page-subtitle">Organisez vos <strong>séances de la semaine</strong></p>
+    </div>
+    <button class="btn-primary">+ Planifier une séance</button>
+  </div>
+  <div class="calendar-grid">
+    @for (day of days; track day; let di = $index) {
+      <div class="day-col">
+        <div class="day-header">{{ day }}</div>
+        <div class="day-sessions">
+          @for (s of weekSessions[di]; track s.time) {
+            <div class="session-chip" [style.borderColor]="s.color" [style.background]="s.color + '12'">
+              <span class="chip-time" [style.color]="s.color">{{ s.time }}</span>
+              <p class="chip-client">{{ s.client }}</p>
+              <span class="chip-type">{{ s.type }}</span>
+            </div>
+          }
+          @if (weekSessions[di].length === 0) {
+            <div class="day-empty">Libre</div>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div>

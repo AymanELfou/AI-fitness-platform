@@ -1,0 +1,39 @@
+<div class="page-wrapper">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Performances & Suivi</h2>
+      <p class="page-subtitle">Analysez la <strong>progression</strong> de chaque client</p>
+    </div>
+  </div>
+  <div class="progress-table-card">
+    <table class="progress-table">
+      <thead>
+        <tr>
+          <th>Client</th>
+          <th>Objectif</th>
+          <th>Poids</th>
+          <th>Force</th>
+          <th>Cardio</th>
+          <th>Séances</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (c of clients; track c.name) {
+          <tr>
+            <td>
+              <div class="table-client">
+                <div class="t-avatar" [style.background]="c.color">{{ c.initials }}</div>
+                <span class="t-name">{{ c.name }}</span>
+              </div>
+            </td>
+            <td><span class="goal-chip">{{ c.goal }}</span></td>
+            <td><span class="stat-val" [class.positive]="c.weight.startsWith('-')" [class.negative]="c.weight.startsWith('+') && c.goal !== 'Prise de masse'">{{ c.weight }}</span></td>
+            <td><span class="stat-val positive">{{ c.strength }}</span></td>
+            <td><span class="stat-val positive">{{ c.cardio }}</span></td>
+            <td><strong>{{ c.sessions }}</strong></td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
