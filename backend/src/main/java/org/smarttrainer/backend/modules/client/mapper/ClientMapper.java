@@ -13,7 +13,7 @@ public class ClientMapper {
         return ClientProfileResponse.builder()
                 .id(profile.getId())
                 .createAt(profile.getCreatedAt())
-                .userId(profile.getId())
+                .userId(profile.getUser().getId())
                 .age(profile.getAge())
                 .poids(profile.getPoids())
                 .taille(profile.getTaille())
