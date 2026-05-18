@@ -5,12 +5,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.abonnement.Abonnement;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
+import org.smarttrainer.backend.domain.comment.Comment;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
+import org.smarttrainer.backend.domain.post.Post;
 import org.smarttrainer.backend.domain.programme.Programme;
 import org.smarttrainer.backend.domain.progress.Progress;
 import org.smarttrainer.backend.domain.seance.Seance;
+import org.smarttrainer.backend.domain.subscription.Subscription;
 import org.smarttrainer.backend.domain.user.User;
 
 import java.time.LocalDateTime;
@@ -35,9 +39,8 @@ public class ClientProfile extends BaseEntity {
     private String niveau;
     private Double imc;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;
+    @OneToMany(mappedBy = "client")
+    private List<Subscription> subscriptions;
 
     //The relationship between client and coach
     @ManyToOne
