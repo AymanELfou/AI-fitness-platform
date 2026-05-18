@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.smarttrainer.backend.domain.admin.AdminProfile;
+import org.smarttrainer.backend.domain.chat.Conversation;
+import org.smarttrainer.backend.domain.chat.Message;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
@@ -75,6 +77,12 @@ public class User implements UserDetails, Principal {
 
     @OneToMany(mappedBy = "user",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Comment> comments;
+
+    @ManyToMany(mappedBy = "participants")
+    private List<Conversation> conversations;
+
+    @OneToMany(mappedBy = "sender")
+    private List<Message> sentMessages;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
