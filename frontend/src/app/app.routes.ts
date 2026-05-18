@@ -7,9 +7,22 @@ import { NutritionComponent } from './features/public/nutrition/nutrition.compon
 import { ClubsComponent } from './features/public/clubs/clubs.component';
 
 import { ProfilesComponent } from './features/public/profiles/profiles.component';
+
+// Club Layout & Pages
 import { ClubLayoutComponent } from './shared/layouts/club-layout/club-layout.component';
 import { DashboardComponent } from './features/club/pages/dashboard/dashboard.component';
 import { CoachesComponent } from './features/club/pages/coaches/coaches.component';
+
+// Coach Layout & Pages
+import { CoachLayoutComponent } from './shared/layouts/coach-layout/coach-layout.component';
+import { CoachDashboardComponent } from './features/coach/pages/dashboard/dashboard.component';
+import { ClientsComponent } from './features/coach/pages/clients/clients.component';
+import { ProgramsComponent } from './features/coach/pages/programs/programs.component';
+import { ScheduleComponent } from './features/coach/pages/schedule/schedule.component';
+import { ChatComponent } from './features/coach/pages/chat/chat.component';
+import { AiAssistantComponent } from './features/coach/pages/ai-assistant/ai-assistant.component';
+import { CommunityComponent } from './features/coach/pages/community/community.component';
+import { ProfileComponent } from './features/coach/pages/profile/profile.component';
 
 
 export const routes: Routes = [
@@ -22,23 +35,32 @@ export const routes: Routes = [
   { path: 'nutrition', component: NutritionComponent },
   { path: 'clubs', component: ClubsComponent },
   
-  
   { path: 'complete-profile', component: ProfilesComponent },
-  { path: 'profiles', component: ProfilesComponent },
 
-
-  
-
-
-  // 🏢 CLUB ROUTES
-
+  // CLUB ROUTES
   {
-    path:'club', component: ClubLayoutComponent,
+    path: 'club', component: ClubLayoutComponent,
     children: [
      { path: 'dashboard', component: DashboardComponent },
      { path: 'coaches', component: CoachesComponent },
-    
+     { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
     ] 
+  },
+
+  // COACH ROUTES
+  {
+    path: 'coach', component: CoachLayoutComponent,
+    children: [
+      { path: 'dashboard', component: CoachDashboardComponent },
+      { path: 'clients', component: ClientsComponent },
+      { path: 'programs', component: ProgramsComponent },    
+      { path: 'schedule', component: ScheduleComponent },
+      { path: 'chat', component: ChatComponent },
+      { path: 'community', component: CommunityComponent },
+      { path: 'ai-assistant', component: AiAssistantComponent },
+      { path: 'profile', component: ProfileComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
   },
 
   { path: '**', redirectTo: '' }
