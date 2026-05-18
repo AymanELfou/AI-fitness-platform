@@ -1,0 +1,29 @@
+---
+- name: Deploy Smart Trainer App
+  hosts: preprod
+  vars:
+    db_host: "{{ lookup('env', 'DB_HOST') }}"
+    db_port: "{{ lookup('env', 'DB_PORT') }}"
+    db_name: "{{ lookup('env', 'DB_NAME') }}"
+    db_user: "{{ lookup('env', 'DB_USER') }}"
+    db_password: "{{ lookup('env', 'DB_PASSWORD') }}"
+    workspace: "{{ lookup('env', 'WORKSPACE') }}"
+
+  tasks:
+    - name: Create .env file from Jenkins secrets
+      template:
+        src: "{{ workspace }}/.env.j2" 
+        dest: "{{ workspace }}/.env"
+      vars:
+        content: |
+          DB_HOST={{ db_host }}
+          DB_PORT={{ db_port }}
+          DB_NAME={{ db_name }}
+          DB_USER={{ db_user }}
+          DB_PASSWORD={{ db_password }}
+
+    - name: Tear down existing containers and pull/build new ones
+      community.docker.docker_compose_v2:
+        project_src: "{{ workspace }}"
+        state: present
+        build: always

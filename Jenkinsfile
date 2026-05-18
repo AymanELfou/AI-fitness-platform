@@ -49,9 +49,8 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Deploy with Ansible (Preprod)') {
     steps {
-        
         withCredentials([
             string(credentialsId: 'smart-db-host', variable: 'DB_HOST'),
             string(credentialsId: 'smart-db-port', variable: 'DB_PORT'),
@@ -60,20 +59,12 @@ pipeline {
             string(credentialsId: 'smart-db-pass', variable: 'DB_PASSWORD')
         ]) {
             script {
-                
-                sh """
-                echo "DB_HOST=${DB_HOST}" > .env
-                echo "DB_PORT=${DB_PORT}" >> .env
-                echo "DB_NAME=${DB_NAME}" >> .env
-                echo "DB_USER=${DB_USER}" >> .env
-                echo "DB_PASSWORD=${DB_PASSWORD}" >> .env
-                
-                
-                docker compose up -d --build
-                """
+                // Jenkins exécute le playbook Ansible en lui injectant l'environnement sécurisé
+                sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy-playbook.yml'
             }
         }
     }
+}
 }
     }
 }
