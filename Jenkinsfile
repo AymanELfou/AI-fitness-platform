@@ -59,7 +59,6 @@ pipeline {
             string(credentialsId: 'smart-db-pass', variable: 'DB_PASSWORD')
         ]) {
             script {
-                // Jenkins exécute le playbook Ansible en lui injectant l'environnement sécurisé
                 sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy-playbook.yml'
             }
         }
