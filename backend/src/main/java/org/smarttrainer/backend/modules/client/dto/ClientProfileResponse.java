@@ -15,6 +15,7 @@ public class ClientProfileResponse {
     private int age;
     private Double poids;
     private Double taille;
+    private String but;
     private String niveau;
     private Double imc;
     private Long coachID;
