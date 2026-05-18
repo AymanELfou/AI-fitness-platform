@@ -11,10 +11,8 @@
 
   tasks:
     - name: Create .env file from Jenkins secrets
-      template:
-        src: "{{ workspace }}/.env.j2" 
+      copy:
         dest: "{{ workspace }}/.env"
-      vars:
         content: |
           DB_HOST={{ db_host }}
           DB_PORT={{ db_port }}
@@ -23,7 +21,4 @@
           DB_PASSWORD={{ db_password }}
 
     - name: Tear down existing containers and pull/build new ones
-      community.docker.docker_compose_v2:
-        project_src: "{{ workspace }}"
-        state: present
-        build: always
+      shell: "docker compose -f {{ workspace }}/docker-compose.yml up -d --build"
