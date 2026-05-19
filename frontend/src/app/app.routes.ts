@@ -27,7 +27,7 @@ import { ProfileComponent } from './features/coach/pages/profile/profile.compone
 
 export const routes: Routes = [
 
-  // Public routes 
+  // Public routes
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },

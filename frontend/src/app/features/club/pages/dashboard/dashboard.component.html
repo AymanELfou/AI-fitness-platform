@@ -3,8 +3,8 @@
   <!-- ===================== PAGE HEADER ===================== -->
   <div class="page-header">
     <div>
-      <h2 class="page-title">Statistique Globale</h2>
-      <p class="page-subtitle">Bienvenue sur <strong>SmartTTrainer</strong> — voici l'aperçu de votre club</p>
+      <h2 class="page-title">Global Statistics</h2>
+      <p class="page-subtitle">Welcome to <strong>SmartTrainer</strong> — here is your club overview</p>
     </div>
     <div class="header-actions">
       <div class="date-badge">
@@ -53,7 +53,7 @@
             <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" [attr.d]="stat.positive ? 'M5 10l7-7 7 7' : 'M19 14l-7 7-7-7'"/>
             </svg>
-            {{ stat.change }} ce mois
+            {{ stat.change }} this month
           </span>
         </div>
       </div>
@@ -67,15 +67,15 @@
     <div class="card chart-card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Revenus Mensuels</h3>
-          <p class="card-subtitle">Évolution sur 12 mois</p>
+          <h3 class="card-title">Monthly Revenue</h3>
+          <p class="card-subtitle">12-Month Progression</p>
         </div>
-        <span class="badge badge-green">+18% vs an dernier</span>
+        <span class="badge badge-green">+18% vs last year</span>
       </div>
       <div class="bar-chart">
         @for (month of revenueMonths; track month; let i = $index) {
           <div class="bar-item">
-            <div class="bar-tooltip">{{ revenueData[i] | number:'1.0-0' }} €</div>
+            <div class="bar-tooltip">${{ revenueData[i] | number:'1.0-0' }}</div>
             <div class="bar-fill" [style.height.%]="getBarHeight(revenueData[i])"
                  [class.bar-active]="i === revenueMonths.length - 1">
             </div>
@@ -89,8 +89,8 @@
     <div class="card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Répartition des Abonnements</h3>
-          <p class="card-subtitle">986 abonnements actifs</p>
+          <h3 class="card-title">Subscription Distribution</h3>
+          <p class="card-subtitle">986 active subscriptions</p>
         </div>
       </div>
       <div class="donut-wrapper">
@@ -139,10 +139,10 @@
     <div class="card members-card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Membres Récents</h3>
-          <p class="card-subtitle">Derniers inscrits sur SmartTTrainer</p>
+          <h3 class="card-title">Recent Members</h3>
+          <p class="card-subtitle">Latest registered on SmartTrainer</p>
         </div>
-        <button class="btn-link">Voir tout →</button>
+        <button class="btn-link">View all →</button>
       </div>
       <div class="members-list">
         @for (member of recentMembers; track member.name) {
@@ -152,7 +152,7 @@
               <p class="member-name">{{ member.name }}</p>
               <p class="member-meta">{{ member.plan }} · {{ member.joined }}</p>
             </div>
-            <span class="status-badge" [class.status-active]="member.status === 'Actif'" [class.status-pending]="member.status !== 'Actif'">
+            <span class="status-badge" [class.status-active]="member.status === 'Active'" [class.status-pending]="member.status !== 'Active'">
               {{ member.status }}
             </span>
           </div>
@@ -164,10 +164,10 @@
     <div class="card coaches-card">
       <div class="card-header">
         <div>
-          <h3 class="card-title">Top Coachs</h3>
-          <p class="card-subtitle">Performance du mois</p>
+          <h3 class="card-title">Top Coaches</h3>
+          <p class="card-subtitle">Performance of the month</p>
         </div>
-        <button class="btn-link">Voir tout →</button>
+        <button class="btn-link">View all →</button>
       </div>
       <div class="coaches-list">
         @for (coach of topCoaches; track coach.name; let i = $index) {
@@ -179,7 +179,7 @@
               <p class="coach-specialty">{{ coach.specialty }}</p>
             </div>
             <div class="coach-stats">
-              <span class="coach-members">{{ coach.members }} membres</span>
+              <span class="coach-members">{{ coach.members }} members</span>
               <span class="coach-rating">⭐ {{ coach.rating }}</span>
             </div>
           </div>
@@ -192,7 +192,7 @@
       <div class="card-header">
         <div>
           <h3 class="card-title">Notifications</h3>
-          <p class="card-subtitle">Alertes & activités récentes</p>
+          <p class="card-subtitle">Alerts & recent activities</p>
         </div>
         <span class="notif-badge">{{ alerts.length }}</span>
       </div>
@@ -222,35 +222,35 @@
       </div>
       <!-- Quick Actions -->
       <div class="quick-actions">
-        <p class="qa-title">Actions Rapides</p>
+        <p class="qa-title">Quick Actions</p>
         <div class="qa-grid">
           <button class="qa-btn">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
             </svg>
-            Ajouter Coach
+            Add Coach
           </button>
           <button class="qa-btn">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
             </svg>
-            Nouveau Plan
+            New Plan
           </button>
           <button class="qa-btn">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
             </svg>
-            Rapports
+            Reports
           </button>
           <button class="qa-btn">
             <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/>
             </svg>
-            Communauté
+            Community
           </button>
         </div>
       </div>
     </div>
-    
+
   </div>
 </div>

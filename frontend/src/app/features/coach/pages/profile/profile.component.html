@@ -38,7 +38,7 @@
     <!-- Left: Avatar & Quick Info -->
     <div class="profile-sidebar-card">
       <div class="profile-avatar-lg">
-        {{ profile.firstname?.[0] || 'C' }}{{ profile.lastname?.[0] || '' }}
+        {{ profile.firstname[0] || 'C' }}{{ profile.lastname[0] || '' }}
       </div>
       <h3 class="profile-fullname">{{ profile.firstname }} {{ profile.lastname }}</h3>
       <p class="profile-email">{{ profile.email }}</p>
