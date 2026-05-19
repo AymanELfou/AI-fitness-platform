@@ -29,8 +29,8 @@ $topbar-h: 64px;
    ============================================================ */
 .coach-sidebar {
   width: $sidebar-width;
-  background: $white;
-  border-right: 1px solid $border;
+  background: $dark;
+  border-right: 1px solid #1e293b;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -42,6 +42,28 @@ $topbar-h: 64px;
   &.collapsed {
     width: $sidebar-collapsed;
   }
+}
+
+/* Sidebar Background */
+.sidebar-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.5;
+  }
+}
+
+.sidebar-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(15,23,42,0.95), rgba(15,23,42,0.8), rgba(15,23,42,0.95));
 }
 
 /* Logo */
@@ -71,17 +93,19 @@ $topbar-h: 64px;
 .logo-text {
   font-size: 1rem;
   font-weight: 800;
-  color: $dark;
+  color: $white;
   white-space: nowrap;
   letter-spacing: -0.3px;
 }
 
 .logo-accent {
-  color: $primary;
+  color: $white;
 }
 
 /* Navigation */
 .sidebar-nav {
+  position: relative;
+  z-index: 10;
   flex: 1;
   padding: 1.5rem 0.75rem;
   overflow-y: auto;
@@ -100,7 +124,7 @@ $topbar-h: 64px;
   gap: 0.75rem;
   padding: 0.7rem 0.85rem;
   border-radius: 10px;
-  color: #6b7280;
+  color: #94a3b8;
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 500;
@@ -111,20 +135,20 @@ $topbar-h: 64px;
   border-right: 4px solid transparent;
 
   &:hover {
-    background: #f9fafb;
-    color: $primary;
+    background: rgba(255, 255, 255, 0.1);
+    color: $white;
 
-    .nav-icon-svg { color: $primary; }
+    .nav-icon-svg { color: $white; }
   }
 
   /* ---- Active state: bg-blue-50 + text-primary + border-r-4 ---- */
   &.nav-active {
-    background: $primary-light;
-    color: $primary;
+    background: rgba(37, 99, 235, 0.2);
+    color: $white;
     font-weight: 600;
     border-right-color: $primary;
 
-    .nav-icon-svg { color: $primary; }
+    .nav-icon-svg { color: $white; }
   }
 }
 
@@ -140,8 +164,10 @@ $topbar-h: 64px;
 
 /* Sidebar Footer */
 .sidebar-footer {
+  position: relative;
+  z-index: 10;
   padding: 0.75rem;
-  border-top: 1px solid #f1f5f9;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   flex-shrink: 0;
 }
 
@@ -154,7 +180,7 @@ $topbar-h: 64px;
   width: 100%;
   background: none;
   border: none;
-  color: #ef4444;
+  color: #f87171;
   font-size: 0.875rem;
   font-weight: 500;
   cursor: pointer;
@@ -162,10 +188,10 @@ $topbar-h: 64px;
   white-space: nowrap;
   overflow: hidden;
 
-  .nav-icon-svg { color: #ef4444; }
+  .nav-icon-svg { color: #f87171; }
 
   &:hover {
-    background: #fef2f2;
+    background: rgba(239, 68, 68, 0.1);
   }
 }
 

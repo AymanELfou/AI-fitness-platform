@@ -13,8 +13,8 @@ export class DashboardComponent {
 
   stats = [
     {
-      label: 'Membres Actifs',
-      value: '1 248',
+      label: 'Active Members',
+      value: '1,248',
       change: '+12%',
       positive: true,
       icon: 'members',
@@ -22,7 +22,7 @@ export class DashboardComponent {
       bg: '#eef2ff'
     },
     {
-      label: 'Coachs',
+      label: 'Coaches',
       value: '24',
       change: '+2',
       positive: true,
@@ -31,7 +31,7 @@ export class DashboardComponent {
       bg: '#ecfdf5'
     },
     {
-      label: 'Abonnements Actifs',
+      label: 'Active Subscriptions',
       value: '986',
       change: '+8%',
       positive: true,
@@ -40,8 +40,8 @@ export class DashboardComponent {
       bg: '#fffbeb'
     },
     {
-      label: 'Revenus du Mois',
-      value: '24 500 €',
+      label: 'Monthly Revenue',
+      value: '$24,500',
       change: '+18%',
       positive: true,
       icon: 'revenue',
@@ -51,21 +51,21 @@ export class DashboardComponent {
   ];
 
   recentMembers = [
-    { name: 'Amina Benali', plan: 'Premium', joined: 'Il y a 1 jour', initials: 'AB', color: '#6366f1', status: 'Actif' },
-    { name: 'Lucas Martin', plan: 'Standard', joined: 'Il y a 2 jours', initials: 'LM', color: '#10b981', status: 'Actif' },
-    { name: 'Sofia Reyes', plan: 'Premium', joined: 'Il y a 3 jours', initials: 'SR', color: '#f59e0b', status: 'En attente' },
-    { name: 'Karim Ouali', plan: 'Basic', joined: 'Il y a 5 jours', initials: 'KO', color: '#ef4444', status: 'Actif' },
-    { name: 'Chloé Dupont', plan: 'Standard', joined: 'Il y a 6 jours', initials: 'CD', color: '#8b5cf6', status: 'Actif' },
+    { name: 'Amina Benali', plan: 'Premium', joined: '1 day ago', initials: 'AB', color: '#6366f1', status: 'Active' },
+    { name: 'Lucas Martin', plan: 'Standard', joined: '2 days ago', initials: 'LM', color: '#10b981', status: 'Active' },
+    { name: 'Sofia Reyes', plan: 'Premium', joined: '3 days ago', initials: 'SR', color: '#f59e0b', status: 'Pending' },
+    { name: 'Karim Ouali', plan: 'Basic', joined: '5 days ago', initials: 'KO', color: '#ef4444', status: 'Active' },
+    { name: 'Chloé Dupont', plan: 'Standard', joined: '6 days ago', initials: 'CD', color: '#8b5cf6', status: 'Active' },
   ];
 
   topCoaches = [
-    { name: 'Thomas Leroy', specialty: 'Musculation', members: 52, rating: 4.9, initials: 'TL', color: '#6366f1' },
+    { name: 'Thomas Leroy', specialty: 'Bodybuilding', members: 52, rating: 4.9, initials: 'TL', color: '#6366f1' },
     { name: 'Nadia Kaci', specialty: 'Yoga & Pilates', members: 48, rating: 4.8, initials: 'NK', color: '#10b981' },
     { name: 'Mehdi Bougra', specialty: 'Cardio & HIIT', members: 41, rating: 4.7, initials: 'MB', color: '#f59e0b' },
     { name: 'Julie Petit', specialty: 'Nutrition', members: 37, rating: 4.9, initials: 'JP', color: '#ef4444' },
   ];
 
-  revenueMonths = ['Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin', 'Juil', 'Août', 'Sep', 'Oct', 'Nov', 'Déc'];
+  revenueMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   revenueData = [14200, 16800, 18500, 17200, 21000, 22300, 19800, 23100, 20500, 22900, 24100, 24500];
 
   maxRevenue = Math.max(...this.revenueData);
@@ -81,8 +81,8 @@ export class DashboardComponent {
   ];
 
   alerts = [
-    { message: '3 abonnements expirent cette semaine', type: 'warning', icon: 'alert' },
-    { message: 'Nouveau membre inscrit : Amina Benali', type: 'info', icon: 'user' },
-    { message: 'Objectif mensuel atteint à 92%', type: 'success', icon: 'check' },
+    { message: '3 subscriptions expire this week', type: 'warning', icon: 'alert' },
+    { message: 'New member registered: Amina Benali', type: 'info', icon: 'user' },
+    { message: 'Monthly goal reached at 92%', type: 'success', icon: 'check' },
   ];
 }
