@@ -1,10 +1,7 @@
 package org.smarttrainer.backend.domain.client;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.smarttrainer.backend.domain.abonnement.Abonnement;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
@@ -26,6 +23,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class ClientProfile extends BaseEntity {
 
     @OneToOne
