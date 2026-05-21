@@ -1,0 +1,217 @@
+<div class="dashboard-wrapper">
+
+  <!-- ===================== PAGE HEADER ===================== -->
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Vue d'Ensemble</h2>
+      <p class="page-subtitle">Bienvenue sur <strong>SmartTrainer</strong> — voici votre tableau de bord coach</p>
+    </div>
+    <div class="header-actions">
+      <div class="date-badge">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        <span>{{ currentDate | date:'MMMM yyyy' }}</span>
+      </div>
+      <button class="btn-add">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+        </svg>
+        Nouvelle Séance
+      </button>
+    </div>
+  </div>
+
+  <!-- ===================== STAT CARDS ===================== -->
+  <div class="stats-grid">
+    @for (stat of stats; track stat.label) {
+      <div class="stat-card">
+        <div class="stat-icon" [style.background]="stat.bg">
+          @if (stat.icon === 'clients') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+          }
+          @if (stat.icon === 'sessions') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          }
+          @if (stat.icon === 'programs') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+          }
+          @if (stat.icon === 'rating') {
+            <svg width="22" height="22" fill="none" stroke="currentColor" viewBox="0 0 24 24" [style.color]="stat.color">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
+            </svg>
+          }
+        </div>
+        <div class="stat-content">
+          <p class="stat-label">{{ stat.label }}</p>
+          <p class="stat-value">{{ stat.value }}</p>
+          <span class="stat-change" [class.positive]="stat.positive" [class.negative]="!stat.positive">
+            <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" [attr.d]="stat.positive ? 'M5 10l7-7 7 7' : 'M19 14l-7 7-7-7'"/>
+            </svg>
+            {{ stat.change }} ce mois
+          </span>
+        </div>
+      </div>
+    }
+  </div>
+
+  <!-- ===================== MAIN ROW ===================== -->
+  <div class="main-row">
+
+    <!-- Sessions Chart -->
+    <div class="card chart-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Séances Mensuelles</h3>
+          <p class="card-subtitle">Évolution sur 12 mois</p>
+        </div>
+        <span class="badge badge-green">+24% vs an dernier</span>
+      </div>
+      <div class="bar-chart">
+        @for (month of sessionsMonths; track month; let i = $index) {
+          <div class="bar-item">
+            <div class="bar-tooltip">{{ sessionsData[i] }} séances</div>
+            <div class="bar-fill" [style.height.%]="getBarHeight(sessionsData[i])"
+                 [class.bar-active]="i === sessionsMonths.length - 1">
+            </div>
+            <span class="bar-label">{{ month }}</span>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Today's Sessions -->
+    <div class="card today-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Séances d'Aujourd'hui</h3>
+          <p class="card-subtitle">{{ todaySessions.length }} séances planifiées</p>
+        </div>
+        <span class="badge badge-purple">Aujourd'hui</span>
+      </div>
+      <div class="today-list">
+        @for (session of todaySessions; track session.time) {
+          <div class="today-item" [class.session-done]="session.status === 'done'">
+            <div class="session-time">{{ session.time }}</div>
+            <div class="session-info">
+              <p class="session-client">{{ session.client }}</p>
+              <p class="session-type">{{ session.type }} · {{ session.duration }}</p>
+            </div>
+            <div class="session-status-dot" [class.dot-done]="session.status === 'done'"></div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== BOTTOM ROW ===================== -->
+  <div class="bottom-row">
+
+    <!-- Clients -->
+    <div class="card clients-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Mes Clients</h3>
+          <p class="card-subtitle">Progression & Suivi</p>
+        </div>
+        <button class="btn-link">Voir tout →</button>
+      </div>
+      <div class="clients-list">
+        @for (client of clients; track client.name) {
+          <div class="client-row">
+            <div class="client-avatar" [style.background]="client.color">{{ client.initials }}</div>
+            <div class="client-info">
+              <p class="client-name">{{ client.name }}</p>
+              <p class="client-goal">{{ client.goal }}</p>
+              <div class="progress-bar-bg">
+                <div class="progress-bar-fill" [style.width.%]="client.progress" [style.background]="client.color"></div>
+              </div>
+            </div>
+            <div class="client-right">
+              <span class="client-pct">{{ client.progress }}%</span>
+              <span class="status-badge" [class.status-active]="client.status === 'Actif'" [class.status-pending]="client.status !== 'Actif'">
+                {{ client.status }}
+              </span>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Alerts + Quick Actions -->
+    <div class="card alerts-card">
+      <div class="card-header">
+        <div>
+          <h3 class="card-title">Notifications</h3>
+          <p class="card-subtitle">Alertes & activités récentes</p>
+        </div>
+        <span class="notif-badge">{{ alerts.length }}</span>
+      </div>
+      <div class="alerts-list">
+        @for (alert of alerts; track alert.message) {
+          <div class="alert-item"
+               [class.alert-warning]="alert.type==='warning'"
+               [class.alert-info]="alert.type==='info'"
+               [class.alert-success]="alert.type==='success'">
+            <div class="alert-icon-wrap">
+              @if (alert.icon === 'alert') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              }
+              @if (alert.icon === 'user') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                </svg>
+              }
+              @if (alert.icon === 'check') {
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+              }
+            </div>
+            <p class="alert-message">{{ alert.message }}</p>
+          </div>
+        }
+      </div>
+      <!-- Quick Actions -->
+      <div class="quick-actions">
+        <p class="qa-title">Actions Rapides</p>
+        <div class="qa-grid">
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            Ajouter Client
+          </button>
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+            </svg>
+            Nouveau Plan
+          </button>
+          <button class="qa-btn">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+            Planifier
+          </button>
+          <button class="qa-btn qa-btn-ai">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17H4a2 2 0 01-2-2V5a2 2 0 012-2h16a2 2 0 012 2v10a2 2 0 01-2 2h-1"/>
+            </svg>
+            AI Assistant
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

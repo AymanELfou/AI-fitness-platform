@@ -1,0 +1,42 @@
+<div class="page-wrapper">
+  <div class="page-header">
+    <div>
+      <h2 class="page-title">Plans Nutritionnels</h2>
+      <p class="page-subtitle">Suivez et gérez les <strong>plans alimentaires</strong> de vos clients</p>
+    </div>
+    <button class="btn-primary">+ Nouveau Plan</button>
+  </div>
+  <div class="nutri-grid">
+    @for (plan of plans; track plan.client) {
+      <div class="nutri-card">
+        <div class="nutri-card-header">
+          <div class="n-avatar" [style.background]="plan.color">{{ plan.initials }}</div>
+          <div>
+            <p class="n-client">{{ plan.client }}</p>
+            <span class="n-goal">{{ plan.goal }}</span>
+          </div>
+          <span class="n-status">{{ plan.status }}</span>
+        </div>
+        <div class="macros-grid">
+          <div class="macro-item">
+            <span class="macro-val" style="color:#ef4444">{{ plan.calories }}</span>
+            <span class="macro-label">kcal/j</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-val" style="color:#6366f1">{{ plan.protein }}</span>
+            <span class="macro-label">Protéines</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-val" style="color:#f59e0b">{{ plan.carbs }}</span>
+            <span class="macro-label">Glucides</span>
+          </div>
+          <div class="macro-item">
+            <span class="macro-val" style="color:#10b981">{{ plan.fat }}</span>
+            <span class="macro-label">Lipides</span>
+          </div>
+        </div>
+        <button class="n-btn">Modifier le plan →</button>
+      </div>
+    }
+  </div>
+</div>

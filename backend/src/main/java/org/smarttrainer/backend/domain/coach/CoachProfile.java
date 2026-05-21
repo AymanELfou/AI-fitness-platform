@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.smarttrainer.backend.domain.availability.Availability;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
@@ -29,9 +30,11 @@ public class CoachProfile extends BaseEntity {
     private int experience;
     private String certifications;
     private double rating;
-    private boolean availability;
     private String speciality;
     private double tariff;
+
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Availability> availabilities;
 
     @OneToMany(mappedBy = "coach",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientProfile> clients;

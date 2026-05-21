@@ -1,0 +1,167 @@
+<div class="ai-wrapper">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="ai-badge">
+        <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        IA
+      </div>
+      <div>
+        <h2 class="page-title">AI Assistant Coach</h2>
+        <p class="page-subtitle">Propulsé par <strong>SmartTrainer AI</strong> — votre expert personnel</p>
+      </div>
+    </div>
+    <button class="clear-btn" (click)="clearChat()">
+      <svg width="15" height="15" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+      </svg>
+      Nouvelle conversation
+    </button>
+  </div>
+
+  <!-- MAIN AI LAYOUT -->
+  <div class="ai-container">
+
+    <!-- Chat Area -->
+    <div class="ai-chat-area">
+
+      <!-- Messages -->
+      <div class="ai-messages">
+        @for (msg of messages; track msg.id) {
+          <div class="ai-msg-row" [class.row-coach]="msg.sender === 'coach'" [class.row-ai]="msg.sender === 'ai'">
+
+            @if (msg.sender === 'ai') {
+              <div class="ai-avatar">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                </svg>
+              </div>
+            }
+
+            <div class="ai-bubble" [class.bubble-coach]="msg.sender === 'coach'" [class.bubble-ai]="msg.sender === 'ai'">
+              @if (msg.isTyping) {
+                <div class="typing-indicator">
+                  <span></span><span></span><span></span>
+                </div>
+              } @else {
+                <p class="ai-msg-text">{{ msg.text }}</p>
+                @if (msg.time) {
+                  <span class="ai-msg-time">{{ msg.time }}</span>
+                }
+              }
+            </div>
+
+            @if (msg.sender === 'coach') {
+              <div class="coach-avatar-mini">C</div>
+            }
+          </div>
+        }
+        <div #messagesEnd></div>
+      </div>
+
+      <!-- Suggestions -->
+      @if (messages.length <= 1) {
+        <div class="suggestions-grid">
+          @for (s of suggestions; track s.title) {
+            <button class="suggestion-card" (click)="useSuggestion(s)">
+              <span class="suggestion-icon">{{ s.icon }}</span>
+              <span class="suggestion-title">{{ s.title }}</span>
+              <p class="suggestion-prompt">{{ s.prompt }}</p>
+            </button>
+          }
+        </div>
+      }
+
+      <!-- Input -->
+      <div class="ai-input-area">
+        <div class="ai-input-box" [class.input-active]="prompt.trim()">
+          <textarea
+            class="ai-textarea"
+            placeholder="Posez votre question au coach IA... (ex: Crée un programme pour débutant)"
+            rows="1"
+            [(ngModel)]="prompt"
+            (keydown)="onKeyDown($event)"
+            [disabled]="isLoading">
+          </textarea>
+          <button class="ai-send-btn" [class.active]="prompt.trim() && !isLoading"
+                  (click)="sendPrompt()" [disabled]="isLoading">
+            @if (isLoading) {
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24" class="spinning">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+              </svg>
+            } @else {
+              <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+              </svg>
+            }
+          </button>
+        </div>
+        <p class="ai-disclaimer">SmartTrainer AI peut faire des erreurs. Vérifiez toujours avec des sources médicales certifiées.</p>
+      </div>
+    </div>
+
+    <!-- Sidebar Info -->
+    <aside class="ai-sidebar">
+      <div class="ai-sidebar-card">
+        <h4>Capacités IA</h4>
+        <ul class="ai-capabilities">
+          <li>
+            <span class="cap-icon">🏋️</span>
+            <div>
+              <p class="cap-title">Programmes d'entraînement</p>
+              <p class="cap-desc">Personnalisés selon objectif & niveau</p>
+            </div>
+          </li>
+          <li>
+            <span class="cap-icon">🥗</span>
+            <div>
+              <p class="cap-title">Plans nutritionnels</p>
+              <p class="cap-desc">Calcul macros & repas optimisés</p>
+            </div>
+          </li>
+          <li>
+            <span class="cap-icon">📊</span>
+            <div>
+              <p class="cap-title">Analyse des performances</p>
+              <p class="cap-desc">Suivi progression & recommandations</p>
+            </div>
+          </li>
+          <li>
+            <span class="cap-icon">🧘</span>
+            <div>
+              <p class="cap-title">Récupération & mobilité</p>
+              <p class="cap-desc">Protocoles de récupération adaptés</p>
+            </div>
+          </li>
+          <li>
+            <span class="cap-icon">💡</span>
+            <div>
+              <p class="cap-title">Conseils scientifiques</p>
+              <p class="cap-desc">Basé sur les dernières recherches</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div class="ai-sidebar-card ai-stats-card">
+        <h4>Statistiques IA</h4>
+        <div class="ai-stat-row">
+          <span class="ai-stat-label">Programmes générés</span>
+          <span class="ai-stat-val">247</span>
+        </div>
+        <div class="ai-stat-row">
+          <span class="ai-stat-label">Temps économisé</span>
+          <span class="ai-stat-val">~12h/mois</span>
+        </div>
+        <div class="ai-stat-row">
+          <span class="ai-stat-label">Précision estimée</span>
+          <span class="ai-stat-val ai-stat-good">94%</span>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
