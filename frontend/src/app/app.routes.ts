@@ -2,18 +2,16 @@ import { Routes } from '@angular/router';
 import { HomeComponent } from './features/public/home/home.component';
 import { AboutComponent } from './features/public/about/about.component';
 import { LoginComponent } from './features/public/auth/login/login.component';
-import { RegisterComponent } from './features/public/auth/register/register.component'; 
+import { RegisterComponent } from './features/public/auth/register/register.component';
 import { NutritionComponent } from './features/public/nutrition/nutrition.component';
+import { WorkoutsComponent } from './features/public/workouts/workouts.component';
 import { ClubsComponent } from './features/public/clubs/clubs.component';
-
 import { ProfilesComponent } from './features/public/profiles/profiles.component';
 
-// Club Layout & Pages
 import { ClubLayoutComponent } from './shared/layouts/club-layout/club-layout.component';
 import { DashboardComponent } from './features/club/pages/dashboard/dashboard.component';
 import { CoachesComponent } from './features/club/pages/coaches/coaches.component';
 
-// Coach Layout & Pages
 import { CoachLayoutComponent } from './shared/layouts/coach-layout/coach-layout.component';
 import { CoachDashboardComponent } from './features/coach/pages/dashboard/dashboard.component';
 import { ClientsComponent } from './features/coach/pages/clients/clients.component';
@@ -24,36 +22,55 @@ import { AiAssistantComponent } from './features/coach/pages/ai-assistant/ai-ass
 import { CommunityComponent } from './features/coach/pages/community/community.component';
 import { ProfileComponent } from './features/coach/pages/profile/profile.component';
 
+<<<<<<< HEAD
+export const routes: Routes = [
+=======
 
+import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
+import { DashboardComponent as AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
 export const routes: Routes = [
 
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
   // Public routes
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
-  { path: 'register', component: RegisterComponent }, 
+  { path: 'register', component: RegisterComponent },
   { path: 'nutrition', component: NutritionComponent },
   { path: 'clubs', component: ClubsComponent },
+<<<<<<< HEAD
+=======
+  { path: 'workouts', component: WorkoutsComponent },
   
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
   { path: 'complete-profile', component: ProfilesComponent },
+  { path: 'profiles', component: ProfilesComponent },
 
-  // CLUB ROUTES
+  // Club routes
   {
-    path: 'club', component: ClubLayoutComponent,
+    path: 'club',
+    component: ClubLayoutComponent,
     children: [
+<<<<<<< HEAD
+      { path: 'dashboard', component: DashboardComponent },
+      { path: 'coaches', component: CoachesComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+=======
      { path: 'dashboard', component: DashboardComponent },
      { path: 'coaches', component: CoachesComponent },
      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
-    ] 
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
+    ]
   },
 
-  // COACH ROUTES
+  // Coach routes
   {
-    path: 'coach', component: CoachLayoutComponent,
+    path: 'coach',
+    component: CoachLayoutComponent,
     children: [
       { path: 'dashboard', component: CoachDashboardComponent },
       { path: 'clients', component: ClientsComponent },
-      { path: 'programs', component: ProgramsComponent },    
+      { path: 'programs', component: ProgramsComponent },
       { path: 'schedule', component: ScheduleComponent },
       { path: 'chat', component: ChatComponent },
       { path: 'community', component: CommunityComponent },
@@ -63,5 +80,13 @@ export const routes: Routes = [
     ]
   },
 
+  // ADMIN ROUTES
+  {
+    path: 'admin', component: AdminLayoutComponent,
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
+      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  },
   { path: '**', redirectTo: '' }
 ];
