@@ -4,6 +4,7 @@ import { AboutComponent } from './features/public/about/about.component';
 import { LoginComponent } from './features/public/auth/login/login.component';
 import { RegisterComponent } from './features/public/auth/register/register.component';
 import { NutritionComponent } from './features/public/nutrition/nutrition.component';
+import { WorkoutsComponent } from './features/public/workouts/workouts.component';
 import { ClubsComponent } from './features/public/clubs/clubs.component';
 import { ProfilesComponent } from './features/public/profiles/profiles.component';
 
@@ -21,7 +22,15 @@ import { AiAssistantComponent } from './features/coach/pages/ai-assistant/ai-ass
 import { CommunityComponent } from './features/coach/pages/community/community.component';
 import { ProfileComponent } from './features/coach/pages/profile/profile.component';
 
+<<<<<<< HEAD
 export const routes: Routes = [
+=======
+
+import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
+import { DashboardComponent as AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
+export const routes: Routes = [
+
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
   // Public routes
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
@@ -29,6 +38,11 @@ export const routes: Routes = [
   { path: 'register', component: RegisterComponent },
   { path: 'nutrition', component: NutritionComponent },
   { path: 'clubs', component: ClubsComponent },
+<<<<<<< HEAD
+=======
+  { path: 'workouts', component: WorkoutsComponent },
+  
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
   { path: 'complete-profile', component: ProfilesComponent },
   { path: 'profiles', component: ProfilesComponent },
 
@@ -37,9 +51,15 @@ export const routes: Routes = [
     path: 'club',
     component: ClubLayoutComponent,
     children: [
+<<<<<<< HEAD
       { path: 'dashboard', component: DashboardComponent },
       { path: 'coaches', component: CoachesComponent },
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+=======
+     { path: 'dashboard', component: DashboardComponent },
+     { path: 'coaches', component: CoachesComponent },
+     { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+>>>>>>> 5c178e6d0d3fa6213a15fd39e80aa4016b96ede3
     ]
   },
 
@@ -60,5 +80,13 @@ export const routes: Routes = [
     ]
   },
 
+  // ADMIN ROUTES
+  {
+    path: 'admin', component: AdminLayoutComponent,
+    children: [
+      { path: 'dashboard', component: AdminDashboardComponent },
+      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+    ]
+  },
   { path: '**', redirectTo: '' }
 ];
