@@ -13,7 +13,7 @@ import org.smarttrainer.backend.domain.post.Post;
 import org.smarttrainer.backend.domain.user.User;
 
 @Entity
-@Table(name = "like")
+@Table(name = "likes")
 @Getter
 @Setter
 @NoArgsConstructor

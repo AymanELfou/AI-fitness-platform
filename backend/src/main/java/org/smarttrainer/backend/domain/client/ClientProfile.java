@@ -2,6 +2,7 @@ package org.smarttrainer.backend.domain.client;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.SuperBuilder;
 import org.smarttrainer.backend.domain.abonnement.Abonnement;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
@@ -23,7 +24,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class ClientProfile extends BaseEntity {
 
     @OneToOne
@@ -36,6 +37,9 @@ public class ClientProfile extends BaseEntity {
     private String but;
     private String niveau;
     private Double imc;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subscription_plan", nullable = false)
+    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;
 
     @OneToMany(mappedBy = "client")
     private List<Subscription> subscriptions;

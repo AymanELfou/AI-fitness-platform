@@ -24,7 +24,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
-    private UserDetailsService userDetailsService;
+    private final UserDetailsService userDetailsService;
 
     @Override
     protected void doFilterInternal(
@@ -61,6 +61,12 @@ public class JwtFilter extends OncePerRequestFilter {
         if(userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null){
             UserDetails userDetails = userDetailsService.loadUserByUsername(userEmail);
             //Validate token
+            System.out.println("=== DEBUG ===");
+            System.out.println("User: " + userDetails.getUsername());
+            System.out.println("Authorities: " + userDetails.getAuthorities());
+            System.out.println("Is enabled: " + userDetails.isEnabled());
+            System.out.println("Is account non locked: " + userDetails.isAccountNonLocked());
+            System.out.println("=============");
             if(jwtService.isTokenValid(jwt, userDetails)){
                 //Create auth Object
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

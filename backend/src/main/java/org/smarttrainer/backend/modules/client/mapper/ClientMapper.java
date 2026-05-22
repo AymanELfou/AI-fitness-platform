@@ -22,6 +22,7 @@ public class ClientMapper {
                 .imc(profile.getImc())
                 .coachID(profile.getCoach() != null ? profile.getCoach().getId() : null)
                 .clubId(profile.getClub() != null ? profile.getClub().getId() : null)
+                .subscriptionPlan(profile.getSubscriptionPlan())
                 .build();
     }
 

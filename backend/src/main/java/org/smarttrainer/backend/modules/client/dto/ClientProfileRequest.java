@@ -10,5 +10,6 @@ public class ClientProfileRequest {
     private Double taille;
     private String but;
     private String niveau;
+    private String subscriptionPlan;
 
 }
