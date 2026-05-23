@@ -10,9 +10,11 @@ import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.commun.BaseEntity;
 import org.smarttrainer.backend.domain.programme.Programme;
+import org.smarttrainer.backend.domain.review.Review;
 import org.smarttrainer.backend.domain.seance.Seance;
 import org.smarttrainer.backend.domain.user.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -29,7 +31,6 @@ public class CoachProfile extends BaseEntity {
 
     private int experience;
     private String certifications;
-    private double rating;
     private String speciality;
     private double tariff;
 
@@ -39,12 +40,15 @@ public class CoachProfile extends BaseEntity {
     @OneToMany(mappedBy = "coach",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClientProfile> clients;
 
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "club_id",nullable = false)
     private ClubProfile club;
 
     @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Seance> seances;
+    private List<Seance> seances = new ArrayList<>();
 
     @OneToMany(mappedBy = "coach",cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Programme> programmes;
