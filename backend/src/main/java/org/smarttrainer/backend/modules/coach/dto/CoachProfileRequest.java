@@ -5,8 +5,14 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.Data;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
-@Data
+import java.math.BigDecimal;
+
+@Getter
+@Setter
 public class CoachProfileRequest {
 
     @Min(0)
@@ -20,6 +26,6 @@ public class CoachProfileRequest {
 
     @NotNull
     @Positive
-    private double tariff;
+    private BigDecimal tariff;
 
 }

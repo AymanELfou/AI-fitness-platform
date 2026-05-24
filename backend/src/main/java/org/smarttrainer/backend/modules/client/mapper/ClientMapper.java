@@ -28,7 +28,6 @@ public class ClientMapper {
 
     public ClientProfile toEntity(ClientProfileRequest request){
         ClientProfile profile = new ClientProfile();
-
         profile.setAge(request.getAge());
         profile.setPoids(request.getPoids());
         profile.setTaille(request.getTaille());

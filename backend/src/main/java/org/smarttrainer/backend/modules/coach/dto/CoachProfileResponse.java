@@ -3,6 +3,7 @@ package org.smarttrainer.backend.modules.coach.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,7 +16,7 @@ public class CoachProfileResponse {
     private Integer experience;
     private String certifications;
     private String speciality;
-    private Double tariff;
+    private BigDecimal tariff;
     private Double rating;
     private Long clubId;
     private String clubName;

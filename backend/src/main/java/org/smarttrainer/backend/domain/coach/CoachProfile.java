@@ -14,6 +14,7 @@ import org.smarttrainer.backend.domain.review.Review;
 import org.smarttrainer.backend.domain.seance.Seance;
 import org.smarttrainer.backend.domain.user.User;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ public class CoachProfile extends BaseEntity {
     private int experience;
     private String certifications;
     private String speciality;
-    private double tariff;
+    private BigDecimal tariff;
 
     @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities;
