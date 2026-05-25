@@ -1,9 +1,12 @@
 package org.smarttrainer.backend.modules.coach.mapper;
 
 import org.smarttrainer.backend.domain.coach.CoachProfile;
+import org.smarttrainer.backend.modules.availability.dto.AvailabilityResponse;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileRequest;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileResponse;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class CoachProfileMapper {
@@ -20,6 +23,18 @@ public class CoachProfileMapper {
                 .rating(rating)
                 .clubId(profile.getClub() != null ? profile.getClub().getId() : null)
                 .clubName(profile.getClub() != null ? profile.getClub().getClubName() : null)
+                .availabilities(
+                        profile.getAvailabilities() == null
+                                ? List.of()
+                                : profile.getAvailabilities().stream()
+                                .map(a -> AvailabilityResponse.builder()
+                                        .id(a.getId())
+                                        .startTime(a.getStartTime())
+                                        .endTime(a.getEndTime())
+                                        .isAvailable(a.isAvailable())
+                                        .build()
+                                ).toList()
+                )
                 .build();
     }
 

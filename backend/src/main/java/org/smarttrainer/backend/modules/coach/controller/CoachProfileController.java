@@ -57,12 +57,10 @@ public class CoachProfileController {
         return ResponseEntity.ok(service.update(id, request));
     }
 
-    // DELETE
+    //DELETE
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id
-    ) {
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }

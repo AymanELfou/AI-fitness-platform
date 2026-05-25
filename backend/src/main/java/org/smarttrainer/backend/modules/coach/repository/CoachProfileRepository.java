@@ -11,5 +11,5 @@ public interface CoachProfileRepository extends JpaRepository<CoachProfile, Long
     Optional<CoachProfile> findByUserId(Long userId);
     boolean existsByUserId(Long userId);
     @Query("SELECT AVG(r.score) FROM Review r WHERE r.coach.id = :coachId")
-    Double getAverageRating(Long coachId);
+    Double getAverageRating(@org.springframework.data.repository.query.Param("coachId") Long coachId);
 }

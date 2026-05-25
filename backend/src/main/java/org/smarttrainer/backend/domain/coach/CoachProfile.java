@@ -33,7 +33,12 @@ public class CoachProfile extends BaseEntity {
     private int experience;
     private String certifications;
     private String speciality;
+
+    @Column(name = "tarif", nullable = false)
     private BigDecimal tariff;
+
+    @Column(nullable = false)
+    private Double rating = 0.0;
 
     @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Availability> availabilities;
@@ -45,7 +50,7 @@ public class CoachProfile extends BaseEntity {
     private List<Review> reviews = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "club_id",nullable = false)
+    @JoinColumn(name = "club_id",nullable = true)
     private ClubProfile club;
 
     @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)

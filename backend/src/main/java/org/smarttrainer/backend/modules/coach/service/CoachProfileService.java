@@ -2,8 +2,10 @@ package org.smarttrainer.backend.modules.coach.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.coach.CoachProfile;
 import org.smarttrainer.backend.domain.user.User;
+import org.smarttrainer.backend.modules.club.repository.ClubProfileRepository;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileRequest;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileResponse;
 import org.smarttrainer.backend.modules.coach.mapper.CoachProfileMapper;
@@ -21,10 +23,10 @@ public class CoachProfileService {
     private final CoachProfileRepository coachRepository;
     private final UserRepository userRepository;
     private final CoachProfileMapper coachMapper;
+    private final ClubProfileRepository clubRepository;
 
     @Transactional
     public CoachProfileResponse create(Long userId, CoachProfileRequest request) {
-
         if (coachRepository.existsByUserId(userId)) {
             throw new RuntimeException("Coach profile already exists for this user");
         }
@@ -32,11 +34,14 @@ public class CoachProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        ClubProfile club = clubRepository.findById(request.getClubId())
+                .orElseThrow(() -> new RuntimeException("Club not found"));
+
         CoachProfile coach = coachMapper.toEntity(request);
         coach.setUser(user);
+        coach.setClub(club);
 
         CoachProfile saved = coachRepository.save(coach);
-
         return coachMapper.toResponse(saved, getRating(saved.getId()));
     }
 

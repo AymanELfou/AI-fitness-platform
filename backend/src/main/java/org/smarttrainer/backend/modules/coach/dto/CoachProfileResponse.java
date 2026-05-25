@@ -2,9 +2,11 @@ package org.smarttrainer.backend.modules.coach.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import org.smarttrainer.backend.modules.availability.dto.AvailabilityResponse;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,4 +22,5 @@ public class CoachProfileResponse {
     private Double rating;
     private Long clubId;
     private String clubName;
+    private List<AvailabilityResponse> availabilities;
 }
