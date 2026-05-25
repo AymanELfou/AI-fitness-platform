@@ -34,4 +34,18 @@ public class Review {
 
     // Optional comment
     private String comment;
+
+    private Double calculateRating(CoachProfile coach) {
+        if (coach.getReviews() == null || coach.getReviews().isEmpty()) {
+            return 0.0;
+        }
+
+        double sum = coach.getReviews()
+                .stream()
+                .mapToDouble(review -> review.getScore())
+                .sum();
+
+        return sum / coach.getReviews().size();
+    }
+
 }

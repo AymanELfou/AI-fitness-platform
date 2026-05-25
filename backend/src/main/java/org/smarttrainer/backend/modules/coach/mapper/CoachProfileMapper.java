@@ -1,7 +1,6 @@
 package org.smarttrainer.backend.modules.coach.mapper;
 
 import org.smarttrainer.backend.domain.coach.CoachProfile;
-import org.smarttrainer.backend.modules.client.dto.ClientProfileResponse;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileRequest;
 import org.smarttrainer.backend.modules.coach.dto.CoachProfileResponse;
 import org.springframework.stereotype.Component;
@@ -19,8 +18,8 @@ public class CoachProfileMapper {
                 .speciality(profile.getSpeciality())
                 .tariff(profile.getTariff())
                 .rating(rating)
-                .clubId(profile.getClub().getId())
-                .clubName(profile.getClub().getClubName())
+                .clubId(profile.getClub() != null ? profile.getClub().getId() : null)
+                .clubName(profile.getClub() != null ? profile.getClub().getClubName() : null)
                 .build();
     }
 
@@ -31,7 +30,7 @@ public class CoachProfileMapper {
         profile.setCertifications(request.getCertifications());
         profile.setSpeciality(request.getSpeciality());
         profile.setTariff(request.getTariff());
+
         return profile;
     }
 }
-
