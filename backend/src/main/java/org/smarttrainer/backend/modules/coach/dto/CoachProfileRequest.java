@@ -28,4 +28,6 @@ public class CoachProfileRequest {
     @Positive
     private BigDecimal tariff;
 
+    private Long clubId;
+
 }
