@@ -1,0 +1,151 @@
+<!-- ========================================================== -->
+<!-- CLIENT FOOTER – PROFESSIONAL (SSR-safe, no innerHTML)     -->
+<!-- ========================================================== -->
+<footer class="client-footer">
+
+  <!-- Animated top accent bar -->
+  <div class="footer-accent-bar"></div>
+
+  <div class="footer-container">
+
+    <!-- ── ROW 1: Brand · Quick Links · Support · Newsletter ── -->
+    <div class="footer-top">
+
+      <!-- Brand column -->
+      <div class="footer-brand">
+        <a routerLink="/client/dashboard" class="footer-logo">
+          <span class="logo-smart">SMART</span><span class="logo-trainer">TRAINER</span>
+        </a>
+        <p class="footer-tagline">
+          Your precision fitness companion.<br>
+          Every rep, every set — tracked and optimized for <strong>you</strong>.
+        </p>
+
+        <!-- Stat chips -->
+        <div class="footer-stats">
+          <div class="stat-chip">
+            <span class="chip-value">340+</span>
+            <span class="chip-label">Active Members</span>
+          </div>
+          <div class="stat-chip">
+            <span class="chip-value">12k+</span>
+            <span class="chip-label">Sessions Logged</span>
+          </div>
+          <div class="stat-chip">
+            <span class="chip-value">98%</span>
+            <span class="chip-label">Satisfaction</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Links -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">My Space</h4>
+        <ul class="footer-link-list">
+          <li *ngFor="let link of quickLinks">
+            <a [routerLink]="link.path" class="footer-link">
+              <span class="link-arrow">›</span> {{ link.label }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Support Links -->
+      <div class="footer-col">
+        <h4 class="footer-col-title">Support</h4>
+        <ul class="footer-link-list">
+          <li *ngFor="let link of supportLinks">
+            <a [routerLink]="link.path" class="footer-link">
+              <span class="link-arrow">›</span> {{ link.label }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Newsletter + Social -->
+      <div class="footer-col footer-newsletter-col">
+        <h4 class="footer-col-title">Stay in the Zone</h4>
+        <p class="newsletter-desc">
+          Weekly workout tips and performance insights — delivered to your inbox.
+        </p>
+        <div class="newsletter-form">
+          <input type="email" placeholder="your@email.com" class="newsletter-input" />
+          <button class="newsletter-btn" aria-label="Subscribe">
+            <!-- Send icon — static SVG -->
+            <svg xmlns="http://www.w3.org/2000/svg" class="btn-icon" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2.5"
+              stroke-linecap="round" stroke-linejoin="round">
+              <line x1="22" y1="2" x2="11" y2="13"/>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Social icons — ALL STATIC SVGs (no innerHTML) -->
+        <div class="social-row">
+          <!-- Instagram -->
+          <a href="#" aria-label="Instagram" class="social-icon" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+            </svg>
+          </a>
+          <!-- X / Twitter -->
+          <a href="#" aria-label="Twitter X" class="social-icon" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+          </a>
+          <!-- YouTube -->
+          <a href="#" aria-label="YouTube" class="social-icon" target="_blank" rel="noopener">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 0 0-1.95 1.96A29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58A2.78 2.78 0 0 0 3.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.95A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+              <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── DIVIDER ── -->
+    <div class="footer-divider"></div>
+
+    <!-- ── ROW 2: Bottom bar ── -->
+    <div class="footer-bottom">
+      <p class="footer-copy">
+        © {{ currentYear }} <strong>SmartTrainer</strong>. All rights reserved. &nbsp;·&nbsp; Built for elite athletes.
+      </p>
+      <div class="footer-badges">
+        <!-- Secure Platform -->
+        <span class="badge-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="badge-icon" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+          Secure Platform
+        </span>
+        <!-- 24/7 Access -->
+        <span class="badge-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="badge-icon" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 8v4l3 3"/>
+          </svg>
+          24/7 Access
+        </span>
+        <!-- AI-Powered -->
+        <span class="badge-item">
+          <svg xmlns="http://www.w3.org/2000/svg" class="badge-icon" viewBox="0 0 24 24"
+            fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+          </svg>
+          AI-Powered
+        </span>
+      </div>
+    </div>
+
+  </div>
+</footer>

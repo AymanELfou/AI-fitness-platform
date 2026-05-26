@@ -1,1 +1,10 @@
-<p>client-layout works!</p>
+<div class="min-h-screen bg-bg-light flex flex-col font-sans">
+  <app-client-navbar></app-client-navbar>
+
+  <!-- pt-[72px] accounts for the 68px fixed client-navbar height -->
+  <main class="flex-grow pt-[72px]">
+    <router-outlet></router-outlet>
+  </main>
+
+  <app-client-footer></app-client-footer>
+</div>
