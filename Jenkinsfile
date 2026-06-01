@@ -49,20 +49,46 @@ pipeline {
             }
         }
 
+        stage('Docker Build & Push') {
+            steps {
+                withCredentials([usernamePassword(
+                    credentialsId: 'docker-hub-credentials',
+                    usernameVariable: 'DOCKER_USER',
+                    passwordVariable: 'DOCKER_PASSWORD'
+                )]) {
+                    script {
+                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
+
+                        echo 'Construction de l\'image Docker Backend...'
+                        sh "docker build -t ${DOCKER_USER}/smart-trainer-backend:latest ./backend"
+
+                        echo 'Push de l\'image Backend sur Docker Hub...'
+                        sh "docker push ${DOCKER_USER}/smart-trainer-backend:latest"
+
+                        echo 'Construction de l\'image Docker Frontend (Angular SSR)...'
+                        sh "docker build -t ${DOCKER_USER}/smart-trainer-frontend:latest ./frontend"
+
+                        echo 'Push de l\'image Frontend sur Docker Hub...'
+                        sh "docker push ${DOCKER_USER}/smart-trainer-frontend:latest"
+                    }
+                }
+            }
+        }
+
         stage('Deploy with Ansible (Preprod)') {
-    steps {
-        withCredentials([
-            string(credentialsId: 'smart-db-host', variable: 'DB_HOST'),
-            string(credentialsId: 'smart-db-port', variable: 'DB_PORT'),
-            string(credentialsId: 'smart-db-name', variable: 'DB_NAME'),
-            string(credentialsId: 'smart-db-user', variable: 'DB_USER'),
-            string(credentialsId: 'smart-db-pass', variable: 'DB_PASSWORD')
-        ]) {
-            script {
-                sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy-playbook.yml'
+            steps {
+                withCredentials([
+                    string(credentialsId: 'smart-db-host', variable: 'DB_HOST'),
+                    string(credentialsId: 'smart-db-port', variable: 'DB_PORT'),
+                    string(credentialsId: 'smart-db-name', variable: 'DB_NAME'),
+                    string(credentialsId: 'smart-db-user', variable: 'DB_USER'),
+                    string(credentialsId: 'smart-db-pass', variable: 'DB_PASSWORD')
+                ]) {
+                    script {
+                        sh 'ansible-playbook -i ansible/inventory.ini ansible/deploy-playbook.yml'
+                    }
+                }
             }
         }
     }
 }
-}
-    }
