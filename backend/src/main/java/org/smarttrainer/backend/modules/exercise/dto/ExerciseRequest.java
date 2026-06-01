@@ -13,4 +13,5 @@ public class ExerciseRequest {
     private int repetition;
     private int duration;
     private int calories;
+    private String imageUrl;
 }
