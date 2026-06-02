@@ -2,6 +2,7 @@ package org.smarttrainer.backend.modules.club.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import org.smarttrainer.backend.domain.client.SubscriptionPlan;
 
 import java.time.LocalDateTime;
 
@@ -16,4 +17,5 @@ public class ClubProfileResponse {
     private int capacity;
     private String contactEmail;
     private String phone;
+    private SubscriptionPlan subscriptionPlan;
 }

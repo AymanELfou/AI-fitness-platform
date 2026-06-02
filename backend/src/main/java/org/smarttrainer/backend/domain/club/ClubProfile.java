@@ -1,4 +1,5 @@
 package org.smarttrainer.backend.domain.club;
+import org.smarttrainer.backend.domain.client.SubscriptionPlan;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -31,6 +32,9 @@ public class ClubProfile extends BaseEntity {
     private int capacity;
     private String contactEmail;
     private String phone;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "subscription_plan", nullable = false)
+    private SubscriptionPlan subscriptionPlan = SubscriptionPlan.PREMIUM;
 
     @OneToMany(mappedBy = "club",cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CoachProfile> coaches;

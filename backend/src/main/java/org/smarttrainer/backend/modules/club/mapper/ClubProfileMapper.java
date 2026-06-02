@@ -18,6 +18,7 @@ public class ClubProfileMapper {
                 .capacity(profile.getCapacity())
                 .contactEmail(profile.getContactEmail())
                 .phone(profile.getPhone())
+                .subscriptionPlan(profile.getSubscriptionPlan())
                 .build();
     }
 
