@@ -9,7 +9,7 @@ import { CommonModule } from '@angular/common';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
-  userName: string = 'Alex';
+  userName: string = 'Ayman';
   
   stats = [
     { title: 'Workouts Completed', value: '24', icon: '🔥', color: 'text-orange-500', bg: 'bg-orange-500/10' },

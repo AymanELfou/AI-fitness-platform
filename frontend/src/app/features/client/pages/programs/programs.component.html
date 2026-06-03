@@ -1,1 +1,160 @@
-<p>programs works!</p>
+<div class="programs-page">
+
+  <!-- ══════════════ HEADER ══════════════ -->
+  <div class="page-header">
+    <div class="header-left">
+      <div class="header-eyebrow">
+        <span class="eyebrow-dot"></span>
+        Musculation Programs
+      </div>
+      <h1 class="header-title">Assigned Programs</h1>
+      <p class="header-sub">
+        Your current and upcoming training cycles — curated and optimized by your coach.
+      </p>
+    </div>
+
+    <div class="filter-bar">
+      <svg class="filter-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="4" y1="6" x2="20" y2="6"/>
+        <line x1="8" y1="12" x2="16" y2="12"/>
+        <line x1="11" y1="18" x2="13" y2="18"/>
+      </svg>
+      <div class="filter-pills">
+        <button
+          *ngFor="let f of filters"
+          (click)="setFilter(f)"
+          [class]="activeFilter() === f ? 'pill pill--active' : 'pill'">
+          {{ f }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STATS STRIP ══════════════ -->
+  <div class="stats-strip">
+    <div class="strip-item">
+      <span class="strip-value">{{ totalCount }}</span>
+      <span class="strip-label">Total Programs</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-value strip-blue">{{ activeCount }}</span>
+      <span class="strip-label">Active</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-value strip-green">{{ completedCount }}</span>
+      <span class="strip-label">Completed</span>
+    </div>
+    <div class="strip-divider"></div>
+    <div class="strip-item">
+      <span class="strip-value strip-orange">{{ upcomingCount }}</span>
+      <span class="strip-label">Upcoming</span>
+    </div>
+  </div>
+
+  <!-- ══════════════ PROGRAMS GRID ══════════════ -->
+  <div class="programs-grid">
+    <div
+      *ngFor="let p of filteredPrograms"
+      class="program-card"
+      [class.card--completed]="p.status === 'COMPLETED'">
+
+      <!-- Image -->
+      <div class="card-image-wrap">
+        <img [src]="p.image" [alt]="p.name" class="card-image" />
+        <div class="card-image-overlay"></div>
+
+        <!-- Badges row -->
+        <div class="card-badges">
+          <span [class]="'status-badge ' + getStatusClass(p.status)">
+            <span *ngIf="p.status === 'ACTIVE'" class="status-pulse"></span>
+            {{ p.status }}
+          </span>
+          <span class="meta-badge">{{ p.statusMeta }}</span>
+        </div>
+
+        <!-- Muscle group label (top-right) -->
+        <div class="muscle-pill">{{ p.muscleGroup }}</div>
+      </div>
+
+      <!-- Body -->
+      <div class="card-body">
+        <h3 class="card-title">{{ p.name }}</h3>
+        <p class="card-desc">{{ p.description }}</p>
+
+        <!-- Meta chips -->
+        <div class="card-meta-row">
+          <div class="meta-item">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="4" width="18" height="18" rx="2"/>
+              <line x1="16" y1="2" x2="16" y2="6"/>
+              <line x1="8" y1="2" x2="8" y2="6"/>
+              <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            {{ p.daysPerWeek }}x / week
+          </div>
+          <div class="meta-item">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l3 3"/>
+            </svg>
+            {{ p.duration }}
+          </div>
+          <div class="meta-item">
+            <svg class="meta-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            {{ p.level }}
+          </div>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="progress-section">
+          <div class="progress-header">
+            <span class="progress-label">Progress</span>
+            <span class="progress-value" [style.color]="getProgressColor(p.status)">{{ p.progress }}%</span>
+          </div>
+          <div class="progress-track">
+            <div class="progress-fill"
+              [style.width.%]="p.progress"
+              [style.background]="getProgressColor(p.status)">
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer: tags + CTA -->
+        <div class="card-footer">
+          <div class="tags">
+            <span *ngFor="let tag of p.tags" class="tag">{{ tag }}</span>
+          </div>
+          <button class="action-btn" [class.btn--completed]="p.status === 'COMPLETED'" [class.btn--upcoming]="p.status === 'UPCOMING'">
+            <!-- PLAY -->
+            <svg *ngIf="getActionIcon(p.status) === 'play'" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M8 5v14l11-7L8 5z"/>
+            </svg>
+            <!-- EYE -->
+            <svg *ngIf="getActionIcon(p.status) === 'eye'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- REFRESH -->
+            <svg *ngIf="getActionIcon(p.status) === 'refresh'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="1 4 1 10 7 10"/>
+              <path d="M3.51 15a9 9 0 1 0 .49-4.65"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty state -->
+  <div *ngIf="filteredPrograms.length === 0" class="empty-state">
+    <div class="empty-icon">🏋️</div>
+    <h3 class="empty-title">No programs found</h3>
+    <p class="empty-sub">No programs match this filter yet.</p>
+  </div>
+
+</div>

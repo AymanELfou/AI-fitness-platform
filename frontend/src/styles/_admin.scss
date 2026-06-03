@@ -1,0 +1,339 @@
+/* ================================================================
+   ADMIN SHARED STYLES — _admin.scss
+   Import in every admin page component SCSS
+   ================================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+
+/* ── TOKENS ── */
+$bg:      #F0F2F8;
+$white:   #FFFFFF;
+$border:  #E2E8F0;
+$border2: #EEF1F7;
+$text:    #0F172A;
+$sub:     #475569;
+$muted:   #94A3B8;
+$blue:    #2563EB;
+$blue-lt: #EEF4FF;
+$green:   #059669;
+$amber:   #F59E0B;
+$red:     #EF4444;
+$purple:  #7C3AED;
+$radius:  16px;
+$shadow:  0 2px 12px rgba(0,0,0,0.06);
+
+/* ── PAGE ROOT ── */
+.ap-root {
+  padding: 2rem 2rem 5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  font-family: 'Inter', sans-serif;
+  animation: apFadeUp 0.35s ease both;
+}
+
+@keyframes apFadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── HEADER ── */
+.ap-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1.5rem;
+  margin-bottom: 1.75rem;
+  flex-wrap: wrap;
+}
+
+.ap-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: $blue;
+  margin-bottom: 0.25rem;
+}
+
+.ap-title {
+  font-size: 1.875rem;
+  font-weight: 900;
+  color: $text;
+  letter-spacing: -0.03em;
+  margin: 0 0 0.25rem;
+}
+
+.ap-subtitle { font-size: 0.875rem; color: $muted; margin: 0; font-weight: 500; }
+
+.ap-header-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+
+/* ── BUTTONS ── */
+.btn-primary {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px; border: none;
+  background: $blue; color: #fff;
+  font-size: 0.875rem; font-weight: 700;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  box-shadow: 0 4px 12px rgba(37,99,235,0.35);
+  transition: all 0.15s; white-space: nowrap;
+  .btn-icon { width: 15px; height: 15px; }
+  &:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(37,99,235,0.45); }
+}
+
+.btn-outline {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.6rem 1.25rem;
+  border-radius: 10px; border: 1.5px solid $border;
+  background: $white; color: $sub;
+  font-size: 0.875rem; font-weight: 600;
+  font-family: 'Inter', sans-serif; cursor: pointer;
+  transition: all 0.15s; white-space: nowrap;
+  .btn-icon { width: 15px; height: 15px; }
+  &:hover { border-color: $blue; color: $blue; background: $blue-lt; }
+}
+
+/* ── SUMMARY PILLS ── */
+.summary-pills {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.sum-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: $white;
+  border: 1.5px solid $border;
+  border-radius: 10px;
+  padding: 0.5rem 1.1rem;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+
+  .sp-val { font-size: 1.125rem; font-weight: 900; color: $text; line-height: 1; }
+  .sp-lbl { font-size: 0.6875rem; font-weight: 700; color: $muted; text-transform: uppercase; letter-spacing: 0.07em; }
+
+  &--blue   .sp-val { color: $blue;   }
+  &--purple .sp-val { color: $purple; }
+  &--green  .sp-val { color: $green;  }
+  &--amber  .sp-val { color: $amber;  }
+  &--red    .sp-val { color: $red;    }
+}
+
+/* ── DATA TABLE CARD ── */
+.data-table-card {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: $radius;
+  overflow: hidden;
+  box-shadow: $shadow;
+  margin-bottom: 1rem;
+}
+
+.dtc-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid $border;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.dtc-title { font-size: 1rem; font-weight: 800; color: $text; letter-spacing: -0.02em; }
+
+.dtc-controls { display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap; }
+
+/* ── SEARCH ── */
+.search-wrap {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: $bg; border: 1.5px solid $border;
+  border-radius: 10px; padding: 0.45rem 0.875rem;
+  transition: border-color 0.15s;
+  &:focus-within { border-color: $blue; }
+}
+
+.search-icon { width: 15px; height: 15px; color: $muted; flex-shrink: 0; }
+
+.search-input {
+  border: none; background: transparent;
+  font-size: 0.8125rem; font-family: 'Inter', sans-serif;
+  color: $text; outline: none; min-width: 180px;
+  &::placeholder { color: $muted; }
+}
+
+.filter-select {
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px; border: 1.5px solid $border;
+  background: $bg; font-size: 0.8125rem;
+  font-family: 'Inter', sans-serif;
+  color: $sub; outline: none; cursor: pointer;
+  &:focus { border-color: $blue; }
+}
+
+/* ── DATA TABLE ── */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  thead tr { border-bottom: 1px solid $border; }
+
+  th {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.625rem; font-weight: 800;
+    text-transform: uppercase; letter-spacing: 0.1em;
+    color: $muted; text-align: left; white-space: nowrap;
+  }
+
+  td {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem; color: $sub;
+    border-bottom: 1px solid rgba(226,232,240,0.5);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background 0.12s;
+    &:hover { background: $bg; }
+    &:last-child td { border-bottom: none; }
+  }
+}
+
+.td-bold  { font-weight: 700; color: $text; }
+.td-muted { color: $muted; font-size: 0.75rem; }
+.revenue-val { font-weight: 700; color: $green; }
+
+/* ── AVATAR CELL ── */
+.avatar-cell { display: flex; align-items: center; gap: 0.625rem; }
+
+.table-avatar {
+  width: 36px; height: 36px; border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.875rem; font-weight: 800; color: #fff;
+  flex-shrink: 0;
+}
+
+/* ── STATUS PILL ── */
+.status-pill {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.25rem 0.65rem; border-radius: 99px;
+  font-size: 0.6875rem; font-weight: 700;
+
+  &::before { content: ''; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+
+  &--active   { background: rgba(5,150,105,0.1);   color: $green;  &::before { background: $green;  } }
+  &--pending  { background: rgba(245,158,11,0.12);  color: $amber;  &::before { background: $amber;  } }
+  &--inactive { background: rgba(148,163,184,0.12); color: $muted;  &::before { background: $muted;  } }
+  &--banned   { background: rgba(239,68,68,0.1);    color: $red;    &::before { background: $red;    } }
+  &--expired  { background: rgba(239,68,68,0.1);    color: $red;    &::before { background: $red;    } }
+  &--cancelled{ background: rgba(148,163,184,0.12); color: $muted;  &::before { background: $muted;  } }
+  &--trial    { background: rgba(124,58,237,0.1);   color: $purple; &::before { background: $purple; } }
+}
+
+/* ── ROLE PILL ── */
+.role-pill {
+  display: inline-block;
+  padding: 0.2rem 0.6rem; border-radius: 6px;
+  font-size: 0.625rem; font-weight: 800;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  &--admin  { background: rgba(239,68,68,0.1);   color: $red;    }
+  &--coach  { background: rgba(37,99,235,0.1);   color: $blue;   }
+  &--club   { background: rgba(124,58,237,0.1);  color: $purple; }
+  &--client { background: rgba(5,150,105,0.1);   color: $green;  }
+}
+
+/* ── TABLE ACTION BUTTONS ── */
+.tbl-actions { display: flex; gap: 0.35rem; }
+
+.tbl-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1.5px solid transparent; background: transparent;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  svg { width: 14px; height: 14px; }
+
+  /* Edit — green */
+  &--edit {
+    background: rgba(5,150,105,0.1);
+    border-color: rgba(5,150,105,0.25);
+    color: #059669;
+    &:hover { background: #059669; border-color: #059669; color: #fff; }
+  }
+
+  /* Toggle / Activate / Approve — blue */
+  &--toggle {
+    background: rgba(37,99,235,0.1);
+    border-color: rgba(37,99,235,0.25);
+    color: #2563EB;
+    &:hover { background: #2563EB; border-color: #2563EB; color: #fff; }
+  }
+
+  /* Suspend / Deactivate — amber */
+  &--suspend {
+    background: rgba(245,158,11,0.1);
+    border-color: rgba(245,158,11,0.25);
+    color: #D97706;
+    &:hover { background: #F59E0B; border-color: #F59E0B; color: #fff; }
+  }
+
+  /* Delete — red (always visible) */
+  &--del {
+    background: rgba(239,68,68,0.1);
+    border-color: rgba(239,68,68,0.25);
+    color: #EF4444;
+    &:hover { background: #EF4444; border-color: #EF4444; color: #fff; }
+  }
+
+  /* View — default gray */
+  &--view {
+    background: rgba(148,163,184,0.1);
+    border-color: rgba(148,163,184,0.25);
+    color: #475569;
+    &:hover { background: #475569; border-color: #475569; color: #fff; }
+  }
+}
+
+/* ── PAGINATION ── */
+.pagination {
+  display: flex; justify-content: space-between;
+  align-items: center; padding: 1rem 1.5rem;
+  border-top: 1px solid $border; background: $bg;
+}
+
+.pag-info { font-size: 0.8125rem; color: $muted; font-weight: 500; }
+
+.pag-btns { display: flex; gap: 0.35rem; }
+
+.pag-btn {
+  width: 32px; height: 32px; border-radius: 8px;
+  border: 1.5px solid $border; background: $white;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  font-size: 0.8125rem; font-weight: 600; color: $sub;
+  font-family: 'Inter', sans-serif; transition: all 0.12s;
+  &:hover    { background: $blue-lt; border-color: rgba(37,99,235,0.3); color: $blue; }
+  &--active  { background: $blue; border-color: $blue; color: #fff; box-shadow: 0 2px 8px rgba(37,99,235,0.3); }
+  &:disabled { opacity: 0.35; cursor: not-allowed; }
+}
+
+/* ── PLAN PILLS (for subscriptions) ── */
+.plan-pill {
+  font-size: 0.5625rem; font-weight: 800;
+  padding: 0.2rem 0.55rem; border-radius: 6px;
+  text-transform: uppercase; letter-spacing: 0.08em;
+  &--basic      { background: rgba(148,163,184,0.15); color: $muted;  }
+  &--pro        { background: rgba(37,99,235,0.1);    color: $blue;   }
+  &--enterprise { background: rgba(124,58,237,0.12);  color: $purple; }
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .ap-header { flex-direction: column; align-items: flex-start; }
+  .dtc-head  { flex-direction: column; align-items: flex-start; }
+}
+
+@media (max-width: 640px) {
+  .ap-root  { padding: 1rem 0.75rem 4rem; }
+  .ap-title { font-size: 1.5rem; }
+  .data-table { font-size: 0.75rem; }
+  .data-table th, .data-table td { padding: 0.6rem 0.75rem; }
+}

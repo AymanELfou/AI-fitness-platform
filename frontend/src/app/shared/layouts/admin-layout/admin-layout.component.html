@@ -1,126 +1,159 @@
-<div class="flex h-screen bg-gray-50 overflow-hidden">
+<div class="admin-shell">
 
-  <!-- Sidebar -->
-  <aside [class.w-64]="sidebarOpen" [class.w-20]="!sidebarOpen"
-    class="relative bg-gray-900 border-r border-gray-800 flex-shrink-0 transition-all duration-300 flex flex-col z-20">
+  <!-- ══════════ SIDEBAR ══════════ -->
+  <aside class="admin-sidebar" [class.admin-sidebar--collapsed]="!sidebarOpen">
 
-    <!-- Sidebar Background Image -->
-    <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-      <img src="/images/club-sidebar-banner.png" class="w-full h-full object-cover opacity-50" alt="Sidebar Background">
-      <div class="absolute inset-0 bg-gradient-to-b from-gray-900/95 via-gray-900/80 to-gray-900/95"></div>
+    <!-- Brand -->
+    <div class="sidebar-brand">
+      <div class="brand-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" class="brand-svg">
+          <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+        </svg>
+      </div>
+      <span class="brand-text" *ngIf="sidebarOpen">SmartTrainer</span>
     </div>
 
-    <!-- Logo -->
-    <div class="relative z-10 h-16 flex items-center px-6 border-b border-gray-800/60">
-      <a routerLink="/" class="text-xl font-black text-primary whitespace-nowrap overflow-hidden">
-        <span [class.hidden]="!sidebarOpen">SMART</span><span class="text-white">T</span>
-      </a>
+    <!-- Admin Badge -->
+    <div class="admin-badge" *ngIf="sidebarOpen">
+      <span class="admin-badge__dot"></span>
+      ADMIN PANEL
     </div>
 
     <!-- Navigation -->
-    <nav class="relative z-10 flex-1 px-3 py-6 space-y-2 overflow-y-auto custom-scrollbar">
+    <nav class="sidebar-nav">
 
-      <a routerLink="/admin/dashboard" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Dashboard</span>
+      <div class="nav-section-label" *ngIf="sidebarOpen">OVERVIEW</div>
+
+      <a routerLink="/admin/dashboard" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Dashboard' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Dashboard</span>
       </a>
 
-      <a routerLink="/admin/users" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">All Users</span>
+      <a routerLink="/admin/reports" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Reports' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Reports</span>
+        <span class="nav-badge" *ngIf="sidebarOpen">New</span>
       </a>
 
-      <a routerLink="/admin/clubs" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Clubs</span>
+      <div class="nav-section-label" *ngIf="sidebarOpen">MANAGEMENT</div>
+
+      <a routerLink="/admin/users" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Users' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">All Users</span>
+        <span class="nav-count" *ngIf="sidebarOpen">1,240</span>
       </a>
 
-      <a routerLink="/admin/coaches" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Coaches</span>
+      <a routerLink="/admin/clubs" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Clubs' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Clubs</span>
+        <span class="nav-count" *ngIf="sidebarOpen">48</span>
       </a>
 
-      <a routerLink="/admin/subscriptions" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z" />
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Subscriptions</span>
+      <a routerLink="/admin/coaches" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Coaches' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Coaches</span>
+        <span class="nav-count" *ngIf="sidebarOpen">186</span>
       </a>
 
-      <a routerLink="/admin/settings" routerLinkActive="bg-primary/20 text-white border-r-4 border-primary"
-        class="flex items-center gap-3 px-3 py-3 rounded-lg text-gray-400 hover:bg-white/10 hover:text-white transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z">
-          </path>
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z">
-          </path>
-        </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Settings</span>
+      <a routerLink="/admin/subscriptions" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Subscriptions' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+            <line x1="1" y1="10" x2="23" y2="10"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Subscriptions</span>
+      </a>
+
+      <div class="nav-section-label" *ngIf="sidebarOpen">SYSTEM</div>
+
+      <a routerLink="/admin/settings" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Settings' : ''">
+        <span class="nav-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </span>
+        <span class="nav-label" *ngIf="sidebarOpen">Settings</span>
       </a>
 
     </nav>
 
-    <!-- Bottom -->
-    <div class="relative z-10 p-4 border-t border-gray-800/60">
-      <button (click)="logout()"
-        class="flex items-center gap-3 px-3 py-3 w-full rounded-lg text-red-400 hover:bg-red-500/10 transition-all">
-        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+    <!-- Sidebar footer: user + collapse -->
+    <div class="sidebar-footer">
+      <div class="sidebar-user" *ngIf="sidebarOpen">
+        <div class="sidebar-user__avatar">{{ (authService.currentUser()?.firstname || 'A')[0] }}</div>
+        <div class="sidebar-user__info">
+          <div class="sidebar-user__name">{{ authService.currentUser()?.firstname }} {{ authService.currentUser()?.lastname }}</div>
+          <div class="sidebar-user__role">Administrator</div>
+        </div>
+      </div>
+
+      <button class="collapse-btn" (click)="toggleSidebar()" [title]="sidebarOpen ? 'Collapse' : 'Expand'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="collapse-icon" [class.collapse-icon--flipped]="!sidebarOpen">
+          <polyline points="15 18 9 12 15 6"/>
         </svg>
-        <span [class.hidden]="!sidebarOpen" class="font-medium text-sm whitespace-nowrap">Log Out</span>
+      </button>
+
+      <button class="logout-btn" (click)="logout()" [title]="!sidebarOpen ? 'Logout' : ''">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+          <polyline points="16 17 21 12 16 7"/>
+          <line x1="21" y1="12" x2="9" y2="12"/>
+        </svg>
+        <span *ngIf="sidebarOpen">Logout</span>
       </button>
     </div>
   </aside>
 
-  <!-- Main Content -->
-  <div class="flex-1 flex flex-col min-w-0">
+  <!-- ══════════ MAIN AREA ══════════ -->
+  <div class="admin-main">
 
-    <!-- Top Header -->
-    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6">
-      <div class="flex items-center gap-4">
-        <button (click)="toggleSidebar()" class="p-2 rounded-lg hover:bg-gray-100 text-gray-500">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <h1 class="text-lg font-semibold text-dark">Admin Panel</h1>
+    <!-- Top bar -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <h1 class="topbar-title">Admin Panel</h1>
       </div>
-
-      <div class="flex items-center gap-4">
-        <div class="text-right hidden sm:block">
-          <p class="text-sm font-medium text-dark">{{ authService.currentUser()?.firstname }} {{
-            authService.currentUser()?.lastname }}</p>
-          <p class="text-xs text-gray-500">Administrator</p>
-        </div>
-        <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-          {{ authService.currentUser()?.firstname?.[0] || 'A' }}
+      <div class="topbar-right">
+        <button class="topbar-icon-btn" title="Notifications">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="topbar-user">
+          <div class="topbar-avatar">{{ (authService.currentUser()?.firstname || 'A')[0] }}</div>
         </div>
       </div>
     </header>
 
-    <!-- Page Content -->
-    <main class="flex-1 overflow-y-auto p-6">
+    <!-- Page content -->
+    <main class="admin-content">
       <router-outlet></router-outlet>
     </main>
   </div>
+
 </div>

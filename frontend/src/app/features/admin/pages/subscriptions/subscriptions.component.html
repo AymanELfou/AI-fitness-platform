@@ -1,0 +1,88 @@
+<div class="ap-root">
+  <div class="ap-header">
+    <div>
+      <div class="ap-eyebrow">Billing & Subscriptions</div>
+      <h1 class="ap-title">Subscriptions</h1>
+      <p class="ap-subtitle">Track recurring revenue, plan distribution and billing cycles.</p>
+    </div>
+    <div class="ap-header-actions">
+      <button class="btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+    </div>
+  </div>
+
+  <!-- Revenue cards -->
+  <div class="rev-cards">
+    <div class="rev-card rev-card--blue">
+      <div class="rev-label">Monthly Recurring Revenue</div>
+      <div class="rev-val">{{ mrr }}</div>
+      <div class="rev-sub">From active monthly subs</div>
+    </div>
+    <div class="rev-card rev-card--purple">
+      <div class="rev-label">Annual Recurring Revenue</div>
+      <div class="rev-val">{{ arr }}</div>
+      <div class="rev-sub">Projected annual total</div>
+    </div>
+    <div class="rev-card rev-card--green">
+      <div class="rev-label">Active Subscriptions</div>
+      <div class="rev-val">{{ activeCount }}</div>
+      <div class="rev-sub">Currently paying</div>
+    </div>
+    <div class="rev-card rev-card--amber">
+      <div class="rev-label">Expired / At Risk</div>
+      <div class="rev-val">{{ expiringCount }}</div>
+      <div class="rev-sub">Need renewal attention</div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="data-table-card">
+    <div class="dtc-head">
+      <span class="dtc-title">{{ filtered.length }} subscriptions</span>
+      <div class="dtc-controls">
+        <select class="filter-select" [(ngModel)]="filterPlan">
+          <option *ngFor="let p of plans">{{ p }}</option>
+        </select>
+        <select class="filter-select" [(ngModel)]="filterStatus">
+          <option *ngFor="let s of statuses">{{ s }}</option>
+        </select>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Entity</th><th>Type</th><th>Plan</th><th>Cycle</th><th>Amount</th><th>Status</th><th>Next Billing</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let s of filtered">
+          <td>
+            <div class="avatar-cell">
+              <div class="table-avatar" [style.background]="s.color" style="border-radius:8px">{{ s.initial }}</div>
+              <span class="td-bold">{{ s.entity }}</span>
+            </div>
+          </td>
+          <td><span class="role-pill" [class]="'role-pill--' + s.type">{{ s.type }}</span></td>
+          <td>
+            <span class="plan-pill" [class]="'plan-pill--' + s.plan.toLowerCase()">{{ s.plan }}</span>
+          </td>
+          <td class="td-muted">{{ s.cycle }}</td>
+          <td class="td-bold" style="color:#059669">{{ s.amount }}<span class="td-muted">/mo</span></td>
+          <td><span class="status-pill" [class]="'status-pill--' + s.status">{{ s.status }}</span></td>
+          <td class="td-muted">{{ s.nextBilling }}</td>
+          <td>
+            <div class="tbl-actions">
+              <button class="tbl-btn" title="View Invoice">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+              </button>
+              <button class="tbl-btn tbl-btn--del" title="Cancel">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

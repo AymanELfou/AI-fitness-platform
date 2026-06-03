@@ -1,1 +1,250 @@
-<p>progress works!</p>
+<div class="pp-root">
+
+  <!-- ══════════════ PAGE HEADER ══════════════ -->
+  <div class="pp-header">
+    <div class="pp-header__left">
+      <h1 class="pp-title">Analytics Overview</h1>
+      <p class="pp-subtitle">Track your transformation and performance metrics.</p>
+    </div>
+
+    <!-- Date Picker -->
+    <div class="date-picker" (click)="showDateMenu = !showDateMenu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cal-icon">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+        <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      <span class="date-range-label">{{ dateRange() }}</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="caret-icon">
+        <polyline points="6 9 12 15 18 9"/>
+      </svg>
+      <!-- Dropdown -->
+      <div class="date-dropdown" *ngIf="showDateMenu" (click)="$event.stopPropagation()">
+        <button *ngFor="let opt of dateOptions"
+          class="date-opt"
+          [class.date-opt--active]="dateRange() === opt"
+          (click)="setDateRange(opt)">
+          {{ opt }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STAT STRIP ══════════════ -->
+  <div class="stat-strip">
+    <div class="stat-item" *ngFor="let s of stats">
+      <div class="stat-item__left">
+        <span class="stat-emoji">{{ s.icon }}</span>
+        <div>
+          <div class="stat-val">{{ s.value }}<span class="stat-unit"> {{ s.unit }}</span></div>
+          <div class="stat-lbl">{{ s.label }}</div>
+        </div>
+      </div>
+      <span class="stat-trend" [class.stat-trend--up]="s.up" [class.stat-trend--down]="!s.up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-arrow">
+          <polyline *ngIf="s.up"  points="18 15 12 9 6 15"/>
+          <polyline *ngIf="!s.up" points="6 9 12 15 18 9"/>
+        </svg>
+        {{ s.trend }}
+      </span>
+    </div>
+  </div>
+
+  <!-- ══════════════ ROW 1: Goals + Weight Trend ══════════════ -->
+  <div class="grid-row grid-row--top">
+
+    <!-- ── Goals Donut Card ── -->
+    <div class="card card--goals">
+      <div class="card-label-row">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="card-label-icon">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="4"/>
+        </svg>
+        <div>
+          <div class="card-label-title">Goals</div>
+          <div class="card-label-sub">Weekly targets completion</div>
+        </div>
+      </div>
+
+      <!-- Donut Chart -->
+      <div class="donut-wrap">
+        <svg [attr.viewBox]="'0 0 ' + (donutCx*2) + ' ' + (donutCy*2)" class="donut-svg">
+          <!-- Background track -->
+          <circle [attr.cx]="donutCx" [attr.cy]="donutCy" [attr.r]="donutR"
+            fill="none" stroke="#F1F5F9" [attr.stroke-width]="18"/>
+          <!-- Segments -->
+          <circle *ngFor="let g of goals; let gi = index"
+            [attr.cx]="donutCx" [attr.cy]="donutCy" [attr.r]="donutR"
+            fill="none" [attr.stroke]="g.color" stroke-width="18"
+            stroke-linecap="round"
+            [attr.stroke-dasharray]="donutCircumference"
+            [attr.stroke-dashoffset]="getDonutOffset(g.percent)"
+            [attr.transform]="'rotate(' + getDonutRotation(gi) + ' ' + donutCx + ' ' + donutCy + ')'">
+          </circle>
+          <!-- Center text -->
+          <text [attr.x]="donutCx" [attr.y]="donutCy - 8"
+            text-anchor="middle" class="donut-pct">{{ overallGoal }}%</text>
+          <text [attr.x]="donutCx" [attr.y]="donutCy + 14"
+            text-anchor="middle" class="donut-lbl">OVERALL</text>
+        </svg>
+      </div>
+
+      <!-- Legend -->
+      <div class="donut-legend">
+        <div class="legend-item" *ngFor="let g of goals">
+          <span class="legend-dot" [style.background]="g.color"></span>
+          <span class="legend-name">{{ g.label }}</span>
+          <span class="legend-pct">{{ g.percent }}%</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Body Weight Trend ── -->
+    <div class="card card--weight">
+      <div class="weight-card-head">
+        <div>
+          <div class="card-section-title">Body Weight Trend</div>
+          <div class="weight-row">
+            <span class="weight-value">{{ currentWeight }}</span>
+            <span class="weight-unit">lbs</span>
+            <span class="weight-change" [class.weight-change--down]="weightChange < 0">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="change-arrow">
+                <polyline *ngIf="weightChange < 0" points="18 15 12 9 6 15"/>
+                <polyline *ngIf="weightChange >= 0" points="6 9 12 15 18 9"/>
+              </svg>
+              {{ weightChange < 0 ? weightChange : '+' + weightChange }} lbs
+            </span>
+          </div>
+        </div>
+        <div class="view-toggle">
+          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '1W'" (click)="setWeightView('1W')">1W</button>
+          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '1M'" (click)="setWeightView('1M')">1M</button>
+          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '3M'" (click)="setWeightView('3M')">3M</button>
+        </div>
+      </div>
+
+      <!-- SVG Line Chart -->
+      <div class="chart-wrap">
+        <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" class="line-chart" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#2563EB" stop-opacity="0.18"/>
+              <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+
+          <!-- Y-axis grid lines -->
+          <line *ngFor="let y of yGridLines"
+            [attr.x1]="chartPadX" [attr.x2]="chartW - chartPadX"
+            [attr.y1]="getWeightY(y)" [attr.y2]="getWeightY(y)"
+            stroke="#E2E8F0" stroke-width="1"/>
+
+          <!-- Area fill -->
+          <path [attr.d]="weightAreaPath" fill="url(#weightGrad)"/>
+
+          <!-- Line -->
+          <path [attr.d]="weightLinePath"
+            fill="none" stroke="#2563EB" stroke-width="2.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+
+          <!-- Data points -->
+          <g *ngFor="let d of currentWeightData; let i = index">
+            <circle [attr.cx]="getWeightX(i)" [attr.cy]="getWeightY(d.value)"
+              r="5" fill="white" stroke="#2563EB" stroke-width="2.5"/>
+          </g>
+        </svg>
+
+        <!-- X-axis labels -->
+        <div class="x-axis">
+          <span *ngFor="let d of currentWeightData"
+            class="x-label"
+            [class.x-label--hidden]="!d.label">
+            {{ d.label }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ══════════════ ROW 2: Volume Bar + Achievements ══════════════ -->
+  <div class="grid-row grid-row--bottom">
+
+    <!-- ── Volume Output ── -->
+    <div class="card card--volume">
+      <div class="volume-head">
+        <div class="card-section-title">Volume Output</div>
+        <div class="view-toggle">
+          <button class="toggle-btn" [class.toggle-btn--active]="volumeView() === 'Weekly'"  (click)="setVolumeView('Weekly')">Weekly</button>
+          <button class="toggle-btn" [class.toggle-btn--active]="volumeView() === 'Monthly'" (click)="setVolumeView('Monthly')">Monthly</button>
+        </div>
+      </div>
+
+      <!-- Bar Chart -->
+      <div class="bar-chart">
+        <div class="bar-col" *ngFor="let d of currentVolumeData">
+          <div class="bar-wrap">
+            <div class="bar"
+              [class.bar--active]="d.isToday"
+              [style.height.px]="getBarHeight(d.volume)">
+            </div>
+          </div>
+          <span class="bar-label" [class.bar-label--active]="d.isToday">{{ d.day }}</span>
+        </div>
+      </div>
+
+      <!-- Volume Summary -->
+      <div class="vol-summary">
+        <div class="vol-sum-item">
+          <span class="vol-sum-val">{{ (volumeMax / 1000).toFixed(0) }}K</span>
+          <span class="vol-sum-lbl">Peak (lbs)</span>
+        </div>
+        <div class="vol-sum-sep"></div>
+        <div class="vol-sum-item">
+          <span class="vol-sum-val">{{ currentVolumeTotal }}</span>
+          <span class="vol-sum-lbl">Total (lbs)</span>
+        </div>
+        <div class="vol-sum-sep"></div>
+        <div class="vol-sum-item">
+          <span class="vol-sum-val" style="color:#22C55E">↑ 8%</span>
+          <span class="vol-sum-lbl">vs Last Period</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Recent Achievements ── -->
+    <div class="card card--achievements">
+      <div class="ach-head">
+        <div class="card-section-title">Recent Achievements</div>
+      </div>
+
+      <div class="ach-timeline">
+        <div class="ach-item" *ngFor="let a of achievements; let last = last">
+          <!-- Date marker -->
+          <div class="ach-date-row">
+            <span class="ach-dot" [style.background]="a.color"
+              [class.ach-dot--pulse]="a.isToday"></span>
+            <span class="ach-date-lbl" [class.ach-date--today]="a.isToday">
+              {{ a.dateLabel }}
+            </span>
+          </div>
+          <!-- Content -->
+          <div class="ach-content">
+            <div class="ach-title">{{ a.icon }} {{ a.title }}</div>
+            <div class="ach-desc">{{ a.description }}</div>
+          </div>
+          <!-- Connector line -->
+          <div class="ach-line" *ngIf="!last"></div>
+        </div>
+      </div>
+
+      <button class="view-history-btn">
+        View Full History
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="btn-arrow">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+</div>

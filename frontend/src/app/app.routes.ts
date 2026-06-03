@@ -25,9 +25,20 @@ import { ProfileComponent } from './features/coach/pages/profile/profile.compone
 
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
 import { DashboardComponent as AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
+import { AdminUsersComponent } from './features/admin/pages/users/users.component';
+import { AdminClubsComponent } from './features/admin/pages/clubs/clubs.component';
+import { AdminCoachesComponent } from './features/admin/pages/coaches/coaches.component';
+import { AdminSubscriptionsComponent } from './features/admin/pages/subscriptions/subscriptions.component';
+import { AdminReportsComponent } from './features/admin/pages/reports/reports.component';
+import { AdminSettingsComponent } from './features/admin/pages/settings/settings.component';
 
 import { ClientLayoutComponent } from './shared/layouts/client-layout/client-layout.component';
 import { DashboardComponent as ClientDashboardComponent } from './features/client/pages/dashboard/dashboard.component';
+import { ProgramsComponent as ClientProgramsComponent } from './features/client/pages/programs/programs.component';
+import { WorkoutsComponent as ClientWorkoutsComponent } from './features/client/pages/workouts/workouts.component';
+import { ProgressComponent as ClientProgressComponent } from './features/client/pages/progress/progress.component';
+import { ClientCommunityComponent } from './features/client/pages/community/community.component';
+import { ClientChatComponent } from './features/client/pages/chat/chat.component';
 export const routes: Routes = [
 
   // Public routes
@@ -77,8 +88,14 @@ export const routes: Routes = [
   {
     path: 'admin', component: AdminLayoutComponent,
     children: [
-      { path: 'dashboard', component: AdminDashboardComponent },
-      // { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: 'dashboard',     component: AdminDashboardComponent     },
+      { path: 'users',         component: AdminUsersComponent         },
+      { path: 'clubs',         component: AdminClubsComponent         },
+      { path: 'coaches',       component: AdminCoachesComponent       },
+      { path: 'subscriptions', component: AdminSubscriptionsComponent },
+      { path: 'reports',       component: AdminReportsComponent       },
+      { path: 'settings',      component: AdminSettingsComponent      },
+      { path: '',              redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
 
@@ -86,8 +103,13 @@ export const routes: Routes = [
   {
     path: 'client', component: ClientLayoutComponent,
     children: [
-      { path: 'dashboard', component: ClientDashboardComponent },
-      { path: '', redirectTo: 'dashboard', pathMatch: 'full' }
+      { path: 'dashboard',  component: ClientDashboardComponent },
+      { path: 'programs',   component: ClientProgramsComponent  },
+      { path: 'workouts',   component: ClientWorkoutsComponent  },
+      { path: 'progress',   component: ClientProgressComponent  },
+      { path: 'community',  component: ClientCommunityComponent },
+      { path: 'chat',       component: ClientChatComponent      },
+      { path: '',           redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },
   { path: '**', redirectTo: '' }

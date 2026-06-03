@@ -1,0 +1,251 @@
+<div class="wp-root">
+
+  <!-- ══════════════ TOP HEADER ══════════════ -->
+  <div class="wp-header">
+    <div class="wp-header__left">
+      <div class="wp-eyebrow">
+        {{ currentProgram.phase }}
+        <span class="eyebrow-sep">•</span>
+        WEEK {{ currentProgram.week }}
+      </div>
+      <h1 class="wp-title">{{ currentProgram.name }}</h1>
+      <p class="wp-subtitle">
+        {{ currentProgram.exercises.length }} Exercises
+        <span class="dot-sep">•</span>
+        Est. Time: {{ currentProgram.estTime }} mins
+      </p>
+    </div>
+
+    <!-- Session Timer -->
+    <div class="session-timer">
+      <span class="timer-label">Session Timer</span>
+      <div class="timer-row">
+        <span class="timer-digits">{{ timerDisplay }}</span>
+        <button class="timer-btn" (click)="toggleTimer()" [attr.aria-label]="timerRunning ? 'Pause' : 'Resume'">
+          <!-- Pause icon -->
+          <svg *ngIf="timerRunning" viewBox="0 0 24 24" fill="currentColor">
+            <rect x="6" y="4" width="4" height="16" rx="1"/><rect x="14" y="4" width="4" height="16" rx="1"/>
+          </svg>
+          <!-- Play icon -->
+          <svg *ngIf="!timerRunning" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M8 5v14l11-7L8 5z"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ PROGRAM TABS ══════════════ -->
+  <div class="prog-tabs">
+    <button
+      *ngFor="let p of programs"
+      class="prog-tab"
+      [class.prog-tab--active]="activeProgramId() === p.id"
+      (click)="selectProgram(p.id)">
+      {{ p.name }}
+    </button>
+  </div>
+
+  <!-- ══════════════ MAIN 2-COL LAYOUT ══════════════ -->
+  <div class="wp-body">
+
+    <!-- ── LEFT: Exercise List ── -->
+    <div class="ex-col">
+      <div
+        *ngFor="let ex of currentProgram.exercises; let i = index; trackBy: trackByEx"
+        class="ex-card"
+        [class.ex-card--collapsed]="!ex.expanded"
+        [class.ex-card--done]="isExerciseDone(ex)">
+
+        <!-- Card top: thumbnail + title -->
+        <div class="ex-card__head" (click)="toggleExpand(ex)">
+          <div class="ex-thumb-wrap">
+            <img [src]="ex.image" [alt]="ex.name" class="ex-thumb" />
+            <div class="ex-thumb-overlay">
+              <svg class="play-icon" viewBox="0 0 24 24" fill="white">
+                <circle cx="12" cy="12" r="11" fill="rgba(0,0,0,0.45)"/>
+                <path d="M10 8.5l6 3.5-6 3.5V8.5z"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="ex-card__info">
+            <div class="ex-num-name">
+              <span class="ex-num">{{ i + 1 }}.</span>
+              <span class="ex-name">{{ ex.name }}</span>
+            </div>
+            <div class="ex-muscles" [style.color]="ex.muscleColor">
+              {{ ex.muscles.join(', ') }}
+            </div>
+            <div class="ex-target" *ngIf="ex.expanded">
+              Target: {{ ex.targetSets }} Sets &times; {{ ex.targetReps }} Reps &#64; RPE {{ ex.rpe }}
+            </div>
+            <div class="ex-collapsed-meta" *ngIf="!ex.expanded">
+              {{ ex.targetSets }} Sets • {{ ex.targetReps }} Reps
+            </div>
+          </div>
+
+          <div class="ex-chevron" [class.ex-chevron--open]="ex.expanded">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- ── Sets Table ── -->
+        <div class="ex-sets" *ngIf="ex.expanded">
+          <!-- Header row -->
+          <div class="sets-head">
+            <span>SET</span>
+            <span>PREV</span>
+            <span>LBS</span>
+            <span>REPS</span>
+            <span>DONE</span>
+          </div>
+
+          <ng-container *ngFor="let set of ex.sets; trackBy: trackBySet">
+            <!-- Rest timer between sets -->
+            <div class="rest-row" *ngIf="set.status === 'active' && ex.restRemaining !== null">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="rest-icon">
+                <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+              </svg>
+              <span class="rest-text">
+                Rest: <strong>{{ restDisplay(ex.restRemaining) }}</strong> / {{ restDisplay(ex.restSeconds) }}
+              </span>
+              <div class="rest-bar">
+                <div class="rest-bar__fill" [style.width.%]="(1 - getRestFraction(ex)) * 100"></div>
+              </div>
+            </div>
+
+            <!-- Set row -->
+            <div class="set-row"
+              [class.set-row--done]="set.status === 'done'"
+              [class.set-row--active]="set.status === 'active'">
+              <span class="set-cell set-idx" [class.set-idx--active]="set.status === 'active'">{{ set.index }}</span>
+              <span class="set-cell set-prev">{{ set.prev }}</span>
+              <span class="set-cell set-input-wrap">
+                <input *ngIf="set.status !== 'done'"
+                  class="set-input" type="number" min="0"
+                  [(ngModel)]="set.lbs"
+                  [placeholder]="set.status === 'pending' ? '-' : ''"
+                  [disabled]="set.status === 'pending'" />
+                <span *ngIf="set.status === 'done'" class="set-val-done">{{ set.lbs }}</span>
+              </span>
+              <span class="set-cell set-input-wrap">
+                <input *ngIf="set.status !== 'done'"
+                  class="set-input" type="number" min="0"
+                  [(ngModel)]="set.reps"
+                  [placeholder]="set.status === 'pending' ? '-' : ''"
+                  [disabled]="set.status === 'pending'" />
+                <span *ngIf="set.status === 'done'" class="set-val-done">{{ set.reps }}</span>
+              </span>
+              <span class="set-cell">
+                <button
+                  class="done-check"
+                  [class.done-check--checked]="set.status === 'done'"
+                  [disabled]="set.status === 'pending'"
+                  (click)="markDone(ex, set); $event.stopPropagation()">
+                  <svg *ngIf="set.status === 'done'" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                </button>
+              </span>
+            </div>
+          </ng-container>
+
+          <!-- Coach Note -->
+          <div class="coach-note">
+            <div class="coach-note__label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="note-icon">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              COACH NOTE
+            </div>
+            <p class="coach-note__text">{{ ex.coachNote }}</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Session Progress Sidebar ── -->
+    <aside class="sidebar">
+
+      <!-- Session Progress -->
+      <div class="sidebar-card">
+        <h2 class="sidebar-card__title">Session Progress</h2>
+
+        <div class="progress-label-row">
+          <span class="progress-lbl">Completed Volume</span>
+          <span class="progress-vol">{{ completedVolume.toLocaleString() }} lbs</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-track__fill" [style.width.%]="progressPercent"
+            [style.background]="'linear-gradient(90deg, #2563EB, #7C3AED)'"></div>
+        </div>
+
+        <div class="prog-counters">
+          <div class="prog-counter">
+            <span class="counter-val">{{ completedExercises }}</span>
+            <span class="counter-lbl">EXERCISES<br>DONE</span>
+          </div>
+          <div class="prog-divider"></div>
+          <div class="prog-counter">
+            <span class="counter-val">{{ remainingExercises }}</span>
+            <span class="counter-lbl">EXERCISES<br>LEFT</span>
+          </div>
+        </div>
+
+        <!-- Sets bar -->
+        <div class="sets-progress-row">
+          <span class="sets-prog-lbl">Sets</span>
+          <span class="sets-prog-val">{{ completedSets }} / {{ totalSets }}</span>
+        </div>
+        <div class="mini-track">
+          <div class="mini-track__fill" [style.width.%]="progressPercent"></div>
+        </div>
+      </div>
+
+      <!-- Active Exercise Note -->
+      <div class="sidebar-card sidebar-card--note" *ngIf="currentProgram.exercises[0] as firstEx">
+        <div class="note-header">
+          <span class="note-header__label">COACH NOTES</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" class="note-edit-icon">
+            <path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+        </div>
+        <p class="note-body">{{ firstEx.coachNote }}</p>
+      </div>
+
+      <!-- Quick program info -->
+      <div class="sidebar-card sidebar-info">
+        <div class="info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="info-icon">
+            <circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/>
+          </svg>
+          <span class="info-label">Est. Duration</span>
+          <span class="info-val">{{ currentProgram.estTime }} min</span>
+        </div>
+        <div class="info-sep"></div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="info-icon">
+            <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"/>
+          </svg>
+          <span class="info-label">Total Sets</span>
+          <span class="info-val">{{ totalSets }}</span>
+        </div>
+        <div class="info-sep"></div>
+        <div class="info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="info-icon">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span class="info-label">Phase</span>
+          <span class="info-val">{{ getPhaseName() }}</span>
+        </div>
+      </div>
+
+    </aside>
+  </div>
+
+</div>
