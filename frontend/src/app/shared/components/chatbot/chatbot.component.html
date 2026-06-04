@@ -1,0 +1,103 @@
+<!-- ═══════════════════════════════════
+     FLOATING TOGGLE BUTTON
+═══════════════════════════════════ -->
+<div class="chatbot-wrapper">
+
+  <!-- Floating launcher button (visible when chat is closed) -->
+  <button class="chat-launcher" (click)="toggle()" *ngIf="!isOpen()" title="Ouvrir le Coach IA">
+    <svg class="launcher-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    </svg>
+    <span class="launcher-label">Coach IA</span>
+    <span class="launcher-dot"></span>
+  </button>
+
+  <!-- Chat Panel -->
+  <div class="chat-panel" [class.chat-panel--open]="isOpen()">
+
+    <!-- ── HEADER ── -->
+    <div class="chat-header">
+      <div class="chat-header-left">
+        <div class="bot-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+          </svg>
+        </div>
+        <div class="chat-header-info">
+          <div class="chat-title">Coach IA SmartTrainer</div>
+          <div class="chat-status">
+            <span class="status-dot"></span> En ligne
+          </div>
+        </div>
+      </div>
+      <button class="chat-collapse-btn" (click)="toggle()" title="Réduire">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- ── MESSAGES ── -->
+    <div class="chat-messages" #msgList>
+
+      <div
+        class="chat-msg"
+        *ngFor="let msg of messages"
+        [class.chat-msg--bot]="msg.from === 'bot'"
+        [class.chat-msg--user]="msg.from === 'user'">
+
+        <div class="msg-avatar" *ngIf="msg.from === 'bot'">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+          </svg>
+        </div>
+
+        <div class="msg-bubble">
+          <div class="msg-text" [innerHTML]="formatText(msg.text)"></div>
+          <div class="msg-time">{{ msg.time }}</div>
+        </div>
+      </div>
+
+      <!-- Typing indicator -->
+      <div class="chat-msg chat-msg--bot" *ngIf="isTyping()">
+        <div class="msg-avatar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+          </svg>
+        </div>
+        <div class="msg-bubble">
+          <div class="typing-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ── GUEST NOTICE ── -->
+    <div class="chat-notice">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="notice-icon">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="1" fill="currentColor"/>
+      </svg>
+      <span>💡 <strong>Version Guest</strong> : Conseils généraux uniquement. Passez <a href="/register" class="notice-link">Premium</a> pour des programmes personnalisés par IA.</span>
+    </div>
+
+    <!-- ── INPUT ── -->
+    <div class="chat-input-bar">
+      <input
+        class="chat-input"
+        [(ngModel)]="input"
+        (keydown)="handleKey($event)"
+        placeholder="Posez votre question..."
+        [disabled]="isTyping()"
+      />
+      <button class="chat-send-btn" (click)="send()" [disabled]="!input.trim() || isTyping()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+</div>
