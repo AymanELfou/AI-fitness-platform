@@ -96,9 +96,9 @@ pipeline {
                 script {
                     echo "--- Début du Déploiement Continu sur Kubernetes ---"
                     
-                    sh 'sudo kubectl apply -f smart-trainer-k8s/backend-deployment.yaml'
+                    sh 'kubectl apply -f smart-trainer-k8s/backend-deployment.yaml'
                     sh 'sudo kubectl apply -f smart-trainer-k8s/backend-hpa.yaml'
-                    sh 'sudo kubectl apply -f smart-trainer-k8s/frontend-deployment.yaml'
+                    sh 'kubectl apply -f smart-trainer-k8s/frontend-deployment.yaml'
                     sh 'sudo kubectl rollout restart deployment/backend-deployment'
                     sh 'sudo kubectl rollout restart deployment/frontend-deployment'
                     
