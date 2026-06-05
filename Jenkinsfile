@@ -96,17 +96,27 @@ pipeline {
                 script {
                     echo "--- Début du Déploiement Continu sur Kubernetes ---"
                     
-                    sh 'kubectl apply -f smart-trainer-k8s/backend-deployment.yaml'
-                    sh 'sudo kubectl apply -f smart-trainer-k8s/backend-hpa.yaml'
-                    sh 'kubectl apply -f smart-trainer-k8s/frontend-deployment.yaml'
-                    sh 'sudo kubectl rollout restart deployment/backend-deployment'
-                    sh 'sudo kubectl rollout restart deployment/frontend-deployment'
+                    sh 'curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"'
+                    sh 'chmod +x ./kubectl'
                     
-                    sh 'sudo kubectl rollout status deployment/backend-deployment --timeout=90s'
+                    withCredentials([file(credentialsId: 'k8s-kubeconfig', variable: 'KUBECONFIG')]) {
+                        
+                        echo "--- Application des manifests Kubernetes ---"
+                        sh './kubectl apply -f smart-trainer-k8s/backend-deployment.yaml'
+                        sh './kubectl apply -f smart-trainer-k8s/backend-hpa.yaml'
+                        sh './kubectl apply -f smart-trainer-k8s/frontend-deployment.yaml'
+                        
+                        echo "--- Déclenchement du Rolling Update (Zéro coupure) ---"
+                        sh './kubectl rollout restart deployment/backend-deployment'
+                        sh './kubectl rollout restart deployment/frontend-deployment'
+                        
+                        echo "--- Vérification de la stabilité du déploiement ---"
+                        sh './kubectl rollout status deployment/backend-deployment --timeout=90s'
+                    }
                     
-                    echo "--- Déploiement accompli avec succès et sans coupure ! ---"
-                }
-            }
-        }
-    }
-}
+                    echo "--- Déploiement accompli avec succès ! ---"
+                } 
+            } 
+        } 
+    } 
+} 
