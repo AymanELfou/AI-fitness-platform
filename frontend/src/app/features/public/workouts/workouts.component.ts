@@ -1,17 +1,9 @@
-import { Component, signal, computed } from '@angular/core';
+import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-
-export interface Exercise {
-  id: number;
-  title: string;
-  category: 'Strength' | 'Cardio' | 'Mobility' | 'Yoga';
-  duration: string;
-  level: string;
-  image: string;
-  featured?: boolean;
-}
+import { Exercise } from '../../../core/models/exercise.model';
+import { ExerciseService } from '../../../core/services/exercise.service';
 
 @Component({
   selector: 'app-workouts',
@@ -20,31 +12,37 @@ export interface Exercise {
   templateUrl: './workouts.component.html',
   styleUrl: './workouts.component.scss'
 })
-export class WorkoutsComponent {
+export class WorkoutsComponent implements OnInit {
 
   activeFilter = signal<string>('All Exercises');
   searchQuery = signal<string>('');
 
-  filters = ['All Exercises', 'Strength', 'Cardio', 'Mobility', 'Yoga'];
+  filters = ['All Exercises', 'LEGS', 'CHEST', 'BACK', 'ARMS', 'SHOULDERS', 'CORE', 'CARDIO', 'FULL_BODY'];
 
-  exercises: Exercise[] = [
-    { id: 1, title: 'Explosive Back Squats', category: 'Strength', duration: '45 MIN', level: 'Advanced', image: '/images/exercise_squats.png' },
-    { id: 2, title: 'HIIT Sprints', category: 'Cardio', duration: '30 MIN', level: 'Intermediate', image: '/images/exercise_hiit.png' },
-    { id: 3, title: 'Dynamic Hip Flow & Spine Decompression', category: 'Mobility', duration: '12 MIN', level: 'Beginner', image: '/images/exercise_hip_flow.png', featured: true },
-    { id: 4, title: 'Vinyasa Peak Pose', category: 'Yoga', duration: '60 MIN', level: 'Intermediate', image: '/images/exercise_yoga.png' },
-    { id: 5, title: 'Upper Body Hypertrophy', category: 'Strength', duration: '50 MIN', level: 'Intermediate', image: '/images/exercise_dumbbell.png' },
-    { id: 6, title: 'Post-Run Release', category: 'Mobility', duration: '20 MIN', level: 'Beginner', image: '/images/exercise_foam_roll.png' },
-  ];
+  exercises = signal<Exercise[]>([]);
 
   filteredExercises = computed(() => {
     const filter = this.activeFilter();
     const query = this.searchQuery().toLowerCase();
-    return this.exercises.filter(ex => {
-      const matchesFilter = filter === 'All Exercises' || ex.category === filter;
-      const matchesSearch = !query || ex.title.toLowerCase().includes(query) || ex.category.toLowerCase().includes(query);
+    return this.exercises().filter(ex => {
+      const matchesFilter = filter === 'All Exercises' || ex.musclesGroup === filter;
+      const matchesSearch = !query || ex.name.toLowerCase().includes(query) || (ex.musclesGroup && ex.musclesGroup.toLowerCase().includes(query));
       return matchesFilter && matchesSearch;
     });
   });
+
+  constructor(private exerciseService: ExerciseService) {}
+
+  ngOnInit(): void {
+    this.exerciseService.getAllExercises().subscribe({
+      next: (data) => {
+        this.exercises.set(data);
+      },
+      error: (err) => {
+        console.error('Failed to load exercises', err);
+      }
+    });
+  }
 
   setFilter(filter: string) {
     this.activeFilter.set(filter);
@@ -55,12 +53,17 @@ export class WorkoutsComponent {
   }
 
   getCategoryColor(category: string): string {
+    if (!category) return '#6366f1';
     const colors: Record<string, string> = {
-      'Strength': '#7c3aed',
-      'Cardio': '#0891b2',
-      'Mobility': '#059669',
-      'Yoga': '#d97706',
+      'LEGS': '#7c3aed',
+      'CHEST': '#0891b2',
+      'BACK': '#059669',
+      'ARMS': '#d97706',
+      'SHOULDERS': '#dc2626',
+      'CORE': '#4f46e5',
+      'CARDIO': '#f43f5e',
+      'FULL_BODY': '#10b981'
     };
-    return colors[category] || '#6366f1';
+    return colors[category.toUpperCase()] || '#6366f1';
   }
 }
