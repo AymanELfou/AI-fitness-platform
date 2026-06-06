@@ -1,0 +1,44 @@
+<div class="p-8 bg-slate-50 min-h-screen">
+  <div class="mb-8">
+    <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Subscription Plans</h1>
+    <p class="text-sm text-slate-500 mt-1">Welcome to SmartTrainer — Overview of membership plans and club tiers.</p>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto pt-4">
+    <div *ngFor="let plan of plans" 
+         [ngClass]="{'border-blue-500 ring-4 ring-blue-500/5 scale-105 shadow-xl': plan.isPopular, 'bg-white border-slate-100 shadow-sm': !plan.isPopular}"
+         class="rounded-3xl border p-8 relative flex flex-col justify-between transition-all duration-300 hover:shadow-xl bg-white group">
+      
+      <span *ngIf="plan.isPopular" class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold tracking-wider uppercase text-[10px] px-4 py-1 rounded-full shadow-md">
+        ⭐ Most Popular
+      </span>
+
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-xl font-bold text-slate-800">{{ plan.name }}</h3>
+          <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-lg">💳</div>
+        </div>
+        <p class="text-xs text-slate-400 mb-6 font-medium leading-relaxed">{{ plan.description }}</p>
+        
+        <div class="flex items-baseline gap-1 mb-8 bg-slate-50 p-4 rounded-2xl border border-slate-100/50">
+          <span class="text-4xl font-extrabold text-slate-800 tracking-tight">${{ plan.price }}</span>
+          <span class="text-xs text-slate-400 font-bold uppercase tracking-wider">/ month</span>
+        </div>
+
+        <ul class="space-y-4 text-sm text-slate-600">
+          <li *ngFor="let feat of plan.features" class="flex items-center gap-3 font-medium">
+            <span class="flex items-center justify-center w-5 h-5 rounded-full bg-emerald-50 text-emerald-500 text-xs font-bold">✓</span> 
+            {{ feat }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-8 pt-4 border-t border-slate-50">
+        <button [ngClass]="plan.isPopular ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'"
+                class="w-full py-3 rounded-xl font-bold text-xs tracking-wider uppercase transition-all transform active:scale-95">
+          Select Package
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
