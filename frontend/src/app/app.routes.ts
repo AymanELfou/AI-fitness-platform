@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 
 // ==========================================
-// 🌐 1. PUBLIC & AUTH COMPONENTS
+// PUBLIC & AUTH COMPONENTS
 // ==========================================
 import { HomeComponent } from './features/public/home/home.component';
 import { AboutComponent } from './features/public/about/about.component';
@@ -13,7 +13,7 @@ import { ClubsComponent } from './features/public/clubs/clubs.component';
 import { ProfilesComponent } from './features/public/profiles/profiles.component';
 
 // ==========================================
-// 🏢 2. CLUB COMPONENTS & LAYOUT
+// CLUB COMPONENTS & LAYOUT
 // ==========================================
 import { ClubLayoutComponent } from './shared/layouts/club-layout/club-layout.component';
 import { DashboardComponent } from './features/club/pages/dashboard/dashboard.component';
@@ -23,7 +23,7 @@ import { SubscriptionsComponent } from './features/club/pages/subscriptions/subs
 import { CommunityComponent as ClubCommunityComponent } from './features/club/pages/community/community.component';
 
 // ==========================================
-// 👟 3. COACH COMPONENTS & LAYOUT
+// COACH COMPONENTS & LAYOUT
 // ==========================================
 import { CoachLayoutComponent } from './shared/layouts/coach-layout/coach-layout.component';
 import { CoachDashboardComponent } from './features/coach/pages/dashboard/dashboard.component';
@@ -36,7 +36,7 @@ import { CommunityComponent as CoachCommunityComponent } from './features/coach/
 import { ProfileComponent } from './features/coach/pages/profile/profile.component';
 
 // ==========================================
-// 👑 4. ADMIN COMPONENTS & LAYOUT
+// ADMIN COMPONENTS & LAYOUT
 // ==========================================
 import { AdminLayoutComponent } from './shared/layouts/admin-layout/admin-layout.component';
 import { DashboardComponent as AdminDashboardComponent } from './features/admin/pages/dashboard/dashboard.component';
@@ -48,7 +48,7 @@ import { AdminReportsComponent } from './features/admin/pages/reports/reports.co
 import { AdminSettingsComponent } from './features/admin/pages/settings/settings.component';
 
 // ==========================================
-// 👤 5. CLIENT COMPONENTS & LAYOUT
+// CLIENT COMPONENTS & LAYOUT
 // ==========================================
 import { ClientLayoutComponent } from './shared/layouts/client-layout/client-layout.component';
 import { DashboardComponent as ClientDashboardComponent } from './features/client/pages/dashboard/dashboard.component';
@@ -59,11 +59,11 @@ import { ClientCommunityComponent } from './features/client/pages/community/comm
 import { ClientChatComponent } from './features/client/pages/chat/chat.component';
 
 // ==========================================
-// 🛣️ 6. ROUTES CONFIGURATION
+// ROUTES CONFIGURATION
 // ==========================================
 export const routes: Routes = [
 
-  // 🌐 Public routes
+  // Public routes
   { path: '', component: HomeComponent },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
@@ -74,7 +74,7 @@ export const routes: Routes = [
   { path: 'complete-profile', component: ProfilesComponent },
   { path: 'profiles', component: ProfilesComponent },
 
-  // 🏢 Club Panel Routing (Merged with Mari updates)
+  // Club Panel Routing
   {
     path: 'club',
     component: ClubLayoutComponent,
@@ -88,7 +88,7 @@ export const routes: Routes = [
     ]
   },
 
-  // 👟 Coach Panel Routing
+  // Coach Panel Routing
   {
     path: 'coach',
     component: CoachLayoutComponent,
@@ -105,7 +105,7 @@ export const routes: Routes = [
     ]
   },
 
-  // 👑 Admin Super-Panel Routing
+  // Admin Routing
   {
     path: 'admin', 
     component: AdminLayoutComponent,
@@ -121,7 +121,7 @@ export const routes: Routes = [
     ]
   },
 
-  // 👤 User Client Routing
+  // User Client Routing
   {
     path: 'client', 
     component: ClientLayoutComponent,
@@ -136,6 +136,6 @@ export const routes: Routes = [
     ]
   },
 
-  // Global Wildcard Fallback
+  // Global Fallbackgit 
   { path: '**', redirectTo: '' }
 ];
