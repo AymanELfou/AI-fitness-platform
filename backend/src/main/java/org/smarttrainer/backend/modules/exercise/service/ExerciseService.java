@@ -39,6 +39,13 @@ public class ExerciseService {
                 .collect(Collectors.toList());
     }
 
+    public List<ExerciseResponse> getAdminExercises() {
+        return exerciseRepository.findExercisesByCreatorRole(org.smarttrainer.backend.domain.user.Role.ROLE_ADMIN)
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
     public List<ExerciseResponse> getByDifficulty(Difficulty difficulty) {
         return exerciseRepository.findByDifficulty(difficulty)
                 .stream()

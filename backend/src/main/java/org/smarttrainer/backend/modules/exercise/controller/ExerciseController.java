@@ -35,6 +35,15 @@ public class ExerciseController {
         return ResponseEntity.ok(service.getAll());
     }
 
+    @GetMapping("admin")
+    public ResponseEntity<List<ExerciseResponse>> getAdminExercises() {
+        return ResponseEntity.ok(service.getAdminExercises());
+    }
+
+
+
+
+
     @GetMapping("difficulty/{difficulty}")
     public ResponseEntity<List<ExerciseResponse>> getByDifficulty(
             @PathVariable Difficulty difficulty) {

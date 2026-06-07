@@ -20,6 +20,8 @@ export class WorkoutsComponent implements OnInit {
   filters = ['All Exercises', 'LEGS', 'CHEST', 'BACK', 'ARMS', 'SHOULDERS', 'CORE', 'CARDIO', 'FULL_BODY'];
 
   exercises = signal<Exercise[]>([]);
+  loading = signal<boolean>(false);
+  error = signal<string>('');
 
   filteredExercises = computed(() => {
     const filter = this.activeFilter();
@@ -34,12 +36,21 @@ export class WorkoutsComponent implements OnInit {
   constructor(private exerciseService: ExerciseService) {}
 
   ngOnInit(): void {
-    this.exerciseService.getAllExercises().subscribe({
+    this.loadAdminExercises(); // ⭐ Appel la nouvelle méthode
+  }
+
+  loadAdminExercises(): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.exerciseService.getAdminExercises().subscribe({
       next: (data) => {
         this.exercises.set(data);
+        this.loading.set(false);
       },
       error: (err) => {
-        console.error('Failed to load exercises', err);
+        this.error.set('Failed to load admin exercises. Please try again.');
+        this.loading.set(false);
+        console.error(err);
       }
     });
   }

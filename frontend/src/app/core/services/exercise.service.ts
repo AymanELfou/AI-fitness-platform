@@ -15,6 +15,10 @@ export class ExerciseService {
     return this.http.get<Exercise[]>(this.apiUrl);
   }
 
+  getAdminExercises(): Observable<Exercise[]> {
+    return this.http.get<Exercise[]>(`${this.apiUrl}/admin`);
+  }
+
   getExerciseById(id: number): Observable<Exercise> {
     return this.http.get<Exercise>(`${this.apiUrl}/${id}`);
   }
