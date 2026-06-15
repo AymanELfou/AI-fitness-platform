@@ -1,5 +1,6 @@
 package org.smarttrainer.backend.modules.exercise.repository;
 
+import org.smarttrainer.backend.domain.exercice.CreatedByRole;
 import org.smarttrainer.backend.domain.exercice.Difficulty;
 import org.smarttrainer.backend.domain.exercice.Exercise;
 import org.smarttrainer.backend.domain.user.Role;

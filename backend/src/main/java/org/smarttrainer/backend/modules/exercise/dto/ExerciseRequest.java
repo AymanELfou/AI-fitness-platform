@@ -1,6 +1,7 @@
 package org.smarttrainer.backend.modules.exercise.dto;
 
 import lombok.Data;
+import org.smarttrainer.backend.domain.exercice.CreatedByRole;
 import org.smarttrainer.backend.domain.exercice.Difficulty;
 
 @Data
@@ -14,4 +15,5 @@ public class ExerciseRequest {
     private int duration;
     private int calories;
     private String imageUrl;
+    private CreatedByRole createdByRole;
 }

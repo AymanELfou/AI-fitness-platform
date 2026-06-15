@@ -33,5 +33,7 @@ public class Exercise extends BaseEntity {
     @ManyToMany(mappedBy = "exercises")
     private List<Programme> programmes;
 
-
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private CreatedByRole createdByRole;
 }

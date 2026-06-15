@@ -70,4 +70,17 @@ public class ExerciseController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("admin")
+    @PreAuthorize("hasAuthority('ROLE_CLIENT')") // both freemium and premium
+    public ResponseEntity<List<ExerciseResponse>> getAdminExercises() {
+        return ResponseEntity.ok(service.getAdminExercises());
+    }
+
+    @GetMapping("coach")
+    @PreAuthorize("hasAuthority('ROLE_CLIENT')") // check premium in service
+    public ResponseEntity<List<ExerciseResponse>> getCoachExercises(
+            @RequestParam Long clientId) {
+        return ResponseEntity.ok(service.getCoachExercisesForClient(clientId));
+    }
 }
