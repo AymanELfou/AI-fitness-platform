@@ -44,13 +44,6 @@ public class ExerciseService {
                 .collect(Collectors.toList());
     }
 
-    public List<ExerciseResponse> getAdminExercises() {
-        return exerciseRepository.findExercisesByCreatorRole(org.smarttrainer.backend.domain.user.Role.ROLE_ADMIN)
-                .stream()
-                .map(exerciseMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
     public List<ExerciseResponse> getByDifficulty(Difficulty difficulty) {
         return exerciseRepository.findByDifficulty(difficulty)
                 .stream()
@@ -92,14 +85,6 @@ public class ExerciseService {
 
     public List<ExerciseResponse> getAdminExercises() {
         return exerciseRepository.findByCreatedByRole(CreatedByRole.ADMIN)
-                .stream()
-                .map(exerciseMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
-    // For premium — coach exercises
-    public List<ExerciseResponse> getCoachExercises() {
-        return exerciseRepository.findByCreatedByRole(CreatedByRole.COACH)
                 .stream()
                 .map(exerciseMapper::toResponse)
                 .collect(Collectors.toList());

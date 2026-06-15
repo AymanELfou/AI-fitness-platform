@@ -13,7 +13,5 @@ import java.util.List;
 public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findByDifficulty(Difficulty difficulty);
     List<Exercise> findByMusclesGroup(String musclesGroup);
-
-    @Query("SELECT e FROM Exercise e WHERE e.createdBy IN (SELECT u.id FROM User u JOIN u.roles r WHERE r = :role)")
-    List<Exercise> findExercisesByCreatorRole(@Param("role") Role role);
+    List<Exercise> findByCreatedByRole(CreatedByRole createdByRole);
 }
