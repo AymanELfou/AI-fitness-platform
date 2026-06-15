@@ -2,8 +2,12 @@ package org.smarttrainer.backend.modules.exercise.service;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.smarttrainer.backend.domain.client.ClientProfile;
+import org.smarttrainer.backend.domain.client.SubscriptionPlan;
+import org.smarttrainer.backend.domain.exercice.CreatedByRole;
 import org.smarttrainer.backend.domain.exercice.Difficulty;
 import org.smarttrainer.backend.domain.exercice.Exercise;
+import org.smarttrainer.backend.modules.client.repository.ClientProfileRepository;
 import org.smarttrainer.backend.modules.exercise.dto.ExerciseRequest;
 import org.smarttrainer.backend.modules.exercise.dto.ExerciseResponse;
 import org.smarttrainer.backend.modules.exercise.mapper.ExerciseMapper;
@@ -19,6 +23,7 @@ public class ExerciseService {
 
     private final ExerciseRepository exerciseRepository;
     private final ExerciseMapper exerciseMapper;
+    private final ClientProfileRepository clientProfileRepository;
 
     @Transactional
     public ExerciseResponse create(ExerciseRequest request) {
@@ -76,5 +81,34 @@ public class ExerciseService {
             throw new RuntimeException("Exercise not found");
         }
         exerciseRepository.deleteById(id);
+    }
+
+    public List<ExerciseResponse> getAdminExercises() {
+        return exerciseRepository.findByCreatedByRole(CreatedByRole.ADMIN)
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    // For premium — coach exercises
+    public List<ExerciseResponse> getCoachExercises() {
+        return exerciseRepository.findByCreatedByRole(CreatedByRole.COACH)
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<ExerciseResponse> getCoachExercisesForClient(Long clientId) {
+        ClientProfile client = clientProfileRepository.findByUserId(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        if (client.getSubscriptionPlan() != SubscriptionPlan.PREMIUM) {
+            throw new RuntimeException("Premium subscription required");
+        }
+
+        return exerciseRepository.findByCreatedByRole(CreatedByRole.COACH)
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .collect(Collectors.toList());
     }
 }

@@ -2,6 +2,7 @@ package org.smarttrainer.backend.modules.exercise.dto;
 
 import lombok.Builder;
 import lombok.Data;
+import org.smarttrainer.backend.domain.exercice.CreatedByRole;
 import org.smarttrainer.backend.domain.exercice.Difficulty;
 
 import java.time.LocalDateTime;
@@ -20,5 +21,6 @@ public class ExerciseResponse {
     private int duration;
     private int calories;
     private String imageUrl;
+    private CreatedByRole createdByRole;
 
 }
