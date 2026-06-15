@@ -20,4 +20,5 @@ public class ExerciseResponse {
     private int duration;
     private int calories;
     private String imageUrl;
+
 }

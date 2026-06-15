@@ -23,4 +23,5 @@ public class CoachProfileResponse {
     private Long clubId;
     private String clubName;
     private List<AvailabilityResponse> availabilities;
+    private String userName;
 }

@@ -34,7 +34,7 @@ public class CoachProfileMapper {
                                         .isAvailable(a.isAvailable())
                                         .build()
                                 ).toList()
-                )
+                ).userName(profile.getUser().fullName())
                 .build();
     }
 
