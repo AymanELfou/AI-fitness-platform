@@ -1,0 +1,88 @@
+<div class="ap-root">
+  <div class="ap-header">
+    <div>
+      <div class="ap-eyebrow">Analytics</div>
+      <h1 class="ap-title">Reports & Insights</h1>
+      <p class="ap-subtitle">Platform performance, revenue trends and user growth analytics.</p>
+    </div>
+    <div class="ap-header-actions">
+      <button class="btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download PDF
+      </button>
+    </div>
+  </div>
+
+  <!-- System Health -->
+  <div class="sys-grid">
+    <div class="sys-card" *ngFor="let s of systemStats">
+      <span class="sys-icon">{{ s.icon }}</span>
+      <div>
+        <div class="sys-val" [style.color]="s.color">{{ s.value }}</div>
+        <div class="sys-lbl">{{ s.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="charts-row">
+
+    <!-- Revenue Chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">Revenue Trend (6M)</span>
+        <span class="chart-sub">Total platform revenue by month</span>
+      </div>
+      <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" class="chart-svg" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="revGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#2563EB" stop-opacity="0.25"/>
+            <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
+          </linearGradient>
+        </defs>
+        <path [attr.d]="revAreaPath" fill="url(#revGrad)"/>
+        <path [attr.d]="revLinePath" fill="none" stroke="#2563EB" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle *ngFor="let d of revenueData; let i = index"
+          [attr.cx]="getX(i, revenueData.length)"
+          [attr.cy]="getRevY(d.value)"
+          r="4" fill="#2563EB" stroke="#fff" stroke-width="2"/>
+      </svg>
+      <div class="chart-labels">
+        <span *ngFor="let d of revenueData" class="chart-label">{{ d.month }}</span>
+      </div>
+    </div>
+
+    <!-- Signup Bar Chart -->
+    <div class="chart-card">
+      <div class="chart-head">
+        <span class="chart-title">New Signups (6M)</span>
+        <span class="chart-sub">Monthly user registration count</span>
+      </div>
+      <div class="bar-chart">
+        <div class="bar-col" *ngFor="let d of signupData">
+          <div class="bar-fill" [style.height.%]="(d.value / 300) * 100" [style.background]="'linear-gradient(180deg, #7C3AED, #A855F7)'"></div>
+          <div class="bar-label">{{ d.month }}</div>
+          <div class="bar-val">{{ d.value }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Top Routes -->
+  <div class="data-table-card">
+    <div class="dtc-head">
+      <span class="dtc-title">Top Page Routes</span>
+      <span class="dtc-title" style="font-size:.75rem;font-weight:500;color:#94A3B8">Last 30 days</span>
+    </div>
+    <div class="route-list">
+      <div class="route-item" *ngFor="let r of topRoutes">
+        <div class="route-path">{{ r.path }}</div>
+        <div class="route-bar-wrap">
+          <div class="route-bar" [style.width.%]="r.pct"></div>
+        </div>
+        <div class="route-hits">{{ r.hits.toLocaleString() }} hits</div>
+      </div>
+    </div>
+  </div>
+</div>

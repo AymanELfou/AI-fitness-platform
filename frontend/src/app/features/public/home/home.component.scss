@@ -276,6 +276,70 @@ $white: #FFFFFF;
   background: linear-gradient(to top, rgba(15, 23, 42, 0.5) 0%, transparent 60%);
 }
 
+// Floating animated cards
+.floating-card {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  animation: floatAnimation 4s ease-in-out infinite;
+
+  .fc-icon {
+    font-size: 1.25rem;
+    background: $bg-light;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+  }
+  
+  .fc-info {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .fc-title {
+    font-size: 0.65rem;
+    color: $text-muted;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  
+  .fc-value {
+    font-size: 0.9rem;
+    font-weight: 800;
+    color: $dark;
+  }
+}
+
+.float-card-1 {
+  top: 15%;
+  left: -20px;
+  animation-delay: 0s;
+}
+
+.float-card-2 {
+  bottom: 25%;
+  right: -30px;
+  animation-delay: 2s;
+}
+
+@keyframes floatAnimation {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+  100% { transform: translateY(0); }
+}
+
 .hero-glow {
   position: absolute;
   width: 300px;

@@ -90,14 +90,6 @@ public class ExerciseService {
                 .collect(Collectors.toList());
     }
 
-    // For premium — coach exercises
-    public List<ExerciseResponse> getCoachExercises() {
-        return exerciseRepository.findByCreatedByRole(CreatedByRole.COACH)
-                .stream()
-                .map(exerciseMapper::toResponse)
-                .collect(Collectors.toList());
-    }
-
     public List<ExerciseResponse> getCoachExercisesForClient(Long clientId) {
         ClientProfile client = clientProfileRepository.findByUserId(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found"));

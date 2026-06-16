@@ -1,0 +1,51 @@
+@import '../../../../../styles/admin';
+
+/* ── System Health Grid ── */
+.sys-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sys-card {
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 14px;
+  padding: 1.125rem 1.25rem; display: flex; align-items: center; gap: 0.875rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05); transition: transform 0.2s;
+  &:hover { transform: translateY(-2px); }
+}
+.sys-icon { font-size: 1.5rem; flex-shrink: 0; }
+.sys-val  { font-size: 1.375rem; font-weight: 900; letter-spacing: -0.03em; line-height: 1; margin-bottom: 2px; }
+.sys-lbl  { font-size: 0.6875rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; }
+
+/* ── Charts Row ── */
+.charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+
+.chart-card {
+  background: #fff; border: 1px solid #E2E8F0; border-radius: 16px;
+  padding: 1.25rem; box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.chart-head { margin-bottom: 1rem; }
+.chart-title { display: block; font-size: 1rem; font-weight: 800; color: #0F172A; margin-bottom: 2px; }
+.chart-sub   { font-size: 0.75rem; color: #94A3B8; font-weight: 500; }
+.chart-svg   { width: 100%; height: 160px; display: block; }
+.chart-labels { display: flex; justify-content: space-between; margin-top: 0.35rem; }
+.chart-label  { font-size: 0.6875rem; color: #94A3B8; font-weight: 600; }
+
+/* ── Bar Chart ── */
+.bar-chart { display: flex; gap: 0.5rem; align-items: flex-end; height: 160px; padding: 0.5rem 0; }
+.bar-col   { flex: 1; display: flex; flex-direction: column-reverse; align-items: center; gap: 0.25rem; height: 100%; }
+.bar-fill  { width: 100%; border-radius: 6px 6px 0 0; min-height: 4px; }
+.bar-label { font-size: 0.625rem; color: #94A3B8; font-weight: 700; }
+.bar-val   { font-size: 0.5625rem; color: #475569; font-weight: 600; }
+
+/* ── Route List ── */
+.route-list { padding: 0.5rem 1.5rem 1rem; display: flex; flex-direction: column; gap: 0.875rem; }
+.route-item { display: flex; align-items: center; gap: 1rem; }
+.route-path { font-size: 0.8125rem; font-weight: 700; color: #0F172A; width: 200px; flex-shrink: 0; font-family: monospace; }
+.route-bar-wrap { flex: 1; height: 8px; background: #F0F2F8; border-radius: 99px; overflow: hidden; }
+.route-bar { height: 100%; background: linear-gradient(90deg, #2563EB, #7C3AED); border-radius: 99px; }
+.route-hits { font-size: 0.75rem; color: #94A3B8; font-weight: 600; width: 80px; text-align: right; flex-shrink: 0; }
+
+@media (max-width: 900px) { .sys-grid { grid-template-columns: repeat(2, 1fr); } .charts-row { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .sys-grid { grid-template-columns: 1fr; } }

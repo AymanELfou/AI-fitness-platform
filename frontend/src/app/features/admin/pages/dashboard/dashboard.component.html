@@ -1,1 +1,146 @@
-<p>dashboard works!</p>
+<div class="ap-root">
+
+  <!-- ══ HEADER ══ -->
+  <div class="ap-header">
+    <div>
+      <div class="ap-eyebrow">SmartTrainer Admin</div>
+      <h1 class="ap-title">Platform Overview</h1>
+      <p class="ap-subtitle">Real-time insights across your entire fitness network.</p>
+    </div>
+    <div class="ap-header-actions">
+      <button class="btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Add User
+      </button>
+    </div>
+  </div>
+
+  <!-- ══ STAT GRID ══ -->
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let s of stats">
+      <div class="stat-card__left">
+        <div class="stat-icon" [style.background]="s.color + '15'" [style.color]="s.color">{{ s.icon }}</div>
+        <div>
+          <div class="stat-val">{{ s.value }}</div>
+          <div class="stat-lbl">{{ s.label }}</div>
+          <div class="stat-sub">{{ s.sub }}</div>
+        </div>
+      </div>
+      <div class="stat-trend" [class.stat-trend--up]="s.up" [class.stat-trend--down]="!s.up">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-arr">
+          <polyline *ngIf="s.up"  points="18 15 12 9 6 15"/>
+          <polyline *ngIf="!s.up" points="6 9 12 15 18 9"/>
+        </svg>
+        {{ s.trend }}
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ ROW 2 ══ -->
+  <div class="dash-row">
+
+    <!-- Activity Feed -->
+    <div class="dash-card dash-card--activity">
+      <div class="dash-card__head">
+        <span class="dash-card__title">Recent Activity</span>
+        <a routerLink="/admin/reports" class="dash-card__link">View all →</a>
+      </div>
+      <div class="activity-list">
+        <div class="activity-item" *ngFor="let a of recentActivity">
+          <div class="act-icon" [style.background]="a.color + '15'" [style.color]="a.color">{{ a.icon }}</div>
+          <div class="act-body">
+            <div class="act-msg">{{ a.message }}</div>
+            <div class="act-time">{{ a.time }}</div>
+          </div>
+          <div class="act-dot" [style.background]="a.color"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Clubs -->
+    <div class="dash-card">
+      <div class="dash-card__head">
+        <span class="dash-card__title">Top Clubs</span>
+        <a routerLink="/admin/clubs" class="dash-card__link">Manage →</a>
+      </div>
+      <table class="mini-table">
+        <thead>
+          <tr>
+            <th>Club</th><th>Members</th><th>Revenue</th><th>Growth</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let c of topClubs">
+            <td class="club-name">{{ c.name }}</td>
+            <td>{{ c.members }}</td>
+            <td class="revenue-val">{{ c.revenue }}</td>
+            <td>
+              <span class="growth-badge" [class.growth-badge--up]="c.up" [class.growth-badge--down]="!c.up">{{ c.growth }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div>
+
+  <!-- ══ ROW 3 ══ -->
+  <div class="dash-row">
+
+    <!-- Plan Distribution -->
+    <div class="dash-card">
+      <div class="dash-card__head">
+        <span class="dash-card__title">Plan Distribution</span>
+      </div>
+      <div class="plan-list">
+        <div class="plan-item" *ngFor="let p of planDistribution">
+          <div class="plan-name-row">
+            <span class="plan-name">{{ p.plan }}</span>
+            <span class="plan-count">{{ p.count }} clubs</span>
+          </div>
+          <div class="plan-bar-track">
+            <div class="plan-bar-fill" [style.width.%]="p.pct" [style.background]="p.color"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="dash-card">
+      <div class="dash-card__head">
+        <span class="dash-card__title">Quick Actions</span>
+      </div>
+      <div class="quick-actions">
+        <a routerLink="/admin/users" class="quick-action">
+          <span class="qa-icon">👥</span>
+          <span>Manage Users</span>
+        </a>
+        <a routerLink="/admin/clubs" class="quick-action">
+          <span class="qa-icon">🏠</span>
+          <span>Review Clubs</span>
+        </a>
+        <a routerLink="/admin/subscriptions" class="quick-action">
+          <span class="qa-icon">💳</span>
+          <span>Subscriptions</span>
+        </a>
+        <a routerLink="/admin/settings" class="quick-action">
+          <span class="qa-icon">⚙️</span>
+          <span>Settings</span>
+        </a>
+        <a routerLink="/admin/reports" class="quick-action">
+          <span class="qa-icon">📊</span>
+          <span>Reports</span>
+        </a>
+        <a routerLink="/admin/coaches" class="quick-action">
+          <span class="qa-icon">⭐</span>
+          <span>Coaches</span>
+        </a>
+      </div>
+    </div>
+
+  </div>
+</div>

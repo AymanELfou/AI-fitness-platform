@@ -1,0 +1,26 @@
+@import '../../../../../styles/admin';
+
+/* ── Specialty Tag ── */
+.specialty-tag {
+  font-size: 0.6875rem; font-weight: 600;
+  padding: 0.25rem 0.6rem; border-radius: 6px;
+  background: rgba(37,99,235,0.08); color: #2563EB;
+  white-space: nowrap;
+}
+
+/* ── Club Cell ── */
+.club-cell {
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.club-icon {
+  width: 14px; height: 14px; color: #94A3B8; flex-shrink: 0;
+}
+.club-name-cell {
+  font-size: 0.8125rem; font-weight: 600; color: #475569;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 140px;
+}
+
+/* ── Star Rating ── */
+.rating-stars { display: flex; align-items: center; gap: 2px; }
+.star { color: #F59E0B; font-size: 0.875rem; line-height: 1; }
+.rating-val { font-size: 0.75rem; font-weight: 700; color: #0F172A; margin-left: 4px; }

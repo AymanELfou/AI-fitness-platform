@@ -52,19 +52,18 @@
 
         <!-- Cards loop with custom layout -->
         <div class="card-small" *ngFor="let ex of exercises; let i = index"
-             [class.card-featured]="ex.featured"
              [class.card-cta-placeholder]="false">
           <div class="card-image-wrap">
-            <img [src]="ex.image" [alt]="ex.title" class="card-image" loading="lazy"/>
+            <img [src]="ex.imageUrl || '/images/placeholder.png'" [alt]="ex.name" class="card-image" loading="lazy"/>
             <div class="card-overlay"></div>
-            <span class="card-badge" [style.background]="getCategoryColor(ex.category)">{{ ex.category | uppercase }}</span>
+            <span class="card-badge" [style.background]="getCategoryColor(ex.musclesGroup)">{{ ex.musclesGroup | uppercase }}</span>
             <div class="card-info">
               <div class="card-meta">
-                <span class="meta-pill">{{ ex.duration }}</span>
+                <span class="meta-pill">{{ ex.duration }} MIN</span>
                 <span class="meta-dot">●</span>
-                <span class="meta-pill">{{ ex.level | uppercase }}</span>
+                <span class="meta-pill">{{ ex.difficulty | uppercase }}</span>
               </div>
-              <h3 class="card-title">{{ ex.title }}</h3>
+              <h3 class="card-title">{{ ex.name }}</h3>
             </div>
           </div>
         </div>

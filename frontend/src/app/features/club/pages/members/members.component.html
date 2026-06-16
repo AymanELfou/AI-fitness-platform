@@ -1,0 +1,121 @@
+<div class="p-6 bg-slate-50 min-h-screen">
+  <!-- Top Control Bar -->
+  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 bg-white p-4 rounded-2xl shadow-sm border border-slate-100">
+    <div>
+      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Members Directory</h1>
+      <p class="text-sm text-slate-500 mt-1">Monitor member subscriptions, fitness journey, and status.</p>
+    </div>
+    
+    <div class="flex items-center gap-3">
+      <div class="relative">
+        <input type="text" placeholder="Search by name or email..." 
+               class="w-72 pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+        <span class="absolute left-3.5 top-3 text-slate-400 text-sm">🔍</span>
+      </div>
+      <button (click)="openModal()" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl text-sm shadow-md transition-all transform active:scale-95">
+        ＋ Add New Member
+      </button>
+    </div>
+  </div>
+
+  <!-- Table List Layout -->
+  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="bg-slate-50 text-slate-400 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
+            <th class="py-4 px-6">Member Profile</th>
+            <th class="py-4 px-6">Assigned Coach</th>
+            <th class="py-4 px-6">Goal & Progress</th>
+            <th class="py-4 px-6">Status</th>
+            <th class="py-4 px-6 text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-slate-50 text-sm text-slate-700">
+          <tr *ngFor="let member of members" [ngClass]="{'opacity-60 bg-red-50/5': member.status === 'Banned'}" class="hover:bg-slate-50/80 transition-colors group">
+            <td class="py-4 px-6">
+              <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-full bg-slate-100 border-2 border-white shadow-sm font-bold text-blue-600 flex items-center justify-center text-sm capitalize">
+                  {{ member.name.charAt(0) }}
+                </div>
+                <div>
+                  <h4 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{{ member.name }}</h4>
+                  <span class="text-xs text-slate-400 block">{{ member.email }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-4 px-6">
+              <span class="text-xs font-semibold px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-600">
+                👤 {{ member.coachName }}
+              </span>
+            </td>
+            <td class="py-4 px-6 w-64">
+              <div class="flex items-center justify-between text-xs mb-1 font-medium text-slate-500">
+                <span>{{ member.goal }}</span>
+                <span class="font-bold text-slate-700">{{ member.progress }}%</span>
+              </div>
+              <div class="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+                <div [style.width.%]="member.progress" class="h-full bg-gradient-to-r from-blue-500 to-indigo-500 rounded-full"></div>
+              </div>
+            </td>
+            <td class="py-4 px-6">
+              <span [ngClass]="{
+                'bg-emerald-50 text-emerald-600 border border-emerald-100': member.status === 'Active',
+                'bg-amber-50 text-amber-600 border border-amber-100': member.status === 'Pending',
+                'bg-red-50 text-red-600 border border-red-100': member.status === 'Banned'
+              }" class="px-3 py-1 rounded-full text-xs font-bold tracking-wide">
+                {{ member.status }}
+              </span>
+            </td>
+            <td class="py-4 px-6 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button (click)="openModal(member)" class="p-2 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">✏️</button>
+                <button (click)="toggleBanMember(member)" class="p-2 rounded-xl text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-all">🚫</button>
+                <button (click)="deleteMember(member.id)" class="p-2 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">🗑️</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Premium Modal Overlay -->
+  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl border border-slate-100 p-6 relative">
+      <button (click)="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+      
+      <div class="mb-5">
+        <h3 class="text-lg font-bold text-slate-800">{{ isEditMode ? 'Edit Member Profile' : 'Add New Club Member' }}</h3>
+        <p class="text-xs text-slate-400 mt-1">Fill in the member credentials and journey goal details.</p>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Full Name</label>
+          <input type="text" [(ngModel)]="currentMember.name" placeholder="e.g. Jane Smith" 
+                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Email Address</label>
+          <input type="email" [(ngModel)]="currentMember.email" placeholder="e.g. janesmith@example.com" 
+                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-1.5">Fitness Goal</label>
+          <input type="text" [(ngModel)]="currentMember.goal" placeholder="e.g. Weight Loss / Muscle Gain" 
+                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+        <button (click)="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+        <button (click)="saveMember()" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition-colors">
+          {{ isEditMode ? 'Save Changes' : 'Register Member' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

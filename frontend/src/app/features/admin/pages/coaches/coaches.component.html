@@ -1,0 +1,117 @@
+<div class="ap-root">
+  <div class="ap-header">
+    <div>
+      <div class="ap-eyebrow">Coach Management</div>
+      <h1 class="ap-title">All Coaches</h1>
+      <p class="ap-subtitle">Review, approve and manage certified fitness coaches.</p>
+    </div>
+    <div class="ap-header-actions">
+      <button class="btn-outline">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Export
+      </button>
+      <button class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Invite Coach
+      </button>
+    </div>
+  </div>
+
+  <div class="summary-pills">
+    <div class="sum-pill"><span class="sp-val">{{ coaches.length }}</span><span class="sp-lbl">Total</span></div>
+    <div class="sum-pill sum-pill--green"><span class="sp-val">{{ activeCount }}</span><span class="sp-lbl">Active</span></div>
+    <div class="sum-pill sum-pill--amber"><span class="sp-val">{{ pendingCount }}</span><span class="sp-lbl">Pending</span></div>
+    <div class="sum-pill sum-pill--blue"><span class="sp-val">{{ totalClients }}</span><span class="sp-lbl">Total Clients</span></div>
+    <div class="sum-pill sum-pill--purple"><span class="sp-val">★ {{ avgRating }}</span><span class="sp-lbl">Avg Rating</span></div>
+  </div>
+
+  <div class="data-table-card">
+    <div class="dtc-head">
+      <span class="dtc-title">{{ filtered.length }} coaches</span>
+      <div class="dtc-controls">
+        <div class="search-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input class="search-input" [(ngModel)]="search" (ngModelChange)="currentPage=1" placeholder="Search by name or specialty…" />
+        </div>
+        <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="currentPage=1">
+          <option *ngFor="let s of statuses">{{ s }}</option>
+        </select>
+      </div>
+    </div>
+
+    <table class="data-table">
+      <thead>
+        <tr><th>Coach</th><th>Club</th><th>Specialty</th><th>Status</th><th>Clients</th><th>Rating</th><th>Revenue</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let c of paginated">
+          <td>
+            <div class="avatar-cell">
+              <div class="table-avatar" [style.background]="c.color">{{ c.initial }}</div>
+              <div>
+                <div class="td-bold">{{ c.name }}</div>
+                <div class="td-muted">{{ c.email }}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <div class="club-cell">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="club-icon"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              <span class="club-name-cell">{{ c.club }}</span>
+            </div>
+          </td>
+          <td><span class="specialty-tag">{{ c.specialty }}</span></td>
+          <td><span class="status-pill" [class]="'status-pill--' + c.status">{{ c.status }}</span></td>
+          <td class="td-bold">{{ c.clients }}</td>
+          <td>
+            <div class="rating-stars" *ngIf="c.rating > 0">
+              <span *ngFor="let s of stars(c.rating)" class="star">★</span>
+              <span class="rating-val">{{ c.rating }}</span>
+            </div>
+            <span class="td-muted" *ngIf="c.rating === 0">—</span>
+          </td>
+          <td class="revenue-val">{{ c.revenue }}</td>
+          <td>
+            <div class="tbl-actions">
+              <!-- View Profile — gray -->
+              <button class="tbl-btn tbl-btn--view" title="View Profile">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+              <!-- Edit — green -->
+              <button class="tbl-btn tbl-btn--edit" title="Edit Coach">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+              </button>
+              <!-- Approve — blue (only for pending) -->
+              <button class="tbl-btn tbl-btn--toggle" title="Approve" *ngIf="c.status === 'pending'" (click)="approveCoach(c)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              </button>
+              <!-- Activate (blue) / Suspend (amber) -->
+              <button
+                class="tbl-btn"
+                [class.tbl-btn--toggle]="c.status === 'inactive'"
+                [class.tbl-btn--suspend]="c.status === 'active'"
+                *ngIf="c.status !== 'pending'"
+                [title]="c.status === 'active' ? 'Suspend' : 'Activate'"
+                (click)="toggleStatus(c)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18.36 6.64a9 9 0 1 1-12.73 0"/><line x1="12" y1="2" x2="12" y2="12"/></svg>
+              </button>
+              <!-- Delete — red -->
+              <button class="tbl-btn tbl-btn--del" title="Remove">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination">
+      <span class="pag-info">{{ (currentPage-1)*pageSize+1 }}–{{ getPageEnd() }} of {{ filtered.length }}</span>
+      <div class="pag-btns">
+        <button class="pag-btn" (click)="setPage(currentPage-1)" [disabled]="currentPage===1">‹</button>
+        <button class="pag-btn" *ngFor="let p of pages" [class.pag-btn--active]="p===currentPage" (click)="setPage(p)">{{ p }}</button>
+        <button class="pag-btn" (click)="setPage(currentPage+1)" [disabled]="currentPage===totalPages">›</button>
+      </div>
+    </div>
+  </div>
+</div>

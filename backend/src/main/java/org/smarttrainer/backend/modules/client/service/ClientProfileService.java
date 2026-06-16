@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.smarttrainer.backend.domain.client.ClientProfile;
+import org.smarttrainer.backend.domain.client.SubscriptionPlan;
 import org.smarttrainer.backend.domain.user.User;
 import org.smarttrainer.backend.modules.client.dto.ClientProfileRequest;
 import org.smarttrainer.backend.modules.client.dto.ClientProfileResponse;
@@ -77,5 +78,13 @@ public class ClientProfileService {
             throw new RuntimeException("Client profile not found");
         }
         clientProfileRepository.deleteById(id);
+    }
+
+    @Transactional
+    public ClientProfileResponse upgradeToPremium(Long userId) {
+        ClientProfile profile = clientProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("Client profile not found"));
+        profile.setSubscriptionPlan(SubscriptionPlan.PREMIUM);
+        return clientMapper.toResponse(clientProfileRepository.save(profile));
     }
 }
