@@ -15,28 +15,30 @@ import { ExerciseService } from '../../../core/services/exercise.service';
 export class WorkoutsComponent implements OnInit {
 
   activeFilter = signal<string>('All Exercises');
+  activeDifficulty = signal<string>('ALL');
   searchQuery = signal<string>('');
 
   filters = ['All Exercises', 'LEGS', 'CHEST', 'BACK', 'ARMS', 'SHOULDERS', 'CORE', 'CARDIO', 'FULL_BODY'];
+  difficulties = ['EASY', 'MEDIUM', 'HARD'];
 
   exercises = signal<Exercise[]>([]);
   loading = signal<boolean>(false);
   error = signal<string>('');
 
   filteredExercises = computed(() => {
-    const filter = this.activeFilter();
     const query = this.searchQuery().toLowerCase();
     return this.exercises().filter(ex => {
-      const matchesFilter = filter === 'All Exercises' || ex.musclesGroup === filter;
-      const matchesSearch = !query || ex.name.toLowerCase().includes(query) || (ex.musclesGroup && ex.musclesGroup.toLowerCase().includes(query));
-      return matchesFilter && matchesSearch;
+      const matchesSearch = !query || 
+        ex.name.toLowerCase().includes(query) || 
+        (ex.musclesGroup && ex.musclesGroup.toLowerCase().includes(query));
+      return matchesSearch;
     });
   });
 
   constructor(private exerciseService: ExerciseService) {}
 
   ngOnInit(): void {
-    this.loadAdminExercises(); // ⭐ Appel la nouvelle méthode
+    this.loadAdminExercises();
   }
 
   loadAdminExercises(): void {
@@ -55,8 +57,62 @@ export class WorkoutsComponent implements OnInit {
     });
   }
 
+  loadExercisesByMuscleGroup(muscleGroup: string): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.exerciseService.getByMusclesGroup(muscleGroup).subscribe({
+      next: (data) => {
+        this.exercises.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(`Failed to load exercises for ${muscleGroup}. Please try again.`);
+        this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
+  loadExercisesByDifficulty(difficulty: string): void {
+    this.loading.set(true);
+    this.error.set('');
+    this.exerciseService.getByDifficulty(difficulty).subscribe({
+      next: (data) => {
+        this.exercises.set(data);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        this.error.set(`Failed to load exercises for difficulty ${difficulty}. Please try again.`);
+        this.loading.set(false);
+        console.error(err);
+      }
+    });
+  }
+
   setFilter(filter: string) {
     this.activeFilter.set(filter);
+    this.activeDifficulty.set('ALL'); // Reset difficulty filter when changing muscle group
+    if (filter === 'All Exercises') {
+      this.loadAdminExercises();
+    } else {
+      this.loadExercisesByMuscleGroup(filter);
+    }
+  }
+
+  onDifficultyChange(event: Event) {
+    const value = (event.target as HTMLSelectElement).value;
+    this.activeDifficulty.set(value);
+    if (value === 'ALL') {
+      const muscleFilter = this.activeFilter();
+      if (muscleFilter === 'All Exercises') {
+        this.loadAdminExercises();
+      } else {
+        this.loadExercisesByMuscleGroup(muscleFilter);
+      }
+    } else {
+      this.activeFilter.set('All Exercises'); // Reset muscle group tab when selecting difficulty
+      this.loadExercisesByDifficulty(value);
+    }
   }
 
   onSearch(event: Event) {
