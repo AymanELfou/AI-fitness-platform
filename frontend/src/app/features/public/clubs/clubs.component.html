@@ -39,22 +39,8 @@
         <div class="stat-card">
           <span class="stat-icon">⚡</span>
           <div>
-            <div class="stat-value">{{ totalMembers.toLocaleString() }}</div>
-            <div class="stat-label">Active members</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">🏅</span>
-          <div>
-            <div class="stat-value">{{ totalCoaches }} Coaches</div>
-            <div class="stat-label">Certified experts</div>
-          </div>
-        </div>
-        <div class="stat-card">
-          <span class="stat-icon">⭐</span>
-          <div>
-            <div class="stat-value">{{ avgRating }} / 5</div>
-            <div class="stat-label">Average rating</div>
+            <div class="stat-value">{{ totalCapacity.toLocaleString() }}</div>
+            <div class="stat-label">Total capacity</div>
           </div>
         </div>
       </div>
@@ -73,40 +59,33 @@
 
       <div class="featured-grid">
         <!-- Large card -->
+        <!-- Large card -->
         <div class="featured-card featured-card--large" *ngIf="featuredClubs[0] as fc">
-          <img [src]="fc.image" [alt]="fc.name" class="fc-img" />
+          <img [src]="getClubImage(fc)" [alt]="fc.clubName" class="fc-img" />
           <div class="fc-gradient"></div>
           <div class="fc-content">
             <div class="fc-badges">
-              <span class="fc-plan-badge fc-plan-badge--{{fc.plan.toLowerCase()}}">{{ fc.plan }}</span>
-              <span class="fc-featured-badge">⭐ Featured</span>
+              <span class="fc-plan-badge fc-plan-badge--{{(fc.subscriptionPlan || 'FREE').toLowerCase()}}">{{ fc.subscriptionPlan }}</span>
+              <span class="fc-featured-badge">⭐ Premium</span>
             </div>
-            <div class="fc-name">{{ fc.name }}</div>
+            <div class="fc-name">{{ fc.clubName }}</div>
             <div class="fc-meta">
-              <span class="fc-location">📍 {{ fc.city }}, {{ fc.countryFlag }}</span>
-              <div class="fc-rating">
-                <span *ngFor="let s of stars(fc.rating)" class="star">★</span>
-                <span class="rating-num">{{ fc.rating }}</span>
-              </div>
+              <span class="fc-location">📍 {{ fc.localisation }}</span>
             </div>
           </div>
         </div>
 
         <!-- Small cards -->
         <div class="featured-card" *ngFor="let fc of featuredClubs.slice(1, 3)">
-          <img [src]="fc.image" [alt]="fc.name" class="fc-img" />
+          <img [src]="getClubImage(fc)" [alt]="fc.clubName" class="fc-img" />
           <div class="fc-gradient"></div>
           <div class="fc-content">
             <div class="fc-badges">
-              <span class="fc-plan-badge fc-plan-badge--{{fc.plan.toLowerCase()}}">{{ fc.plan }}</span>
+              <span class="fc-plan-badge fc-plan-badge--{{(fc.subscriptionPlan || 'FREE').toLowerCase()}}">{{ fc.subscriptionPlan }}</span>
             </div>
-            <div class="fc-name">{{ fc.name }}</div>
+            <div class="fc-name">{{ fc.clubName }}</div>
             <div class="fc-meta">
-              <span class="fc-location">📍 {{ fc.city }}, {{ fc.countryFlag }}</span>
-              <div class="fc-rating">
-                <span *ngFor="let s of stars(fc.rating)" class="star">★</span>
-                <span class="rating-num">{{ fc.rating }}</span>
-              </div>
+              <span class="fc-location">📍 {{ fc.localisation }}</span>
             </div>
           </div>
         </div>
@@ -141,9 +120,8 @@
 
         <!-- Sort -->
         <select class="sort-select" [(ngModel)]="sortBy">
-          <option value="rating">⭐ Top Rated</option>
-          <option value="members">👥 Most Members</option>
-          <option value="price">💰 Lowest Price</option>
+          <option value="name">🔤 Name</option>
+          <option value="capacity">👥 Capacity</option>
         </select>
       </div>
     </div>
@@ -165,62 +143,41 @@
 
             <!-- Image -->
             <div class="cc-image-wrap">
-              <img [src]="c.image" [alt]="c.name" class="cc-img" />
+              <img [src]="getClubImage(c)" [alt]="c.clubName" class="cc-img" />
               <div class="cc-img-overlay"></div>
               <div class="cc-top-badges">
-                <span class="cc-plan-badge cc-plan-badge--{{c.plan.toLowerCase()}}">{{ c.plan }}</span>
-                <span class="cc-featured-badge" *ngIf="c.featured">⭐ Featured</span>
+                <span class="cc-plan-badge cc-plan-badge--{{(c.subscriptionPlan || 'FREE').toLowerCase()}}">{{ c.subscriptionPlan }}</span>
+                <span class="cc-featured-badge" *ngIf="c.subscriptionPlan === 'PREMIUM'">⭐ Premium</span>
               </div>
-              <div class="cc-location-badge">{{ c.countryFlag }} {{ c.city }}</div>
+              <div class="cc-location-badge">📍 {{ c.localisation }}</div>
             </div>
 
             <!-- Content -->
             <div class="cc-body">
               <div class="cc-name-row">
-                <h3 class="cc-name">{{ c.name }}</h3>
-                <div class="cc-rating">
-                  <span class="star">★</span>
-                  <span class="rating-n">{{ c.rating }}</span>
-                  <span class="reviews">({{ c.reviews }})</span>
-                </div>
+                <h3 class="cc-name">{{ c.clubName }}</h3>
               </div>
-
-              <div class="cc-specialty">{{ c.specialty }}</div>
 
               <!-- Stats bar -->
               <div class="cc-stats">
                 <div class="cc-stat">
-                  <span class="sv">{{ c.members }}</span>
-                  <span class="sl">Members</span>
+                  <span class="sv">{{ c.capacity || 0 }}</span>
+                  <span class="sl">Capacity</span>
                 </div>
                 <div class="cc-stat">
-                  <span class="sv">{{ c.coaches }}</span>
-                  <span class="sl">Coaches</span>
+                  <span class="sv" style="font-size:0.75rem; word-break:break-all;">{{ c.phone || 'N/A' }}</span>
+                  <span class="sl">Phone</span>
                 </div>
                 <div class="cc-stat">
-                  <span class="sv" style="color:#2563EB">★ {{ c.rating }}</span>
-                  <span class="sl">Rating</span>
+                  <span class="sv" style="font-size:0.75rem; word-break:break-all;">{{ c.contactEmail || 'N/A' }}</span>
+                  <span class="sl">Email</span>
                 </div>
-              </div>
-
-              <!-- Amenities -->
-              <div class="cc-amenities">
-                <span class="amenity-tag" *ngFor="let a of c.amenities.slice(0, 4)">{{ a }}</span>
-                <span class="amenity-tag amenity-more" *ngIf="c.amenities.length > 4">+{{ c.amenities.length - 4 }}</span>
               </div>
 
               <!-- Footer -->
-              <div class="cc-footer">
-                <div class="cc-price">
-                  <div class="price-from">From</div>
-                  <div class="price-val">${{ c.priceFrom }}<span class="price-period">/mo</span></div>
-                </div>
-                <div class="cc-hours">
-                  <div class="hours-lbl">Hours</div>
-                  {{ c.openHours }}
-                </div>
+              <div class="cc-footer" style="justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 1rem;">
                 <button class="cc-join-btn">
-                  Join Club →
+                  Contact Club →
                 </button>
               </div>
             </div>

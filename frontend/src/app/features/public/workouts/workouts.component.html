@@ -27,6 +27,14 @@
             class="search-input"
           />
         </div>
+
+        <select
+          [value]="activeDifficulty()"
+          (change)="onDifficultyChange($event)"
+          class="difficulty-select">
+          <option value="ALL">All Difficulties</option>
+          <option *ngFor="let diff of difficulties" [value]="diff">{{ diff }}</option>
+        </select>
       </div>
     </div>
 
