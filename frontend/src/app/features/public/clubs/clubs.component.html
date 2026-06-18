@@ -65,8 +65,7 @@
           <div class="fc-gradient"></div>
           <div class="fc-content">
             <div class="fc-badges">
-              <span class="fc-plan-badge fc-plan-badge--{{(fc.subscriptionPlan || 'FREE').toLowerCase()}}">{{ fc.subscriptionPlan }}</span>
-              <span class="fc-featured-badge">⭐ Premium</span>
+              <span class="fc-plan-badge fc-featured-badge fc-plan-badge--{{(fc.subscriptionPlan || 'FREE').toLowerCase()}}">⭐ {{ fc.subscriptionPlan }}</span>
             </div>
             <div class="fc-name">{{ fc.clubName }}</div>
             <div class="fc-meta">
@@ -119,10 +118,7 @@
         </div>
 
         <!-- Sort -->
-        <select class="sort-select" [(ngModel)]="sortBy">
-          <option value="name">🔤 Name</option>
-          <option value="capacity">👥 Capacity</option>
-        </select>
+        
       </div>
     </div>
   </div>
@@ -146,8 +142,7 @@
               <img [src]="getClubImage(c)" [alt]="c.clubName" class="cc-img" />
               <div class="cc-img-overlay"></div>
               <div class="cc-top-badges">
-                <span class="cc-plan-badge cc-plan-badge--{{(c.subscriptionPlan || 'FREE').toLowerCase()}}">{{ c.subscriptionPlan }}</span>
-                <span class="cc-featured-badge" *ngIf="c.subscriptionPlan === 'PREMIUM'">⭐ Premium</span>
+                <span class="cc-plan-badge cc-featured-badge cc-plan-badge--{{(c.subscriptionPlan || 'FREE').toLowerCase()}}">⭐ {{ c.subscriptionPlan }}</span>
               </div>
               <div class="cc-location-badge">📍 {{ c.localisation }}</div>
             </div>
@@ -212,7 +207,7 @@
         Manage coaches, track members, and grow your revenue — all in one place.
       </p>
       <div class="cta-btns">
-        <a routerLink="/register" class="btn-cta">Register Your Club Free</a>
+        <a routerLink="/register" class="btn-cta">Register Your Own Club </a>
         <a routerLink="/about" class="btn-cta-ghost">Learn More →</a>
       </div>
     </div>

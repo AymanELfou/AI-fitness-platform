@@ -20,7 +20,7 @@ export class ClubsComponent implements OnInit {
   loading = false;
   error = '';
 
-  filters = ['All', 'PREMIUM', 'FREE'];
+  filters = ['All', 'PREMIUM', 'BASIC'];
   clubs: Club[] = [];
 
   constructor(private clubService: ClubService) {}
