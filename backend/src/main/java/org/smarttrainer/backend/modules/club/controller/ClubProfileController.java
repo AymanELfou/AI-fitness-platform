@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/clubs")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class ClubProfileController {
 
     private final ClubProfileService service;

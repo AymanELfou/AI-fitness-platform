@@ -171,8 +171,8 @@
 
               <!-- Footer -->
               <div class="cc-footer" style="justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 1rem;">
-                <button class="cc-join-btn">
-                  Contact Club →
+                <button class="cc-join-btn" (click)="openCoachModal(c)">
+                  Join Club →
                 </button>
               </div>
             </div>
@@ -213,5 +213,119 @@
     </div>
     <div class="cta-bg-pattern"></div>
   </section>
+
+  <!-- ══════════════════════════════════════
+      COACH SELECTION MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="showCoachModal" (click)="closeCoachModal()">
+    <div class="modal-container coach-modal" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-icon">🏆</div>
+          <div>
+            <h2 class="modal-title">Choose Your Personal Coach</h2>
+            <p class="modal-subtitle" *ngIf="selectedClub">
+              Joining <strong>{{ selectedClub.clubName }}</strong> — select a coach to begin your journey
+            </p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeCoachModal()">✕</button>
+      </div>
+
+      <!-- Coach Grid -->
+      <div class="coach-grid">
+        <div
+          class="coach-card"
+          *ngFor="let coach of coaches"
+          [class.selected]="selectedCoach?.id === coach.id"
+          (click)="selectCoach(coach)">
+
+          <div class="coach-card-check" *ngIf="selectedCoach?.id === coach.id">✓</div>
+
+          <div class="coach-avatar">{{ coach.avatar }}</div>
+          <h3 class="coach-name">{{ coach.name }}</h3>
+          <div class="coach-specialty">{{ coach.specialty }}</div>
+
+          <div class="coach-rating">
+            <span *ngFor="let s of starsArray(coach.rating)" class="coach-star">★</span>
+            <span class="coach-rating-num">{{ coach.rating }}</span>
+          </div>
+
+          <p class="coach-bio">{{ coach.bio }}</p>
+
+          <div class="coach-meta">
+            <span class="coach-meta-item">📅 {{ coach.experience }}</span>
+            <span class="coach-meta-item">👥 {{ coach.clients }} clients</span>
+          </div>
+
+          <div class="coach-certs">
+            <span class="coach-cert" *ngFor="let cert of coach.certifications">{{ cert }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="modal-btn-ghost" (click)="closeCoachModal()">Cancel</button>
+        <button
+          class="modal-btn-primary"
+          [disabled]="!selectedCoach"
+          (click)="confirmCoachSelection()">
+          <span *ngIf="selectedCoach">Continue with {{ selectedCoach.name }} →</span>
+          <span *ngIf="!selectedCoach">Select a coach to continue</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PREMIUM MEMBER SUCCESS MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay success-overlay" *ngIf="showSuccessModal" (click)="closeSuccessModal()">
+    <div class="modal-container success-modal" (click)="$event.stopPropagation()">
+
+      <div class="success-confetti">
+        <span *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="confetti-piece confetti-{{i}}"></span>
+      </div>
+
+      <div class="success-content">
+        <div class="success-badge-glow"></div>
+        <div class="success-icon">👑</div>
+        <h2 class="success-title">Welcome, Premium Member!</h2>
+        <p class="success-text">
+          You've successfully joined <strong>{{ selectedClub?.clubName }}</strong>
+          with your personal coach <strong>{{ selectedCoach?.name }}</strong>.
+        </p>
+
+        <div class="success-card">
+          <div class="success-card-row">
+            <span class="success-label">Club</span>
+            <span class="success-value">{{ selectedClub?.clubName }}</span>
+          </div>
+          <div class="success-card-row">
+            <span class="success-label">Location</span>
+            <span class="success-value">📍 {{ selectedClub?.localisation }}</span>
+          </div>
+          <div class="success-card-row">
+            <span class="success-label">Coach</span>
+            <span class="success-value">{{ selectedCoach?.avatar }} {{ selectedCoach?.name }}</span>
+          </div>
+          <div class="success-card-row">
+            <span class="success-label">Specialty</span>
+            <span class="success-value">{{ selectedCoach?.specialty }}</span>
+          </div>
+          <div class="success-card-row">
+            <span class="success-label">Membership</span>
+            <span class="success-value premium-badge">⭐ PREMIUM</span>
+          </div>
+        </div>
+
+        <button class="success-btn" (click)="closeSuccessModal()">
+          Start Training →
+        </button>
+      </div>
+    </div>
+  </div>
 
 </div>

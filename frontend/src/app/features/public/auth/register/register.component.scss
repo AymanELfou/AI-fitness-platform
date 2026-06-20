@@ -91,7 +91,13 @@ $text-gray: #64748b;
       .role-item {
         background: #f8fafc; border: 2px solid transparent; padding: 15px; border-radius: 15px; cursor: pointer; transition: 0.3s;
         &.active { border-color: $primary-blue; background: white; box-shadow: 0 4px 15px rgba(0, 60, 199, 0.08); }
-        .role-main { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: $text-dark; }
+        .role-main { 
+          display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 14px; color: $text-dark; 
+          .premium-badge {
+            background: linear-gradient(135deg, #ffc107, #ff9800);
+            color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 900; margin-left: auto;
+          }
+        }
         .role-sub { font-size: 10px; color: $text-gray; margin: 5px 0 0 0; line-height: 1.4; }
       }
     }
@@ -134,5 +140,228 @@ $text-gray: #64748b;
     }
     
     .terms { font-size: 10px; color: #94a3b8; text-align: center; margin-top: 25px; a { color: $primary-blue; font-weight: 700; text-decoration: none; } }
+  }
+
+  /* Fake Stripe Payment & Modals Styles */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 1000;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.25s ease;
+    
+    &.success-overlay {
+      background: rgba(15, 23, 42, 0.75);
+    }
+  }
+
+  .modal-container {
+    background: transparent; /* Changed since Stripe has its own container */
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    
+    &.success-modal {
+      background: white;
+      border-radius: 24px;
+      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(37, 99, 235, 0.08);
+      width: 100%; max-width: 480px;
+      text-align: center; overflow: hidden;
+      position: relative;
+    }
+  }
+
+  .stripe-container {
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 15px 35px rgba(50, 50, 93, 0.1), 0 5px 15px rgba(0, 0, 0, 0.07);
+    width: 100%;
+    min-width: 400px;
+    max-width: 450px;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Ubuntu, sans-serif;
+
+    .stripe-header {
+      background: #f6f9fc;
+      padding: 30px;
+      border-bottom: 1px solid #e6ebf1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+
+      .stripe-logo { margin-bottom: 20px; }
+      
+      .stripe-amount {
+        span { color: #525f7f; font-size: 14px; font-weight: 500; }
+        .price { color: #32325d; font-size: 36px; font-weight: 600; margin-top: 5px; }
+        .per-month { color: #525f7f; font-size: 16px; font-weight: 500; }
+      }
+    }
+
+    .stripe-body {
+      padding: 30px;
+      
+      .payment-title { color: #32325d; font-size: 18px; font-weight: 500; margin: 0 0 8px; }
+      .payment-desc { color: #525f7f; font-size: 14px; margin: 0 0 24px; line-height: 1.5; }
+
+      .stripe-field {
+        margin-bottom: 16px;
+        label { display: block; color: #32325d; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+        
+        .simple-input, .card-input-wrapper {
+          background: #f6f9fc;
+          border: 1px solid #e6ebf1;
+          border-radius: 5px;
+          padding: 0;
+          box-shadow: 0 1px 3px rgba(50, 50, 93, 0.1), 0 1px 0 rgba(0, 0, 0, 0.02);
+        }
+
+        .simple-input {
+          width: 100%;
+          padding: 10px 12px;
+          color: #32325d;
+          font-size: 16px;
+        }
+
+        .card-input-wrapper {
+          display: flex;
+          flex-direction: column;
+          
+          input { border: none; background: transparent; padding: 10px 12px; color: #32325d; font-size: 16px; width: 100%; outline: none; }
+          .card-extra { display: flex; border-top: 1px solid #e6ebf1; input { width: 50%; border-right: 1px solid #e6ebf1; } input:last-child { border-right: none; } }
+        }
+      }
+
+      .stripe-pay-btn {
+        background: #635bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 16px;
+        box-shadow: 0 4px 6px rgba(50, 50, 93, 0.11), 0 1px 3px rgba(0, 0, 0, 0.08);
+        transition: all 0.15s ease;
+        &:hover { transform: translateY(-1px); box-shadow: 0 7px 14px rgba(50, 50, 93, 0.1), 0 3px 6px rgba(0, 0, 0, 0.08); }
+      }
+
+      .stripe-secure {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 6px;
+        color: #8898aa;
+        font-size: 12px;
+        margin-top: 20px;
+      }
+    }
+  }
+
+  /* Success Modal Specifics */
+  .success-confetti {
+    position: absolute; inset: 0;
+    pointer-events: none; overflow: hidden;
+  }
+
+  .confetti-piece {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 2px;
+    top: -10px;
+    animation: confettiFall 2.5s ease-in-out infinite;
+  }
+
+  @for $i from 1 through 12 {
+    .confetti-#{$i} {
+      left: #{random(90)}#{'%'};
+      background: nth(($primary-blue, #F59E0B, #059669, #DC2626, #7C3AED, #3B82F6, #F472B6, #34D399, #60A5FA, #FBBF24, #A78BFA, #FB7185), $i);
+      animation-delay: #{$i * 0.18}s;
+      animation-duration: #{2 + random(2)}s;
+      width: #{4 + random(6)}px;
+      height: #{4 + random(6)}px;
+    }
+  }
+
+  @keyframes confettiFall {
+    0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(500px) rotate(720deg); opacity: 0; }
+  }
+
+  .success-content {
+    position: relative; z-index: 2;
+    padding: 3rem 2.5rem 2.5rem;
+  }
+
+  .success-badge-glow {
+    position: absolute; top: -40px; left: 50%; transform: translateX(-50%);
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.2), transparent 70%);
+    pointer-events: none;
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulseGlow {
+    0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+    50% { opacity: 1; transform: translateX(-50%) scale(1.15); }
+  }
+
+  .success-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    animation: bounceIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  .success-title {
+    font-size: 1.75rem; font-weight: 900; color: $text-dark;
+    letter-spacing: -0.03em; margin: 0 0 0.5rem;
+    background: linear-gradient(135deg, $text-dark, $primary-blue);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .success-text {
+    font-size: 0.9375rem; color: $text-gray; line-height: 1.6;
+    margin: 0 0 1.5rem;
+    strong { color: $primary-blue; }
+  }
+
+  .success-btn {
+    width: 100%;
+    padding: 0.875rem 2rem;
+    border-radius: 12px; border: none;
+    background: linear-gradient(135deg, $primary-blue, #002da3);
+    color: #fff;
+    font-size: 1rem; font-weight: 800;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    box-shadow: 0 6px 24px rgba(0, 60, 199, 0.4);
+    transition: all 0.25s;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 35px rgba(0, 60, 199, 0.55);
+    }
+  }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  @keyframes bounceIn {
+    0%   { transform: scale(0); }
+    60%  { transform: scale(1.15); }
+    100% { transform: scale(1); }
   }
 }

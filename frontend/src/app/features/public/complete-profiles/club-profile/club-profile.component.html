@@ -11,9 +11,9 @@
 
     <div class="form-ctrl span-2">
       <label>Physical Address</label>
-      <input type="text" formControlName="address" placeholder="Street Address, City Location"
-             [ngClass]="{'invalid-touched': isInvalid('address')}">
-      <div *ngIf="isInvalid('address')" class="error-msg">⚠️ Verified location address is required.</div>
+      <input type="text" formControlName="localisation" placeholder="Street Address, City Location"
+             [ngClass]="{'invalid-touched': isInvalid('localisation')}">
+      <div *ngIf="isInvalid('localisation')" class="error-msg">⚠️ Verified location address is required.</div>
     </div>
 
     <div class="form-ctrl">
@@ -35,6 +35,17 @@
       <input type="email" formControlName="contactEmail" placeholder="management@facility.com"
              [ngClass]="{'invalid-touched': isInvalid('contactEmail')}">
       <div *ngIf="isInvalid('contactEmail')" class="error-msg">⚠️ Please provide a valid office email.</div>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Subscription Plan</label>
+      <select formControlName="subscriptionPlan" [ngClass]="{'invalid-touched': isInvalid('subscriptionPlan')}">
+        <option value="" disabled selected>Select a subscription plan</option>
+        <option value="BASIC">Basic Plan</option>
+        <option value="PREMIUM">Premium Plan</option>
+        <option value="ENTERPRISE">Enterprise Plan</option>
+      </select>
+      <div *ngIf="isInvalid('subscriptionPlan')" class="error-msg">⚠️ Please select a subscription plan.</div>
     </div>
 
   </div>
