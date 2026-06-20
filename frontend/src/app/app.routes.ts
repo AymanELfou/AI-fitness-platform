@@ -10,7 +10,7 @@ import { RegisterComponent } from './features/public/auth/register/register.comp
 import { NutritionComponent } from './features/public/nutrition/nutrition.component';
 import { WorkoutsComponent } from './features/public/workouts/workouts.component';
 import { ClubsComponent } from './features/public/clubs/clubs.component';
-import { ProfilesComponent } from './features/public/profiles/profiles.component';
+import { ProfilesComponent } from './features/public/complete-profiles/profiles.component';
 
 // ==========================================
 // CLUB COMPONENTS & LAYOUT

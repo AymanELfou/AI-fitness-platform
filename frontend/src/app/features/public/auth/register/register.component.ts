@@ -1,11 +1,9 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
-import { User } from '../../../../core/models/user.model';
-import { Role } from '../../../../core/models/user.model';
-import { Router } from '@angular/router';
+import { User, Role } from '../../../../core/models/user.model';
 
 @Component({
   selector: 'app-register',
@@ -16,21 +14,22 @@ import { Router } from '@angular/router';
 })
 export class RegisterComponent {
   registerForm: FormGroup;
-  selectedRole: string = 'Coach';
+  selectedRole: string = 'Club';
+  showPaymentPage: boolean = false;
+  showSuccessModal: boolean = false;
+  tempLoginCredentials: any = null;
 
   roles = [
-    { id: 'Admin', name: 'Admin', icon: '🛡️', description: 'System management & high-level reporting.' },
     { id: 'Club', name: 'Club', icon: '🏁', description: 'Manage organizations, venues, and events.' },
-    { id: 'Coach', name: 'Coach', icon: '🏋️', description: 'Create workouts and track client progress.' },
     { id: 'Client', name: 'Client', icon: '👤', description: 'Train, compete, and track your metrics.' }
   ];
 
-  constructor(private fb: FormBuilder, public authService: AuthService,private router:Router) {
+  constructor(private fb: FormBuilder, public authService: AuthService, private router: Router) {
     this.registerForm = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(8)]],
-      role: ['Coach']
+      role: ['Club']
     });
   }
 
@@ -43,16 +42,12 @@ export class RegisterComponent {
     if (this.registerForm.valid) {
       const formValue = this.registerForm.value;
       
-      // Split fullName to firstname and lastname
       const nameParts = formValue.fullName.trim().split(' ');
       const firstname = nameParts[0];
       const lastname = nameParts.slice(1).join(' ') || ' ';
 
-      // Map UI role to backend Role enum
       const roleMapping: { [key: string]: string } = {
-        'Admin': 'ROLE_ADMIN',
         'Club': 'ROLE_CLUB',
-        'Coach': 'ROLE_COACH',
         'Client': 'ROLE_CLIENT'
       };
 
@@ -64,29 +59,48 @@ export class RegisterComponent {
         role: roleMapping[formValue.role] || 'ROLE_CLIENT'
       };
 
-      console.log('Sending data to backend...', payload);
       this.authService.register(payload).subscribe({
         next: () => {
-          console.log('Registration Successful!');
-          // After successful registration, auto-login to get the token
-          this.authService.login({ email: payload.email, password: payload.password }).subscribe({
-            next: () => {
-              alert('Compte créé et connecté avec succès !');
-              //this.authService.redirectByRole();
-              this.router.navigate(['/']);
-
-            },
-            error: (err: any) => {
-              console.error('Auto-login Failed!', err);
-              alert('Compte créé, mais la connexion automatique a échoué. Veuillez vous connecter.');
-            }
-          });
+          this.tempLoginCredentials = { email: payload.email, password: payload.password, role: payload.role };
+          
+          if (payload.role === 'ROLE_CLUB') {
+            this.showPaymentPage = true;
+          } else {
+            this.executeLogin(payload.role);
+          }
         },
         error: (err: any) => {
           console.error('Registration Failed!', err);
-          alert('Erreur lors de la création du compte. Vérifiez la console.');
+          alert('Erreur lors de la création du compte.');
         }
       });
     }
+  }
+
+  completePayment(): void {
+    this.showPaymentPage = false;
+    this.showSuccessModal = true;
+  }
+
+  completeProfile(): void {
+    this.showSuccessModal = false;
+    this.executeLogin(this.tempLoginCredentials?.role);
+  }
+
+  private executeLogin(role: string): void {
+    if (!this.tempLoginCredentials) return;
+    this.authService.login({ email: this.tempLoginCredentials.email, password: this.tempLoginCredentials.password }).subscribe({
+      next: () => {
+        if (role === 'ROLE_CLUB') {
+          this.router.navigate(['/complete-profile'], { queryParams: { role: 'club' } });
+        } else {
+          this.router.navigate(['/']);
+        }
+      },
+      error: (err: any) => {
+        console.error('Auto-login Failed!', err);
+        alert('Compte créé, mais la connexion automatique a échoué. Veuillez vous connecter.');
+      }
+    });
   }
 }

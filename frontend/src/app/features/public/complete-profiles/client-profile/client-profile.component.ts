@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { IClientProfile } from '../profile-models'; 
+import { client } from '../../../../core/models/client.model'; 
 @Component({
   selector: 'app-client-profile',
   standalone: true,
@@ -49,7 +49,7 @@ export class ClientProfileComponent implements OnInit {
   submit() { 
     if (this.clientForm.valid) {
      
-      const clientData: IClientProfile = this.clientForm.getRawValue();
+      const clientData: client = this.clientForm.getRawValue();
       console.log('Validated Client Structured Payload:', clientData); 
     }
   }

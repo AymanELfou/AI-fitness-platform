@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ICoachProfile } from '../profile-models';
+import { coach } from '../../../../core/models/coach.model';
 
 @Component({
   selector: 'app-coach-profile',
@@ -45,7 +45,7 @@ export class CoachProfileComponent implements OnInit {
 
   submit() {
     if (this.coachForm.valid) {
-      const coachData: ICoachProfile = this.coachForm.value;
+      const coachData: coach = this.coachForm.value;
       console.log('Validated Coach Payload:', coachData);
     }
   }

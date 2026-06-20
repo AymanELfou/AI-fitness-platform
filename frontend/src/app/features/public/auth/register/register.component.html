@@ -49,6 +49,7 @@
             <div class="role-main">
               <span class="role-icon">{{ role.icon }}</span>
               <span class="role-name">{{ role.name }}</span>
+              <span *ngIf="role.id === 'Club'" class="premium-badge">PREMIUM 💎</span>
             </div>
             <p class="role-sub">{{ role.description }}</p>
           </div>
@@ -58,8 +59,6 @@
           <div class="input-field">
             <label>FULL NAME</label>
             <input type="text" formControlName="fullName" placeholder="Alex Rivera">
-
-              
           </div>
 
           <div class="input-field">
@@ -87,4 +86,82 @@
       </div>
     </section>
   </main>
+
+  <!-- Fake Stripe Payment Modal -->
+  <div class="modal-overlay" *ngIf="showPaymentPage">
+    <div class="stripe-container">
+      <div class="stripe-header">
+        <div class="stripe-logo">
+          <svg viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg" width="60" height="25" class="StripeLogo"><path fill="#635bff" d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h5.25c0-1.48-.98-2.58-3.08-2.58zM43.02 5.84l-.51 3.06c-.85-.92-2.31-1.35-3.8-1.35-3.23 0-6.15 2.12-6.15 6.87 0 4.29 2.5 6.44 5.56 6.44 1.62 0 3-.62 3.86-1.57l-.37 2.05h4.16V5.84h-2.75zm-2.45 11.23c-1.38 0-2.67-.93-2.67-3.27 0-2.45 1.34-3.53 2.76-3.53 1.48 0 2.65 1 2.65 3.32 0 2.22-1.07 3.48-2.74 3.48zM29.82 20.33V5.84h4.16v14.49h-4.16zM24.84 5.84h-4.2V2.85h4.2v2.99zM20.65 20.33V5.84h4.2v14.49h-4.2zM12.98 5.84h-3.66v2.1c0 2.06 1.04 2.82 2.96 2.82h1.36v3.2h-1.49c-3.13 0-5.11-1.5-5.11-4.83V5.84H4.8V2.85h2.24V.29l4.2-1.12v3.68h3.66v2.99zM2.83 20.33v-3.14c-1.25.96-2.53 1.33-3.9 1.33-1.63 0-3.32-.82-3.32-3.12 0-2.82 2.38-3.68 5.3-3.68h1.86V9.82c0-1.03-.78-1.92-2.3-1.92-1.4 0-2.81.7-3.91 1.63V6.26C-1.89 5.32.22 4.6 2.05 4.6c3.48 0 4.96 2 4.96 5.58v10.15h-4.18zm-1.88-5.32H-.9c-1.35 0-2.1.58-2.1 1.55 0 1.06.84 1.57 1.83 1.57 1.15 0 2.05-.63 2.05-1.74v-1.38z"></path></svg>
+        </div>
+        <div class="stripe-amount">
+          <span>Amount due</span>
+          <div class="price">US$99.00 <span class="per-month">/month</span></div>
+        </div>
+      </div>
+      
+      <div class="stripe-body">
+        <h3 class="payment-title">Subscribe to Club Premium</h3>
+        <p class="payment-desc">Gain access to venue management, analytics, and premium event creation.</p>
+        
+        <div class="stripe-form">
+          <div class="stripe-field">
+            <label>Card information</label>
+            <div class="card-input-wrapper">
+              <input type="text" placeholder="1234 5678 9123 0000" disabled>
+              <div class="card-extra">
+                <input type="text" placeholder="MM/YY" disabled>
+                <input type="text" placeholder="CVC" disabled>
+              </div>
+            </div>
+          </div>
+          
+          <div class="stripe-field">
+            <label>Name on card</label>
+            <input type="text" placeholder="Jane Doe" disabled class="simple-input">
+          </div>
+          
+          <div class="stripe-field">
+            <label>Country or region</label>
+            <select disabled class="simple-input">
+              <option>United States</option>
+            </select>
+          </div>
+          
+          <button class="stripe-pay-btn" (click)="completePayment()">
+            Subscribe
+          </button>
+          <p class="stripe-secure">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            Payments are secure and encrypted
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PREMIUM SUCCESS MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay success-overlay" *ngIf="showSuccessModal">
+    <div class="modal-container success-modal">
+
+      <div class="success-confetti">
+        <span *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="confetti-piece confetti-{{i}}"></span>
+      </div>
+
+      <div class="success-content">
+        <div class="success-badge-glow"></div>
+        <div class="success-icon">👑</div>
+        <h2 class="success-title">Welcome, Premium Club!</h2>
+        <p class="success-text">
+          You've successfully Paiement Stripe Gym with your own Comunity.
+        </p>
+
+        <button class="success-btn" (click)="completeProfile()">
+          Complet profile →
+        </button>
+      </div>
+    </div>
+  </div>
 </div>
