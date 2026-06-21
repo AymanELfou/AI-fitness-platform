@@ -11,6 +11,7 @@ public class PostResponse {
     private Long id;
     private LocalDateTime createdAt;
     private String content;
+    private String imageUrl;
     private Long communityId;
     private Long userId;
     private String userName;

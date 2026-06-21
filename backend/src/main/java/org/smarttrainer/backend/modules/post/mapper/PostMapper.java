@@ -13,6 +13,7 @@ public class PostMapper {
                 .id(post.getId())
                 .createdAt(post.getCreatedAt())
                 .content(post.getContent())
+                .imageUrl(post.getImageUrl())
                 .communityId(post.getCommunity() != null ? post.getCommunity().getId() : null)
                 .userId(post.getUser() != null ? post.getUser().getId() : null)
                 .userName(post.getUser() != null ? post.getUser().fullName() : null)
@@ -24,6 +25,7 @@ public class PostMapper {
     public Post toEntity(PostRequest request) {
         Post post = new Post();
         post.setContent(request.getContent());
+        post.setImageUrl(request.getImageUrl());
         return post;
     }
 }
