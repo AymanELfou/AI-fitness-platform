@@ -33,6 +33,19 @@ public class ClientMapper {
         profile.setTaille(request.getTaille());
         profile.setBut(request.getBut());
         profile.setNiveau(request.getNiveau());
+
+        //Request to The Default Subscription Plan
+        
+        if (request.getSubscriptionPlan() != null && !request.getSubscriptionPlan().trim().isEmpty()) {
+            try {
+                profile.setSubscriptionPlan(org.smarttrainer.backend.domain.client.SubscriptionPlan.valueOf(request.getSubscriptionPlan().trim().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                profile.setSubscriptionPlan(org.smarttrainer.backend.domain.client.SubscriptionPlan.FREEMIUM);
+            }
+        } else {
+            profile.setSubscriptionPlan(org.smarttrainer.backend.domain.client.SubscriptionPlan.FREEMIUM);
+        }
+        
         return profile;
     }
 }

@@ -58,21 +58,37 @@
         <form [formGroup]="registerForm" (ngSubmit)="onRegister()">
           <div class="input-field">
             <label>FULL NAME</label>
-            <input type="text" formControlName="fullName" placeholder="Alex Rivera">
+            <input type="text" formControlName="fullName" placeholder="Alex Rivera"
+                   [ngClass]="{'invalid-touched': isInvalid('fullName')}">
+            <div *ngIf="isInvalid('fullName')" class="error-msg">
+              <span *ngIf="registerForm.get('fullName')?.errors?.['required']">⚠️ Full name is required.</span>
+              <span *ngIf="registerForm.get('fullName')?.errors?.['invalidFullName']">⚠️ Please enter both your first name and last name.</span>
+            </div>
           </div>
 
           <div class="input-field">
             <label>EMAIL ADDRESS</label>
-            <input type="email" formControlName="email" placeholder="alex@kinetic.com">
+            <input type="email" formControlName="email" placeholder="alex@kinetic.com"
+                   [ngClass]="{'invalid-touched': isInvalid('email')}">
+            <div *ngIf="isInvalid('email')" class="error-msg">
+              <span *ngIf="registerForm.get('email')?.errors?.['required']">⚠️ Email address is required.</span>
+              <span *ngIf="registerForm.get('email')?.errors?.['email']">⚠️ Please enter a valid email address.</span>
+            </div>
           </div>
 
           <div class="input-field password-group">
             <label>PASSWORD</label>
             <div class="password-wrapper">
-              <input type="password" formControlName="password" placeholder="••••••••">
-              <span class="eye-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+              <input [type]="showPassword ? 'text' : 'password'" formControlName="password" placeholder="••••••••"
+                     [ngClass]="{'invalid-touched': isInvalid('password')}">
+              <span class="eye-icon" (click)="togglePasswordVisibility()">
+                <svg *ngIf="!showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg *ngIf="showPassword" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
               </span>
+            </div>
+            <div *ngIf="isInvalid('password')" class="error-msg">
+              <span *ngIf="registerForm.get('password')?.errors?.['required']">⚠️ Password is required.</span>
+              <span *ngIf="registerForm.get('password')?.errors?.['minlength']">⚠️ Password must be at least 8 characters.</span>
             </div>
           </div>
 
@@ -92,7 +108,7 @@
     <div class="stripe-container">
       <div class="stripe-header">
         <div class="stripe-logo">
-          <svg viewBox="0 0 60 25" xmlns="http://www.w3.org/2000/svg" width="60" height="25" class="StripeLogo"><path fill="#635bff" d="M59.64 14.28h-8.06c.19 1.93 1.6 2.55 3.2 2.55 1.64 0 2.96-.37 4.05-.95v3.32a8.33 8.33 0 0 1-4.56 1.1c-4.01 0-6.83-2.5-6.83-7.48 0-4.19 2.39-7.52 6.3-7.52 3.92 0 5.96 3.28 5.96 7.5 0 .4-.04 1.26-.06 1.48zm-5.92-5.62c-1.03 0-2.17.73-2.17 2.58h5.25c0-1.48-.98-2.58-3.08-2.58zM43.02 5.84l-.51 3.06c-.85-.92-2.31-1.35-3.8-1.35-3.23 0-6.15 2.12-6.15 6.87 0 4.29 2.5 6.44 5.56 6.44 1.62 0 3-.62 3.86-1.57l-.37 2.05h4.16V5.84h-2.75zm-2.45 11.23c-1.38 0-2.67-.93-2.67-3.27 0-2.45 1.34-3.53 2.76-3.53 1.48 0 2.65 1 2.65 3.32 0 2.22-1.07 3.48-2.74 3.48zM29.82 20.33V5.84h4.16v14.49h-4.16zM24.84 5.84h-4.2V2.85h4.2v2.99zM20.65 20.33V5.84h4.2v14.49h-4.2zM12.98 5.84h-3.66v2.1c0 2.06 1.04 2.82 2.96 2.82h1.36v3.2h-1.49c-3.13 0-5.11-1.5-5.11-4.83V5.84H4.8V2.85h2.24V.29l4.2-1.12v3.68h3.66v2.99zM2.83 20.33v-3.14c-1.25.96-2.53 1.33-3.9 1.33-1.63 0-3.32-.82-3.32-3.12 0-2.82 2.38-3.68 5.3-3.68h1.86V9.82c0-1.03-.78-1.92-2.3-1.92-1.4 0-2.81.7-3.91 1.63V6.26C-1.89 5.32.22 4.6 2.05 4.6c3.48 0 4.96 2 4.96 5.58v10.15h-4.18zm-1.88-5.32H-.9c-1.35 0-2.1.58-2.1 1.55 0 1.06.84 1.57 1.83 1.57 1.15 0 2.05-.63 2.05-1.74v-1.38z"></path></svg>
+          <img src="https://upload.wikimedia.org/wikipedia/commons/b/ba/Stripe_Logo%2C_revised_2016.svg" alt="Stripe Logo" style="height: 32px;">
         </div>
         <div class="stripe-amount">
           <span>Amount due</span>
@@ -141,25 +157,44 @@
   </div>
 
   <!-- ══════════════════════════════════════
-       PREMIUM SUCCESS MODAL
+       CLUB SUCCESS MODAL
   ══════════════════════════════════════ -->
   <div class="modal-overlay success-overlay" *ngIf="showSuccessModal">
     <div class="modal-container success-modal">
-
       <div class="success-confetti">
         <span *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="confetti-piece confetti-{{i}}"></span>
       </div>
-
       <div class="success-content">
         <div class="success-badge-glow"></div>
         <div class="success-icon">👑</div>
         <h2 class="success-title">Welcome, Premium Club!</h2>
         <p class="success-text">
-          You've successfully Paiement Stripe Gym with your own Comunity.
+          You've successfully registered your Club. Set up your workspace and start building your community today.
         </p>
-
         <button class="success-btn" (click)="completeProfile()">
-          Complet profile →
+          Complete Profile →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       CLIENT SUCCESS MODAL (Welcome Box)
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay success-overlay" *ngIf="showClientSuccessAlert">
+    <div class="modal-container success-modal">
+      <div class="success-confetti">
+        <span *ngFor="let i of [1,2,3,4,5,6,7,8,9,10,11,12]" class="confetti-piece confetti-{{i}}"></span>
+      </div>
+      <div class="success-content">
+        <div class="success-badge-glow"></div>
+        <div class="success-icon">✨</div>
+        <h2 class="success-title">Welcome to SmartTrainer!</h2>
+        <p class="success-text">
+          "The only bad workout is the one that didn't happen. Let's set up your profile and unleash your potential!"
+        </p>
+        <button class="success-btn" (click)="completeClientProfile()">
+          Complete Profile →
         </button>
       </div>
     </div>

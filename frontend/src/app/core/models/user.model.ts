@@ -8,6 +8,7 @@ export interface User {
   accountLocked: boolean;
   createdDate: string;
   modifiedDate?: string;
+  profileCompleted?: boolean;
 }
 
 export enum Role {

@@ -24,38 +24,35 @@
     </div>
 
     <div class="form-ctrl">
-      <label>Target Weight (Kg)</label>
-      <input type="number" formControlName="targetWeight" placeholder="e.g., 70"
-             [ngClass]="{'invalid-touched': isInvalid('targetWeight')}">
-      <div *ngIf="isInvalid('targetWeight')" class="error-msg">⚠️ Target weight is required.</div>
-    </div>
-
-    <div class="form-ctrl span-2">
-      <label>Residential Address</label>
-      <input type="text" formControlName="address" placeholder="Street name, City, Postal Code"
-             [ngClass]="{'invalid-touched': isInvalid('address')}">
-      <div *ngIf="isInvalid('address')" class="error-msg">⚠️ Full address path is required.</div>
+      <label>Fitness Goal (But)</label>
+      <select formControlName="but" [ngClass]="{'invalid-touched': isInvalid('but')}">
+        <option value="" disabled selected>Select Option...</option>
+        <option value="Weight Loss">Weight Loss</option>
+        <option value="Muscle Gain">Muscle Gain</option>
+        <option value="Cardio Fitness">Cardio Fitness</option>
+        <option value="General Health">General Health</option>
+      </select>
+      <div *ngIf="isInvalid('but')" class="error-msg">⚠️ Please choose your target goal.</div>
     </div>
 
     <div class="form-ctrl">
-      <label>Fitness Goal</label>
-      <select formControlName="fitnessGoal" [ngClass]="{'invalid-touched': isInvalid('fitnessGoal')}">
-        <option value="">Select Option...</option>
-        <option value="weight-loss">Weight Loss</option>
-        <option value="muscle-gain">Muscle Gain</option>
+      <label>Fitness Level (Niveau)</label>
+      <select formControlName="niveau" [ngClass]="{'invalid-touched': isInvalid('niveau')}">
+        <option value="" disabled selected>Select Option...</option>
+        <option value="Beginner">Beginner</option>
+        <option value="Intermediate">Intermediate</option>
+        <option value="Advanced">Advanced</option>
       </select>
-      <div *ngIf="isInvalid('fitnessGoal')" class="error-msg">⚠️ Please choose your target goal.</div>
+      <div *ngIf="isInvalid('niveau')" class="error-msg">⚠️ Selection is required.</div>
     </div>
 
     <div class="form-ctrl">
-      <label>Fitness Level</label>
-      <select formControlName="fitnessLevel" [ngClass]="{'invalid-touched': isInvalid('fitnessLevel')}">
-        <option value="">Select Option...</option>
-        <option value="beginner">Beginner</option>
-        <option value="intermediate">Intermediate</option>
-        <option value="advanced">Advanced</option>
+      <label>Subscription Plan</label>
+      <select formControlName="subscriptionPlan" [ngClass]="{'invalid-touched': isInvalid('subscriptionPlan')}">
+        <option value="FREEMIUM">Freemium Plan</option>
+        <option value="PREMIUM">Premium Plan</option>
       </select>
-      <div *ngIf="isInvalid('fitnessLevel')" class="error-msg">⚠️ Selection is required.</div>
+      <div *ngIf="isInvalid('subscriptionPlan')" class="error-msg">⚠️ Selection is required.</div>
     </div>
 
     <div class="form-ctrl span-2 imc-highlight-box">
@@ -64,5 +61,17 @@
     </div>
 
   </div>
-  <button type="submit" [disabled]="clientForm.invalid" class="btn-primary-submit">Save Client Profile</button>
+  <button type="submit" [disabled]="clientForm.invalid" class="btn-primary-submit">Save</button>
 </form>
+
+<!-- Custom Success Alert Modal (ng-alert-box-popup) -->
+<div class="alert-overlay" *ngIf="showSuccessAlert">
+  <div class="alert-box">
+    <div class="alert-icon-wrapper">
+      <span class="alert-icon">✨</span>
+    </div>
+    <h3 class="alert-title">Success</h3>
+    <p class="alert-message">Client profile created successfully</p>
+    <button class="alert-btn" (click)="closeAlertAndNavigate()">Go to Dashboard</button>
+  </div>
+</div>

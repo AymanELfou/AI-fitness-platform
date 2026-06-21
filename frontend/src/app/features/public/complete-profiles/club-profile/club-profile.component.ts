@@ -11,17 +11,18 @@ import { AuthService } from '../../../../core/services/auth.service';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './club-profile.component.html',
-  styleUrls: ['../shared-forms.scss']
+  styleUrls: ['../shared-forms.scss', './club-profile.component.scss']
 })
 export class ClubProfileComponent implements OnInit {
   clubForm!: FormGroup;
+  showSuccessAlert = false;
 
   constructor(
-    private fb: FormBuilder, 
+    private fb: FormBuilder,
     private clubService: ClubService,
     private authService: AuthService,
     private router: Router
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.clubForm = this.fb.group({
@@ -50,8 +51,9 @@ export class ClubProfileComponent implements OnInit {
         phone: formValue.phone,
         subscriptionPlan: formValue.subscriptionPlan
       };
-      const user = this.authService.currentUser();
       
+      const user = this.authService.currentUser();
+
       if (!user || !user.id) {
         alert('User not authenticated properly.');
         return;
@@ -60,8 +62,12 @@ export class ClubProfileComponent implements OnInit {
       this.clubService.createClub(user.id, clubData).subscribe({
         next: (createdClub) => {
           console.log('Club created successfully:', createdClub);
-          alert('Club profile created successfully!');
-          this.router.navigate(['/club/dashboard']);
+          const currentUser = this.authService.currentUser();
+          if (currentUser) {
+            currentUser.profileCompleted = true;
+            this.authService.setUser(currentUser);
+          }
+          this.showSuccessAlert = true;
         },
         error: (err) => {
           console.error('Error creating club:', err);
@@ -69,5 +75,10 @@ export class ClubProfileComponent implements OnInit {
         }
       });
     }
+  }
+
+  closeAlertAndNavigate() {
+    this.showSuccessAlert = false;
+    this.router.navigate(['/club/dashboard']);
   }
 }

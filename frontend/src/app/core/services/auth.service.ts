@@ -12,7 +12,7 @@ import { AuthResponse } from '../models/auth-response.model';
   providedIn: 'root'
 })
 export class AuthService {
-  
+
 
   private readonly TOKEN_KEY = 'token';
   private readonly USER_KEY = 'user';
@@ -36,17 +36,17 @@ export class AuthService {
     this.loadUserFromStorage();
   }
 
-   /**
-   * Load authentication data from localStorage
-   * and restore user session after page refresh
-   */
+  /**
+  * Load authentication data from localStorage
+  * and restore user session after page refresh
+  */
 
   private loadUserFromStorage(): void {
-    if (isPlatformBrowser(this.platformId)){
+    if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem(this.TOKEN_KEY);
       const userStr = localStorage.getItem(this.USER_KEY);
 
-      if (token){
+      if (token) {
         this._isLoggedIn.set(true);
         if (userStr) {
           try {
@@ -58,10 +58,10 @@ export class AuthService {
         } else {
           // If no userStr but token exists, we can still try to decode basic info from token
           try {
-             const payload = JSON.parse(atob(token.split('.')[1]));
-             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
-             this._currentUser.set(user);
-          } catch (e) {}
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const user: any = { id: payload.userId, email: payload.sub, roles: payload.roles || payload.authorities || [] };
+            this._currentUser.set(user);
+          } catch (e) { }
         }
       }
     }
@@ -83,17 +83,17 @@ export class AuthService {
         } else {
           // Backend might only return a token, try to decode user from token
           try {
-             const payload = JSON.parse(atob(response.token.split('.')[1]));
-             console.log('JWT Payload complet:', payload);
-             
-             const user: any = { email: payload.sub, roles: payload.roles || payload.authorities || [] };
-             localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+            const payload = JSON.parse(atob(response.token.split('.')[1]));
+            console.log('JWT Payload complet:', payload);
 
-             
-             this._currentUser.set(user);
-             console.log(user);
-             
-          } catch (e) {}
+            const user: any = { id: payload.userId, email: payload.sub, roles: payload.roles || payload.authorities || [] };
+            localStorage.setItem(this.USER_KEY, JSON.stringify(user));
+
+
+            this._currentUser.set(user);
+            console.log(user);
+
+          } catch (e) { }
         }
       }
       this._isLoggedIn.set(true);
@@ -164,7 +164,7 @@ export class AuthService {
   //Set the authenticated user and store user data in localStorage
   setUser(user: User): void {
     this._currentUser.set(user);
-    if (isPlatformBrowser(this.platformId)){
+    if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem(this.USER_KEY, JSON.stringify(user));
       this._currentUser.set(user);
       this._isLoggedIn.set(true);
@@ -179,11 +179,11 @@ export class AuthService {
   //Redirect authenticated user
   redirectByRole(): void {
     const user = this._currentUser();
-    if(!user) return;
+    if (!user) return;
 
-    if(user.roles.includes(Role.ROLE_ADMIN)){
+    if (user.roles.includes(Role.ROLE_ADMIN)) {
       this.router.navigate(['/admin/dashboard']);
-    }else if (user.roles.includes(Role.ROLE_CLUB)) {
+    } else if (user.roles.includes(Role.ROLE_CLUB)) {
       this.router.navigate(['/club/dashboard']);
     } else if (user.roles.includes(Role.ROLE_COACH)) {
       this.router.navigate(['/coach/dashboard']);
