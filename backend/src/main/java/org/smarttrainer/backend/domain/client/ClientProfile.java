@@ -37,6 +37,9 @@ public class ClientProfile extends BaseEntity {
     private String but;
     private String niveau;
     private Double imc;
+    //Default subscription plan is FREEMIUM
+    @Builder.Default 
+    
     @Enumerated(EnumType.STRING)
     @Column(name = "subscription_plan", nullable = false)
     private SubscriptionPlan subscriptionPlan = SubscriptionPlan.FREEMIUM;

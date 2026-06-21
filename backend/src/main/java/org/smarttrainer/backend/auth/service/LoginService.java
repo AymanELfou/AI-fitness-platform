@@ -36,6 +36,8 @@ public class LoginService {
             var claims = new HashMap<String, Object>();
             var user = ((User)auth.getPrincipal());
             claims.put("fullName",user.fullName());
+            //user Id must be included in the token
+            claims.put("userId", user.getId());
 
             var jwtToken = jwtService.generateToken(claims, user);
 

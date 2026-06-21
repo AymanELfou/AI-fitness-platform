@@ -76,6 +76,32 @@
         }
         .label-row { display: flex; justify-content: space-between; align-items: center; }
         .forgot-link { font-size: 0.75rem; color: #2563eb; font-weight: 700; text-decoration: none; }
+
+        .password-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          width: 100%;
+
+          input {
+            padding-right: 50px;
+          }
+
+          .eye-icon {
+            position: absolute;
+            right: 16px;
+            cursor: pointer;
+            color: #94a3b8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: color 0.2s;
+            
+            &:hover {
+              color: #64748b;
+            }
+          }
+        }
       }
 
       .checkbox-group {

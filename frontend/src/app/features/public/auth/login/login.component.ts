@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router, RouterLink, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 
@@ -15,12 +15,18 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
   errorMessage = '';
+  showPassword = false;
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
 
   ngOnInit(): void {
     this.loginForm = this.fb.group({
@@ -37,9 +43,16 @@ export class LoginComponent implements OnInit {
       this.authService.login(this.loginForm.value).subscribe({
         next: () => {
           this.isLoading = false;
-          // Navigate after successful login
-          this.authService.redirectByRole();
           alert('Login successful');
+
+          const redirect = this.route.snapshot.queryParamMap.get('redirect');
+          const role = this.route.snapshot.queryParamMap.get('role');
+
+          if (redirect === 'complete-profile' && role) {
+            this.router.navigate(['/complete-profile'], { queryParams: { role: role } });
+          } else {
+            this.authService.redirectByRole();
+          }
         },
         error: (err) => {
           this.isLoading = false;
