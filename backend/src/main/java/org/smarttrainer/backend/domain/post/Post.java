@@ -26,6 +26,7 @@ import java.util.List;
 public class Post extends BaseEntity {
 
     private String content;
+    private String imageUrl;
 
     @ManyToOne
     @JoinColumn(name = "community_id")
