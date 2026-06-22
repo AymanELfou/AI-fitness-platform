@@ -54,8 +54,11 @@ public class ClientController {
 
     @PatchMapping("{userId}/upgrade")
     @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_ADMIN')")
-    public ResponseEntity<ClientProfileResponse> upgradeToPremium(@PathVariable Long userId) {
-        return ResponseEntity.ok(service.upgradeToPremium(userId));
+    public ResponseEntity<ClientProfileResponse> upgradeToPremium(
+            @PathVariable Long userId,
+            @RequestParam Long clubId,
+            @RequestParam Long coachId) {
+        return ResponseEntity.ok(service.upgradeToPremium(userId, clubId, coachId));
     }
 
     @DeleteMapping("{id}/profile")

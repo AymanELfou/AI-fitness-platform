@@ -234,7 +234,8 @@
       </div>
 
       <!-- Coach Grid -->
-      <div class="coach-grid">
+      <!-- Nouvelle modification: Conditionner l'affichage de la grille à la présence de coachs -->
+      <div class="coach-grid" *ngIf="coaches.length > 0">
         <div
           class="coach-card"
           *ngFor="let coach of coaches"
@@ -263,6 +264,14 @@
             <span class="coach-cert" *ngFor="let cert of coach.certifications">{{ cert }}</span>
           </div>
         </div>
+      </div>
+
+      <!-- Error Message -->
+      <!-- Nouvelle modification: Afficher le message d'erreur si la récupération échoue ou s'il n'y a pas de coach -->
+      <div class="modal-error-message" *ngIf="error" style="padding: 2.5rem; text-align: center; color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); border-radius: 12px; margin: 1rem 0;">
+        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">⚠️</span>
+        <h4 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 600; color: red;">Erreur de chargement</h4>
+        <p style="margin: 0; font-size: 0.9rem; color: #94a3b8;">{{ error }}</p>
       </div>
 
       <!-- Footer -->

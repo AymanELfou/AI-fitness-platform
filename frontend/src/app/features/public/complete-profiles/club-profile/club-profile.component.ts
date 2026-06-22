@@ -42,7 +42,7 @@ export class ClubProfileComponent implements OnInit {
 
   submit() {
     if (this.clubForm.valid) {
-      const formValue = this.clubForm.value;
+      const formValue = this.clubForm.value;   
       const clubData: Partial<club> = {
         clubName: formValue.clubName,
         localisation: formValue.localisation,

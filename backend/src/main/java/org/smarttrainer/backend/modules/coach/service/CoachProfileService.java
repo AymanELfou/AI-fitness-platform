@@ -69,6 +69,16 @@ public class CoachProfileService {
                 .collect(Collectors.toList());
     }
 
+    public List<CoachProfileResponse> getByClubId(Long clubId) {
+        return coachRepository.findByClubId(clubId)
+                .stream()
+                .map(coach -> coachMapper.toResponse(
+                        coach,
+                        getRating(coach.getId())
+                ))
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public CoachProfileResponse update(Long id, CoachProfileRequest request) {
 

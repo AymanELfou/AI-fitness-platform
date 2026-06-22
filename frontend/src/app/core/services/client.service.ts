@@ -31,8 +31,17 @@ export class ClientService {
     return this.http.put<Client>(`${this.apiUrl}/${id}/profile`, clientData);
   }
 
-  upgradeToPremium(userId: number): Observable<Client> {
-    return this.http.patch<Client>(`${this.apiUrl}/${userId}/upgrade`, {});
+  // upgradeToPremium exige le clubId et le coachId
+  upgradeToPremium(userId: number, clubId?: number, coachId?: number): Observable<Client> {
+    let url = `${this.apiUrl}/${userId}/upgrade`;
+    const params: any = {};
+    if (clubId !== undefined && clubId !== null) {
+      params.clubId = clubId.toString();
+    }
+    if (coachId !== undefined && coachId !== null) {
+      params.coachId = coachId.toString();
+    }
+    return this.http.patch<Client>(url, {}, { params });
   }
 
   deleteClient(id: number): Observable<void> {

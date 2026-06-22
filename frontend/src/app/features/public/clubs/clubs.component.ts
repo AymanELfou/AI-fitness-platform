@@ -1,10 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { NavbarComponent } from '../../../shared/components/navbar/navbar.component';
 import { Club } from '../../../core/models/club.model';
 import { ClubService } from '../../../core/services/club.service';
+import { AuthService } from '../../../core/services/auth.service';
+import { CoachService, CoachProfileResponse } from '../../../core/services/coach.service';
+import { ClientService } from '../../../core/services/client.service';
 
 export interface Coach {
   id: number;
@@ -41,59 +44,15 @@ export class ClubsComponent implements OnInit {
   selectedClub: Club | null = null;
   selectedCoach: Coach | null = null;
 
-  // ── Static coaches data ──
-  coaches: Coach[] = [
-    {
-      id: 1, name: 'Youssef Amrani',
-      specialty: 'Strength & Hypertrophy',
-      experience: '8 years', avatar: '🏋️',
-      rating: 4.9, clients: 120,
-      certifications: ['NSCA-CSCS', 'ISSA CPT'],
-      bio: 'Elite powerlifting coach specializing in progressive overload programs and competition prep.'
-    },
-    {
-      id: 2, name: 'Sarah El Fassi',
-      specialty: 'Yoga & Flexibility',
-      experience: '6 years', avatar: '🧘',
-      rating: 4.8, clients: 95,
-      certifications: ['RYT-500', 'Yoga Alliance'],
-      bio: 'Certified yoga instructor combining Vinyasa flow with mobility training for athletes.'
-    },
-    {
-      id: 3, name: 'Karim Benali',
-      specialty: 'CrossFit & HIIT',
-      experience: '5 years', avatar: '⚡',
-      rating: 4.7, clients: 88,
-      certifications: ['CrossFit L3', 'NASM-PES'],
-      bio: 'High-intensity functional training expert. Builds endurance, agility and explosive power.'
-    },
-    {
-      id: 4, name: 'Amina Ouazzani',
-      specialty: 'Nutrition & Weight Loss',
-      experience: '7 years', avatar: '🥗',
-      rating: 4.9, clients: 150,
-      certifications: ['Precision Nutrition L2', 'ACE-HC'],
-      bio: 'Holistic nutrition coach helping clients transform their body composition through sustainable plans.'
-    },
-    {
-      id: 5, name: 'Omar Tazi',
-      specialty: 'Boxing & Combat Sports',
-      experience: '10 years', avatar: '🥊',
-      rating: 4.8, clients: 72,
-      certifications: ['AIBA Coach', 'NASM-CPT'],
-      bio: 'Former national boxing champion turned coach. Expert in striking, footwork and fight conditioning.'
-    },
-    {
-      id: 6, name: 'Leila Mansouri',
-      specialty: 'Pilates & Rehabilitation',
-      experience: '9 years', avatar: '💎',
-      rating: 4.9, clients: 110,
-      certifications: ['PMA-CPT', 'STOTT Pilates'],
-      bio: 'Clinical Pilates specialist focusing on injury prevention, posture correction and core stability.'
-    }
-  ];
+  coaches: Coach[] = [];
 
-  constructor(private clubService: ClubService) {}
+  constructor(
+    private clubService: ClubService,
+    private authService: AuthService,
+    private coachService: CoachService,
+    private clientService: ClientService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     this.loadClubs();
@@ -113,6 +72,38 @@ export class ClubsComponent implements OnInit {
         console.error(err);
       }
     });
+  }
+
+  mapCoach(backendCoach: CoachProfileResponse, index: number): Coach {
+    const avatars = ['🏋️', '🧘', '⚡', '🥗', '🥊', '💎'];
+    const bios = [
+      'Elite coach specializing in progressive overload programs and athletic conditioning.',
+      'Certified instructor combining mobility training and flexibility exercises.',
+      'High-intensity functional training expert focusing on building endurance and power.',
+      'Nutrition and weight management specialist helping clients transform their body composition.',
+      'Experienced boxing and combat sports trainer. Expert in striking and footwork.',
+      'Specialist in core stability, posture correction, and injury prevention.'
+    ];
+    
+    let certs: string[] = [];
+    if (backendCoach.certifications) {
+      certs = backendCoach.certifications.split(',').map(s => s.trim()).filter(Boolean);
+    }
+    if (certs.length === 0) {
+      certs = ['Certified Coach'];
+    }
+
+    return {
+      id: backendCoach.id,
+      name: backendCoach.userName || 'Coach',
+      specialty: backendCoach.speciality || 'Fitness Trainer',
+      experience: `${backendCoach.experience || 0} years`,
+      avatar: avatars[index % avatars.length],
+      rating: backendCoach.rating || 0.0,
+      clients: Math.floor(Math.random() * 80) + 20,
+      certifications: certs,
+      bio: bios[index % bios.length]
+    };
   }
 
   getClubImage(c: Club): string {
@@ -160,11 +151,41 @@ export class ClubsComponent implements OnInit {
   }
 
   // ── Modal actions ──
+  // Nouvelle modification: openCoachModal ne fait plus de fallback et affiche un message d'erreur si la liste est vide ou en cas d'erreur
   openCoachModal(club: Club): void {
+    if (!this.authService.isLoggedIn()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     this.selectedClub = club;
     this.selectedCoach = null;
     this.showCoachModal = true;
     document.body.style.overflow = 'hidden';
+    
+    this.loading = true;
+    this.coaches = [];
+    this.error = '';
+    this.coachService.getCoachesByClubId(club.id).subscribe({
+      next: (data: CoachProfileResponse[]) => {
+        if (data && data.length > 0) {
+          // Nouvelle modification: Remplir la liste des coachs depuis la base de données
+          this.coaches = data.map((bc, i) => this.mapCoach(bc, i));
+        } else {
+          // Nouvelle modification: Vider la liste et lever une erreur si aucun coach n'existe
+          this.coaches = [];
+          this.error = "Aucun coach n'est disponible dans ce club pour le moment.";
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load coaches:', err);
+        // Nouvelle modification: Vider la liste et lever une erreur en cas d'erreur de serveur/réseau
+        this.coaches = [];
+        this.error = "Une erreur est survenue lors du chargement des coachs.";
+        this.loading = false;
+      }
+    });
   }
 
   closeCoachModal(): void {
@@ -178,9 +199,26 @@ export class ClubsComponent implements OnInit {
   }
 
   confirmCoachSelection(): void {
-    if (!this.selectedCoach) return;
-    this.showCoachModal = false;
-    this.showSuccessModal = true;
+    if (!this.selectedCoach || !this.selectedClub) return;
+
+    const user = this.authService.currentUser();
+    if (!user || !user.id) {
+      console.error('User not authenticated properly');
+      return;
+    }
+
+    this.loading = true;
+    this.clientService.upgradeToPremium(user.id, this.selectedClub.id, this.selectedCoach.id).subscribe({
+      next: (res) => {
+        this.loading = false;
+        this.showCoachModal = false;
+        this.showSuccessModal = true;
+      },
+      error: (err) => {
+        console.error('Failed to upgrade to premium:', err);
+        this.loading = false;
+      }
+    });
   }
 
   closeSuccessModal(): void {
@@ -188,6 +226,7 @@ export class ClubsComponent implements OnInit {
     this.selectedClub = null;
     this.selectedCoach = null;
     document.body.style.overflow = '';
+    this.router.navigate(['/client/dashboard']);
   }
 
   starsArray(n: number): number[] {

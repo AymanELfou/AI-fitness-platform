@@ -6,10 +6,13 @@ import org.smarttrainer.backend.modules.coach.dto.CoachProfileResponse;
 import org.smarttrainer.backend.modules.coach.service.CoachProfileService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import java.util.List;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("api/v1/coaches")
+@CrossOrigin(origins = "http://localhost:4200")
+
 @RequiredArgsConstructor
 public class CoachProfileController {
 
@@ -45,6 +48,12 @@ public class CoachProfileController {
     @GetMapping
     public ResponseEntity<?> getAll() {
         return ResponseEntity.ok(service.getAll());
+    }
+
+    // Récupérer les coachs par l'ID du club
+    @GetMapping("club/{clubId}")
+    public ResponseEntity<List<CoachProfileResponse>> getAllByClubId(@PathVariable Long clubId) {
+        return ResponseEntity.ok(service.getByClubId(clubId));
     }
 
     // UPDATE

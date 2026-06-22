@@ -6,12 +6,16 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import org.smarttrainer.backend.domain.client.ClientProfile;
 import org.smarttrainer.backend.domain.client.SubscriptionPlan;
+import org.smarttrainer.backend.domain.coach.CoachProfile;
+import org.smarttrainer.backend.domain.club.ClubProfile;
 import org.smarttrainer.backend.domain.user.User;
 import org.smarttrainer.backend.modules.client.dto.ClientProfileRequest;
 import org.smarttrainer.backend.modules.client.dto.ClientProfileResponse;
 import org.smarttrainer.backend.modules.client.mapper.ClientMapper;
 import org.smarttrainer.backend.modules.client.repository.ClientProfileRepository;
 import org.smarttrainer.backend.modules.user.repository.UserRepository;
+import org.smarttrainer.backend.modules.coach.repository.CoachProfileRepository;
+import org.smarttrainer.backend.modules.club.repository.ClubProfileRepository;
 import org.springframework.boot.autoconfigure.pulsar.PulsarProperties;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,6 +30,8 @@ public class ClientProfileService {
     private final ClientProfileRepository clientProfileRepository;
     private final UserRepository userRepository;
     private final ClientMapper clientMapper;
+    private final CoachProfileRepository coachProfileRepository;
+    private final ClubProfileRepository clubProfileRepository;
 
     @Transactional
     public ClientProfileResponse create(Long userId, ClientProfileRequest request) {
@@ -80,10 +86,23 @@ public class ClientProfileService {
         clientProfileRepository.deleteById(id);
     }
 
+    // upgradeToPremium exige le club_id et le coach_id
     @Transactional
-    public ClientProfileResponse upgradeToPremium(Long userId) {
+    public ClientProfileResponse upgradeToPremium(Long userId, Long clubId, Long coachId) {
         ClientProfile profile = clientProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Client profile not found"));
+        
+        // assignation strictes du club
+        ClubProfile club = clubProfileRepository.findById(clubId)
+                .orElseThrow(() -> new RuntimeException("Club not found"));
+        profile.setClub(club);
+        
+        // assignation strictes du coach
+        CoachProfile coach = coachProfileRepository.findById(coachId)
+                .orElseThrow(() -> new RuntimeException("Coach not found"));
+        profile.setCoach(coach);
+        
+        // Changement de plan d'abonnement en PREMIUM
         profile.setSubscriptionPlan(SubscriptionPlan.PREMIUM);
         return clientMapper.toResponse(clientProfileRepository.save(profile));
     }
