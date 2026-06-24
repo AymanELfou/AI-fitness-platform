@@ -14,6 +14,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/abonnements")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class AbonnementController {
 
     private final AbonnementService service;

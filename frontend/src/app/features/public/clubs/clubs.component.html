@@ -171,8 +171,8 @@
 
               <!-- Footer -->
               <div class="cc-footer" style="justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 1rem; margin-top: 1rem;">
-                <button class="cc-join-btn" (click)="openCoachModal(c)">
-                  Join Club →
+                <button class="cc-join-btn" (click)="openAbonnementModal(c)">
+                  View Club →
                 </button>
               </div>
             </div>
@@ -213,6 +213,67 @@
     </div>
     <div class="cta-bg-pattern"></div>
   </section>
+
+  <!-- ══════════════════════════════════════
+      ABONNEMENT SELECTION MODAL
+  ══════════════════════════════════════ -->
+  <div class="modal-overlay" *ngIf="showAbonnementModal" (click)="closeAbonnementModal()">
+    <div class="modal-container coach-modal" (click)="$event.stopPropagation()">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="modal-header-left">
+          <div class="modal-icon">💳</div>
+          <div>
+            <h2 class="modal-title">Choose Your Subscription</h2>
+            <p class="modal-subtitle" *ngIf="selectedClub">
+              Select a subscription plan for <strong>{{ selectedClub.clubName }}</strong>
+            </p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeAbonnementModal()">✕</button>
+      </div>
+
+      <!-- Abonnement Grid -->
+      <div class="coach-grid" *ngIf="abonnements.length > 0">
+        <div
+          class="coach-card"
+          *ngFor="let abonnement of abonnements"
+          [class.selected]="selectedAbonnement?.id === abonnement.id"
+          (click)="selectAbonnement(abonnement)">
+
+          <div class="coach-card-check" *ngIf="selectedAbonnement?.id === abonnement.id">✓</div>
+
+          <h3 class="coach-name">{{ abonnement.type }}</h3>
+          <div class="coach-specialty">{{ abonnement.price }} MAD</div>
+
+          <p class="coach-bio">{{ abonnement.description || 'No description available' }}</p>
+
+          <div class="coach-meta">
+            <span class="coach-meta-item">⏱ {{ abonnement.duration }} days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div class="modal-error-message" *ngIf="error" style="padding: 2.5rem; text-align: center; color: #f87171; background: rgba(248, 113, 113, 0.1); border: 1px solid rgba(248, 113, 113, 0.2); border-radius: 12px; margin: 1rem 0;">
+        <span style="font-size: 2rem; display: block; margin-bottom: 0.5rem;">⚠️</span>
+        <h4 style="margin: 0 0 0.25rem 0; font-size: 1.1rem; font-weight: 600; color: red;">Erreur</h4>
+        <p style="margin: 0; font-size: 0.9rem; color: #94a3b8;">{{ error }}</p>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="modal-btn-ghost" (click)="closeAbonnementModal()">Cancel</button>
+        <button
+          class="modal-btn-primary"
+          [disabled]="!selectedAbonnement"
+          (click)="confirmAbonnementSelection()">
+          <span *ngIf="selectedAbonnement">Continue with {{ selectedAbonnement.type }} →</span>
+          <span *ngIf="!selectedAbonnement">Select a plan to continue</span>
+        </button>
+      </div>
+    </div>
+  </div>
 
   <!-- ══════════════════════════════════════
       COACH SELECTION MODAL
@@ -324,9 +385,13 @@
             <span class="success-label">Specialty</span>
             <span class="success-value">{{ selectedCoach?.specialty }}</span>
           </div>
-          <div class="success-card-row">
+          <div class="success-card-row" *ngIf="selectedAbonnement">
+            <span class="success-label">Subscription</span>
+            <span class="success-value">{{ selectedAbonnement.type }} ({{ selectedAbonnement.price }} DH)</span>
+          </div>
+          <div class="success-card-row" *ngIf="selectedAbonnement">
             <span class="success-label">Membership</span>
-            <span class="success-value premium-badge">⭐ PREMIUM</span>
+            <span class="success-value premium-badge">⭐ {{ selectedAbonnement.type }}</span>
           </div>
         </div>
 
