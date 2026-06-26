@@ -1,93 +1,394 @@
-<div class="p-8 bg-slate-50 min-h-screen">
+<div class="p-8 bg-slate-50 min-h-screen relative overflow-hidden">
   
-  <!-- 🌟 Top Control Bar matching your screenshot structure perfectly -->
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+  <!-- Notifications Banners -->
+  <div *ngIf="successMessage" class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-emerald-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+    <span class="text-xl">💪</span>
     <div>
-      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Community Feed</h1>
-      <p class="text-sm text-slate-500 mt-1">Latest system announcements, notifications, and updates around your club.</p>
-    </div>
-    
-    <div class="flex items-center gap-3 self-end md:self-auto">
-      <!-- Search Input aligned left of the button -->
-      <div class="relative">
-        <input type="text" placeholder="Search posts..." 
-               class="w-64 pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm">
-        <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🔍</span>
-      </div>
-      
-      <!-- Styled Action Button -->
-      <button (click)="openModal()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md shadow-blue-500/10 transition-all transform active:scale-95">
-        ＋ Add Post
-      </button>
+      <h4 class="font-bold text-sm">Success!</h4>
+      <p class="text-xs opacity-90">{{ successMessage }}</p>
     </div>
   </div>
 
-  <!-- Announcement Posts Feed Wall -->
-  <div class="max-w-3xl mx-auto space-y-4">
-    <div *ngFor="let post of posts" class="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-all duration-300 relative flex gap-4">
+  <div *ngIf="errorMessage" class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-rose-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+    <span class="text-xl">⚠️</span>
+    <div>
+      <h4 class="font-bold text-sm">Action Failed</h4>
+      <p class="text-xs opacity-90">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/10 backdrop-blur-[2px]">
+    <div class="bg-white p-5 rounded-2xl shadow-xl flex flex-col items-center gap-3 border border-slate-100">
+      <div class="animate-spin w-8 h-8 border-4 border-t-indigo-600 border-indigo-200 rounded-full"></div>
+      <p class="text-xs font-bold text-slate-600">Syncing community network...</p>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- STATE 1: NO COMMUNITY INITIALIZED (ONBOARDING) -->
+  <!-- ======================================================= -->
+  <div *ngIf="!hasCommunity" class="max-w-3xl mx-auto my-12 animate-fade-in-up">
+    
+    <!-- If Club has Premium, show Auto-create space -->
+    <div *ngIf="isPremium" class="bg-white rounded-3xl border border-slate-100 shadow-xl p-10 text-center glass-panel">
+      <div class="w-24 h-24 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-3xl flex items-center justify-center text-white text-4xl shadow-xl rotate-6 mx-auto mb-8">
+        👥
+      </div>
+      <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Activez votre Espace Communauté</h2>
+      <p class="text-slate-500 mt-3 text-sm max-w-lg mx-auto leading-relaxed">
+        Créez un canal d'échange privilégié pour votre club. Permettez à vos <strong>Coachs</strong> et <strong>Clients</strong> de publier des posts, d'interagir et de partager leur progression sportive directement sur la plateforme.
+      </p>
+
+      <div class="mt-8 flex justify-center">
+        <button (click)="initializeCommunity()" 
+                class="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-8 py-4 rounded-2xl text-sm shadow-lg shadow-indigo-500/20 transition-all transform active:scale-95 pulse-glow">
+          ＋ Initialiser le Feed Communauté
+        </button>
+      </div>
+    </div>
+
+    <!-- If Club is Freemium, show Lock Screen / Simulation -->
+    <div *ngIf="!isPremium" class="bg-white rounded-3xl border border-slate-100 shadow-xl p-10 text-center glass-panel relative overflow-hidden">
+      <div class="absolute top-0 right-0 bg-amber-500 text-white text-[10px] font-black uppercase px-6 py-1.5 rotate-45 translate-x-7 translate-y-3 shadow-sm">
+        Premium
+      </div>
       
-      <div class="w-1 bg-gradient-to-b from-blue-500 to-indigo-500 rounded-full h-auto"></div>
+      <div class="w-24 h-24 bg-amber-50 border border-amber-100 rounded-full flex items-center justify-center mx-auto mb-6">
+        <span class="text-4xl">🔒</span>
+      </div>
+
+      <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight">Espace Communauté Verrouillé</h2>
+      <p class="text-slate-500 mt-3 text-sm max-w-lg mx-auto leading-relaxed">
+        L'Espace Communauté (Feed, Modération des posts des membres et coachs) est une fonctionnalité exclusive réservée aux clubs abonnés à notre offre <strong>Premium</strong>.
+      </p>
+
+      <!-- Alert warning badge -->
+      <div class="my-6 p-4 bg-amber-50 border border-amber-100/50 rounded-2xl max-w-md mx-auto flex items-center gap-3 text-amber-800 text-left">
+        <span class="text-xl">💡</span>
+        <p class="text-xs font-semibold leading-relaxed">
+          Pour vous permettre de juger de la qualité de cette interface, vous pouvez tester la version Premium en mode simulation ci-dessous.
+        </p>
+      </div>
+
+      <div class="mt-8 flex flex-col md:flex-row gap-4 justify-center items-center">
+        <button class="w-full md:w-auto px-8 py-3.5 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-2xl text-sm transition-all border border-slate-200">
+          En savoir plus sur l'offre
+        </button>
+        <button (click)="simulatePremium()" 
+                class="w-full md:w-auto px-8 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-2xl text-sm shadow-lg shadow-amber-500/20 transition-all transform active:scale-95 animate-pulse">
+          ⚡ Simuler l'Espace Premium
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- STATE 2: COMMUNITY IS ACTIVE (DASHBOARD FEED) -->
+  <!-- ======================================================= -->
+  <div *ngIf="hasCommunity" class="max-w-5xl mx-auto animate-fade-in-up">
+    
+    <!-- Community Profile Info Banner -->
+    <div class="bg-white p-6 md:p-8 rounded-3xl border border-slate-100 shadow-sm glass-panel flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8 relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-indigo-500 to-blue-500"></div>
       
       <div class="flex-1">
-        <div class="flex items-start justify-between gap-4 mb-2">
-          <div class="flex items-center gap-2">
-            <span class="text-base">📢</span>
-            <h3 class="font-bold text-slate-800 text-base tracking-tight">{{ post.title }}</h3>
+        <div class="flex items-center gap-3">
+          <span class="text-3xl">💬</span>
+          <div>
+            <h1 class="text-2xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+              {{ communityName }}
+              <button (click)="openSettingsModal()" title="Paramètres Communauté" class="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md hover:bg-slate-50">
+                ⚙️
+              </button>
+            </h1>
+            <p class="text-sm text-slate-500 mt-1 leading-relaxed">{{ communityDescription }}</p>
           </div>
-          <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold tracking-wider uppercase bg-slate-100 text-slate-500 border border-slate-200/50">
-            {{ post.category }}
-          </span>
-        </div>
-        
-        <p class="text-slate-600 text-sm leading-relaxed mb-3 font-medium">{{ post.content }}</p>
-        
-        <div class="flex items-center justify-between text-xs text-slate-400 font-semibold pt-2 border-t border-slate-50">
-          <span>SmartTrainer Broadcast</span>
-          <span class="text-blue-500 bg-blue-50 px-2 py-0.5 rounded-md text-[10px]">{{ post.date }}</span>
         </div>
       </div>
 
+      <!-- Quick Metrics Panel inside header -->
+      <div class="flex flex-wrap items-center gap-4 bg-slate-50 p-4 rounded-2xl border border-slate-100/50">
+        <div class="text-center px-4 border-r border-slate-200/60 last:border-0">
+          <span class="text-xs text-slate-400 font-bold block uppercase tracking-wider">Posts</span>
+          <span class="text-lg font-black text-slate-800">{{ posts.length }}</span>
+        </div>
+        <div class="text-center px-4 border-r border-slate-200/60 last:border-0">
+          <span class="text-xs text-slate-400 font-bold block uppercase tracking-wider">Moderator</span>
+          <span class="text-xs font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md mt-0.5 block">Club Board</span>
+        </div>
+        <div class="text-center px-4 last:border-0">
+          <button (click)="openPostModal()" 
+                  class="flex items-center gap-1.5 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-4 py-2.5 rounded-xl text-xs shadow-md shadow-indigo-500/10 transition-colors">
+            ＋ Publier Post
+          </button>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- Modern Modal Overlay for Adding a New Post -->
-  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl border border-slate-100 p-6 relative">
-      <button (click)="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+    <!-- Feed Wall & Filters Sidebar -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
       
-      <div class="mb-5">
-        <h3 class="text-lg font-bold text-slate-800">Create Community Post</h3>
-        <p class="text-xs text-slate-400 mt-1">Publish announcements or events directly to the feed.</p>
+      <!-- Filter Sidebar -->
+      <div class="lg:col-span-1 space-y-6">
+        
+        <!-- Search bar -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+          <label class="block text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-2">Search Content</label>
+          <div class="relative">
+            <input type="text" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange()" placeholder="Type keywords..." 
+                   class="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+            <span class="absolute left-3 top-3 text-slate-400 text-xs">🔍</span>
+          </div>
+        </div>
+
+        <!-- Filter Navigation Pill List -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-2">
+          <label class="block text-xs font-extrabold text-slate-400 uppercase tracking-wider mb-3">Filter Feed Categories</label>
+          
+          <button (click)="setFilter('all')" 
+                  [class.bg-indigo-600]="activeFilter === 'all'" [class.text-white]="activeFilter === 'all'"
+                  [class.bg-slate-50]="activeFilter !== 'all'" [class.text-slate-600]="activeFilter !== 'all'"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:translate-x-1">
+            <span>🌐 Tout le Flux</span>
+            <span class="px-2 py-0.5 rounded-md text-[9px] font-black" [class.bg-indigo-500]="activeFilter === 'all'" [class.text-white]="activeFilter === 'all'" [class.bg-slate-200]="activeFilter !== 'all'">
+              {{ posts.length }}
+            </span>
+          </button>
+
+          <button (click)="setFilter('announcement')" 
+                  [class.bg-indigo-600]="activeFilter === 'announcement'" [class.text-white]="activeFilter === 'announcement'"
+                  [class.bg-slate-50]="activeFilter !== 'announcement'" [class.text-slate-600]="activeFilter !== 'announcement'"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:translate-x-1">
+            <span>📢 Annonces Club</span>
+            <span class="px-2 py-0.5 rounded-md text-[9px] font-black" [class.bg-indigo-500]="activeFilter === 'announcement'" [class.text-white]="activeFilter === 'announcement'" [class.bg-slate-200]="activeFilter !== 'announcement'">
+              📢
+            </span>
+          </button>
+
+          <button (click)="setFilter('coach')" 
+                  [class.bg-indigo-600]="activeFilter === 'coach'" [class.text-white]="activeFilter === 'coach'"
+                  [class.bg-slate-50]="activeFilter !== 'coach'" [class.text-slate-600]="activeFilter !== 'coach'"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:translate-x-1">
+            <span>🏋️‍♂️ Posts des Coachs</span>
+            <span class="px-2 py-0.5 rounded-md text-[9px] font-black" [class.bg-indigo-500]="activeFilter === 'coach'" [class.text-white]="activeFilter === 'coach'" [class.bg-slate-200]="activeFilter !== 'coach'">
+              PRO
+            </span>
+          </button>
+
+          <button (click)="setFilter('client')" 
+                  [class.bg-indigo-600]="activeFilter === 'client'" [class.text-white]="activeFilter === 'client'"
+                  [class.bg-slate-50]="activeFilter !== 'client'" [class.text-slate-600]="activeFilter !== 'client'"
+                  class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-xs font-bold transition-all hover:translate-x-1">
+            <span>👥 Posts des Membres</span>
+            <span class="px-2 py-0.5 rounded-md text-[9px] font-black" [class.bg-indigo-500]="activeFilter === 'client'" [class.text-white]="activeFilter === 'client'" [class.bg-slate-200]="activeFilter !== 'client'">
+              MEM
+            </span>
+          </button>
+        </div>
       </div>
 
-      <div class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Post Title</label>
-          <input type="text" [(ngModel)]="newPost.title" placeholder="e.g. Summer Pool Maintenance 🏊‍♂️" 
-                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+      <!-- Feed Container -->
+      <div class="lg:col-span-3 space-y-6">
+        
+        <!-- Empty State in Feed -->
+        <div *ngIf="filteredPosts.length === 0" class="bg-white rounded-3xl border border-slate-100 shadow-sm p-16 text-center glass-panel">
+          <span class="text-4xl block mb-4">📭</span>
+          <h3 class="font-bold text-slate-700 text-lg">Aucun Post Trouvé</h3>
+          <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Il n'y a actuellement aucune publication correspondant aux critères de filtrage dans cet espace communauté.</p>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Category</label>
-          <select [(ngModel)]="newPost.category" 
-                  class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
-            <option value="Announcement">Announcement</option>
-            <option value="Event">Event</option>
-            <option value="Alert">Alert</option>
-          </select>
-        </div>
+        <!-- Post Cards Loop -->
+        <div *ngFor="let post of filteredPosts" class="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 hover:shadow-md transition-all duration-300 relative flex flex-col gap-4 animate-fade-in-up">
+          
+          <!-- Header with author data -->
+          <div class="flex items-start justify-between gap-4">
+            <div class="flex items-center gap-3.5">
+              
+              <!-- Avatar with border depending on Role -->
+              <div class="w-11 h-11 rounded-2xl border-2 font-black flex items-center justify-center text-sm uppercase relative overflow-hidden shadow-sm"
+                   [ngClass]="getRoleBorderClass(post.userRole)">
+                {{ post.userName ? post.userName.charAt(0) : 'U' }}
+              </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Content Message</label>
-          <textarea [(ngModel)]="newPost.content" rows="4" placeholder="Write details here..." 
-                    class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800 resize-none"></textarea>
-        </div>
-      </div>
+              <div>
+                <h4 class="font-extrabold text-slate-800 text-sm hover:text-indigo-600 transition-colors">
+                  {{ post.userName || 'Utilisateur Anonyme' }}
+                </h4>
+                
+                <!-- Display metadata (Role Badge and Date) -->
+                <div class="flex items-center gap-2 mt-1">
+                  <span class="px-2 py-0.5 rounded-lg text-[9px] font-extrabold uppercase tracking-wide"
+                        [ngClass]="getRoleBadgeClass(post.userRole)">
+                    {{ getRoleDisplayName(post.userRole) }}
+                  </span>
+                  <span class="text-[10px] text-slate-400 font-semibold">• {{ post.createdAt | date: 'short' }}</span>
+                </div>
+              </div>
+            </div>
 
-      <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
-        <button (click)="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
-        <button (click)="savePost()" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition-colors">Publish Post</button>
+            <!-- Action buttons (Delete for moderation, Edit if authored by Club) -->
+            <div class="flex items-center gap-2">
+              <button *ngIf="post.userRole === 'ROLE_CLUB'" (click)="openPostModal(post)" title="Modifier" 
+                      class="text-slate-400 hover:text-slate-600 hover:bg-slate-100 p-1.5 rounded-lg transition-colors">
+                ✏️
+              </button>
+              <button (click)="confirmDeletePost(post)" title="Supprimer (Modération)" 
+                      class="text-rose-400 hover:text-rose-600 hover:bg-rose-50 p-1.5 rounded-lg transition-colors">
+                🗑️
+              </button>
+            </div>
+          </div>
+
+          <!-- Body content -->
+          <div class="space-y-4">
+            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line font-medium">
+              {{ post.content }}
+            </p>
+            
+            <!-- Optional post Image -->
+            <div *ngIf="post.imageUrl" class="rounded-2xl overflow-hidden border border-slate-100/50 max-h-96">
+              <img [src]="post.imageUrl" alt="Post attachment image" class="w-full h-full object-cover animate-fade-in-up">
+            </div>
+          </div>
+
+          <!-- Footer stats (Likes, comments) -->
+          <div class="flex items-center gap-6 pt-4 border-t border-slate-50 text-xs text-slate-400 font-bold">
+            <span class="flex items-center gap-1.5 hover:text-red-500 cursor-pointer transition-colors">
+              ❤️ {{ getLikesCount(post) }} J'aime
+            </span>
+            <span class="flex items-center gap-1.5 hover:text-blue-500 cursor-pointer transition-colors">
+              💬 {{ getCommentsCount(post) }} Commentaires
+            </span>
+          </div>
+
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL: ADD / EDIT ANNOUNCEMENT -->
+  <!-- ======================================================= -->
+  <div *ngIf="isPostModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-8 relative animate-scale-up glass-modal">
+      <button (click)="closePostModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+      
+      <div class="mb-6 flex items-center gap-3">
+        <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500 text-xl">
+          📢
+        </div>
+        <div>
+          <h3 class="text-xl font-extrabold text-slate-800">{{ isEditMode ? 'Modifier l\'Annonce' : 'Nouvelle Annonce' }}</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Publiez une note officielle sur le feed de votre club.</p>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Post content -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Message de l'annonce</label>
+          <textarea [(ngModel)]="currentPost.content" rows="5" placeholder="Saisissez votre annonce ici..." 
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800 resize-none font-medium"></textarea>
+        </div>
+
+        <!-- Optional Image URL -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">URL de l'image (Optionnel)</label>
+          <div class="relative">
+            <input type="text" [(ngModel)]="currentPost.imageUrl" placeholder="https://example.com/image.jpg" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800 font-medium">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🖼️</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-8 pt-4 border-t border-slate-100">
+        <button (click)="closePostModal()" class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+        <button (click)="savePost()" class="w-1/2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md transition-colors" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full inline-block mr-1"></span>
+          {{ isEditMode ? 'Enregistrer Modifs' : 'Publier Annonce' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL: COMMUNITY PROFILE SETTINGS -->
+  <!-- ======================================================= -->
+  <div *ngIf="isSettingsModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-8 relative animate-scale-up glass-modal">
+      <button (click)="closeSettingsModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+      
+      <div class="mb-6 flex items-center gap-3">
+        <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 text-xl">
+          ⚙️
+        </div>
+        <div>
+          <h3 class="text-xl font-extrabold text-slate-800">Paramètres de la Communauté</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Personnalisez l'identité de votre espace communautaire.</p>
+        </div>
+      </div>
+
+      <div class="space-y-5">
+        <!-- Community Name -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nom de l'Espace</label>
+          <div class="relative">
+            <input type="text" [(ngModel)]="settingsCommunityName" placeholder="Ex: Club Premium Feed" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 font-bold font-medium">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">💬</span>
+          </div>
+        </div>
+
+        <!-- Community Description -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Description</label>
+          <textarea [(ngModel)]="settingsCommunityDescription" rows="4" placeholder="Description de l'espace..." 
+                    class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-amber-500 transition-all text-slate-800 resize-none font-medium"></textarea>
+        </div>
+      </div>
+
+      <div class="flex gap-3 mt-8 pt-4 border-t border-slate-100">
+        <button (click)="closeSettingsModal()" class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
+        <button (click)="saveCommunitySettings()" class="w-1/2 py-3 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold shadow-md transition-colors" [disabled]="isLoading">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-amber-200 rounded-full inline-block mr-1"></span>
+          Enregistrer Paramètres
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================= -->
+  <!-- MODAL: STYLIZED ACTION DELETE POST CONFIRMATION -->
+  <!-- ======================================================= -->
+  <div *ngIf="isDeleteConfirmOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 p-8 text-center animate-scale-up glass-modal">
+      <!-- Warning graphic badge -->
+      <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-rose-100">
+        <img src="https://cdn-icons-png.flaticon.com/512/9068/9068699.png" alt="Warning Danger" class="w-12 h-12 object-contain animate-pulse">
+      </div>
+
+      <h3 class="text-xl font-extrabold text-slate-800">Modérer la Publication ?</h3>
+      <p class="text-sm text-slate-500 mt-2">
+        Êtes-vous sûr de vouloir supprimer définitivement le post de <strong>{{ postToDelete?.userName }}</strong> de votre feed ? 
+        Cette action est irréversible.
+      </p>
+
+      <!-- Confirmation Panel Controls -->
+      <div class="flex gap-4 mt-8">
+        <button type="button" (click)="closeDeleteConfirm()" 
+                class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+          Annuler, Garder
+        </button>
+        
+        <button type="button" (click)="executeDeletePost()" [disabled]="isLoading"
+                class="w-1/2 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-md shadow-rose-600/10 transition-colors flex items-center justify-center gap-2">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-rose-200 rounded-full"></span>
+          Oui, Supprimer
+        </button>
+      </div>
+    </div>
+  </div>
+
 </div>

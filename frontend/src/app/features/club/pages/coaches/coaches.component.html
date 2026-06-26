@@ -1,108 +1,480 @@
-<div class="p-8 bg-slate-50 min-h-screen">
-  <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
+<div class="p-8 bg-slate-50 min-h-screen relative overflow-hidden">
+  <!-- Notifications Banners -->
+  <div *ngIf="successMessage" class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-emerald-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+    <span class="text-xl">💪</span>
     <div>
-      <h1 class="text-2xl font-bold text-slate-800 tracking-tight">Coaches Roster</h1>
-      <p class="text-sm text-slate-500 mt-1">Manage and monitor performance stats of your club trainers team.</p>
-    </div>
-    
-    <div class="flex items-center gap-3 self-end md:self-auto">
-      <div class="relative">
-        <input type="text" placeholder="Search coaches..." 
-               class="w-64 pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all shadow-sm">
-        <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🔍</span>
-      </div>
-      <button (click)="openModal()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm shadow-md shadow-blue-500/10 transition-all transform active:scale-95">
-        ＋ Add Coach
-      </button>
+      <h4 class="font-bold text-sm">Success!</h4>
+      <p class="text-xs opacity-90">{{ successMessage }}</p>
     </div>
   </div>
 
-  <div class="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left border-collapse">
-        <thead>
-          <tr class="bg-slate-50/70 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-100">
-            <th class="py-4 px-6">Coach Name</th>
-            <th class="py-4 px-6">Specialty Field</th>
-            <th class="py-4 px-6">Active Members</th>
-            <th class="py-4 px-6">Rating Performance</th>
-            <th class="py-4 px-6 text-center">Actions</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-50 text-sm text-slate-700">
-          <tr *ngFor="let coach of coaches" [ngClass]="{'opacity-60 bg-red-50/5': coach.isBanned}" class="hover:bg-slate-50/40 transition-colors group">
-            
-            <td class="py-4 px-6">
-              <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full font-bold text-blue-600 bg-slate-100 flex items-center justify-center text-xs uppercase border border-slate-200 shadow-inner">
-                  {{ coach.name.charAt(0) }}
+  <div *ngIf="errorMessage" class="fixed top-6 right-6 z-50 flex items-center gap-3 bg-rose-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+    <span class="text-xl">⚠️</span>
+    <div>
+      <h4 class="font-bold text-sm">Action Failed</h4>
+      <p class="text-xs opacity-90">{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- VIEW MODE: LIST (COACHES ROSTER) -->
+  <!-- ========================================== -->
+  <div *ngIf="viewMode === 'list'" class="animate-fade-in-up">
+    
+    <!-- Top Header & Actions bar -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-8">
+      <div>
+        <h1 class="text-3xl font-extrabold text-slate-800 tracking-tight flex items-center gap-2">
+          <span>🏋️‍♂️</span> Club Coaches Roster
+        </h1>
+        <p class="text-sm text-slate-500 mt-1">Recruit, manage, and monitor the performance of your fitness trainer crew.</p>
+      </div>
+      
+      <div class="flex items-center gap-4 self-end md:self-auto">
+        <div class="relative">
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search trainers..." 
+                 class="w-64 pl-10 pr-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-all shadow-sm">
+          <span class="absolute left-3.5 top-3.5 text-slate-400">🔍</span>
+        </div>
+        
+        <button (click)="setViewMode('add')" 
+                class="flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-lg shadow-indigo-600/10 transition-all transform active:scale-95 pulse-glow">
+          <svg class="w-5 h-5 text-white animate-bounce" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
+          </svg>
+          Add Trainer Account
+        </button>
+      </div>
+    </div>
+
+    <!-- Quick Stats Widgets (Adds Premium feel) -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 gym-card">
+        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0 1 8.625 21c-2.031 0-3.921-.53-5.562-1.464l-.08-.054a3.375 3.375 0 0 1 4.103-5.22 8.507 8.507 0 0 1 11.14 0 3.375 3.375 0 0 1 4.103 5.22l-.08.054a11.388 11.388 0 0 1-6.208 1.838v-.109ZM15 9a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm6 3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Zm-13.5-3a2.25 2.25 0 1 1-4.5 0 2.25 2.25 0 0 1 4.5 0Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 font-semibold block">Total Trainers</span>
+          <span class="text-xl font-bold text-slate-800">{{ coaches.length }} Active</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 gym-card">
+        <div class="p-3 bg-amber-50 text-amber-500 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499c.15-.358.53-.598.92-.598s.77.24.92.598l1.455 3.476 3.793.411c.394.043.71.32.814.708.104.388-.008.796-.289 1.072l-2.793 2.72.695 3.727c.072.39-.082.784-.412 1.018-.33.233-.762.249-1.107.042l-3.326-1.996-3.327 1.996c-.345.207-.777.19-1.107-.042-.33-.234-.484-.628-.412-1.018l.695-3.727-2.793-2.72c-.281-.276-.393-.684-.289-1.072.104-.388.42-.665.814-.708l3.793-.411 1.455-3.476Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 font-semibold block">Top Rating</span>
+          <span class="text-xl font-bold text-slate-800">4.8 ★ / 5.0</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 gym-card">
+        <div class="p-3 bg-emerald-50 text-emerald-500 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 font-semibold block">Est. Revenue Share</span>
+          <span class="text-xl font-bold text-slate-800">Premium Cut</span>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-4 gym-card">
+        <div class="p-3 bg-rose-50 text-rose-500 rounded-xl">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286Zm0 13.036h.008v.008H12v-.008Z"/>
+          </svg>
+        </div>
+        <div>
+          <span class="text-xs text-slate-400 font-semibold block">Safety & Compliance</span>
+          <span class="text-xl font-bold text-slate-800">100% Certified</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Table Roster Card -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-sm overflow-hidden glass-panel">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-50/80 text-slate-400 uppercase text-[11px] font-bold tracking-wider border-b border-slate-100">
+              <th class="py-5 px-6">Coach Trainer</th>
+              <th class="py-5 px-6">Specialty Field</th>
+              <th class="py-5 px-6">Experience</th>
+              <th class="py-5 px-6">Tariff Rate</th>
+              <th class="py-5 px-6">Rating Performance</th>
+              <th class="py-4 px-6 text-center">Actions Panel</th>
+            </tr>
+          </thead>
+          
+          <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+            <!-- Loading Indicator -->
+            <tr *ngIf="isLoading && coaches.length === 0">
+              <td colspan="6" class="py-12 text-center text-slate-400">
+                <div class="inline-block animate-spin w-8 h-8 border-4 border-t-indigo-600 border-indigo-200 rounded-full mb-2"></div>
+                <p class="text-xs font-semibold">Synchronizing roster database...</p>
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="filteredCoaches.length === 0">
+              <td colspan="6" class="py-16 text-center text-slate-400">
+                <span class="text-4xl block mb-3">👨‍🏫</span>
+                <h4 class="font-bold text-slate-700">No Coaches Found</h4>
+                <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Try adjusting your search criteria.</p>
+              </td>
+            </tr>
+
+            <!-- Roster Row -->
+            <tr *ngFor="let coach of filteredCoaches" class="hover:bg-slate-50/50 transition-colors group border-b border-slate-50 last:border-0">
+              <td class="py-5 px-6">
+                <div class="flex items-center gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl font-bold text-indigo-600 bg-indigo-50 flex items-center justify-center text-lg uppercase border border-indigo-100 shadow-sm relative overflow-hidden">
+                    {{ coach.userName ? coach.userName.charAt(0) : 'C' }}
+                    <!-- Mini bicep badge overlay -->
+                    <span class="absolute bottom-0 right-0 bg-indigo-600 text-white text-[8px] px-1 rounded-tl-md">PRO</span>
+                  </div>
+                  <div>
+                    <h4 class="font-bold text-slate-800 group-hover:text-indigo-600 transition-colors">{{ coach.userName || 'Unknown Trainer' }}</h4>
+                    <span class="text-[10px] font-semibold flex items-center gap-1 mt-0.5 text-emerald-500">
+                      <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                      On Duty
+                    </span>
+                  </div>
                 </div>
-                <div>
-                  <h4 class="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{{ coach.name }}</h4>
-                  <span class="text-[11px] font-semibold flex items-center gap-1 mt-0.5" [ngClass]="coach.isBanned ? 'text-red-500' : 'text-emerald-500'">
-                    <span class="w-1.5 h-1.5 rounded-full" [ngClass]="coach.isBanned ? 'bg-red-500' : 'bg-emerald-500'"></span>
-                    {{ coach.isBanned ? 'Suspended' : 'Active Duty' }}
+              </td>
+
+              <td class="py-5 px-6">
+                <span class="text-xs font-bold px-3 py-1.5 rounded-xl bg-indigo-50 text-indigo-600 border border-indigo-100 flex items-center gap-1 w-max">
+                  🏋️ {{ coach.speciality || 'General Fitness' }}
+                </span>
+              </td>
+
+              <td class="py-5 px-6">
+                <div class="flex flex-col">
+                  <span class="text-slate-800 font-bold text-sm">{{ coach.experience || 0 }} Years</span>
+                  <span class="text-[10px] text-slate-400 font-semibold">{{ coach.certifications || 'Certified Trainer' }}</span>
+                </div>
+              </td>
+
+              <td class="py-5 px-6">
+                <span class="text-slate-900 font-extrabold text-sm">{{ coach.tariff || 0 }} DH</span>
+                <span class="text-[10px] text-slate-400 block font-medium">per hour</span>
+              </td>
+
+              <td class="py-5 px-6">
+                <div class="flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-xl w-max border border-amber-100">
+                  <span class="text-xs font-black text-amber-600 flex items-center gap-0.5">
+                    ⭐ {{ (coach.rating || 0).toFixed(1) }}
                   </span>
                 </div>
-              </div>
-            </td>
+              </td>
 
-            <td class="py-4 px-6">
-              <span class="text-xs font-bold px-2.5 py-1 rounded-lg bg-blue-50/60 text-blue-600 border border-blue-100/30">
-                {{ coach.specialty }}
-              </span>
-            </td>
+              <td class="py-5 px-6 text-center">
+                <!-- Realistic Action Buttons using CDN action imagery for premium feel -->
+                <div class="flex items-center justify-center gap-4">
+                  <!-- Edit Coach Action Image -->
+                  <button (click)="openEditModal(coach)" title="Modifier Profile" class="focus:outline-none">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2921/2921222.png" 
+                         alt="Edit Profile" 
+                         class="w-9 h-9 action-img-btn rounded-full object-cover">
+                  </button>
 
-            <td class="py-4 px-6">
-              <span class="text-slate-700 font-bold">{{ coach.activeMembers }}</span>
-              <span class="text-xs text-slate-400 font-medium"> Trainees</span>
-            </td>
-
-            <td class="py-4 px-6">
-              <span class="text-sm font-bold text-amber-500 flex items-center gap-1">⭐ {{ coach.rating.toFixed(1) }}</span>
-            </td>
-
-            <td class="py-4 px-6 text-center">
-              <div class="flex items-center justify-center gap-1">
-                <button (click)="openModal(coach)" class="p-2 rounded-lg text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all">✏️</button>
-                <button (click)="toggleBanCoach(coach)" class="p-2 rounded-lg text-slate-400 hover:text-amber-600 hover:bg-amber-50 transition-all">🚫</button>
-                <button (click)="deleteCoach(coach.id)" class="p-2 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-all">🗑️</button>
-              </div>
-            </td>
-
-          </tr>
-        </tbody>
-      </table>
+                  <!-- Delete Coach Action Image -->
+                  <button (click)="confirmDeleteCoach(coach)" title="Désabonner Coach" class="focus:outline-none">
+                    <img src="https://cdn-icons-png.flaticon.com/512/9068/9068699.png" 
+                         alt="Delete Account" 
+                         class="w-9 h-9 action-img-btn rounded-full object-cover">
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 
-  <div *ngIf="isModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
-    <div class="bg-white w-full max-w-md rounded-2xl shadow-xl border border-slate-100 p-6 relative">
-      <button (click)="closeModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+  <!-- ========================================== -->
+  <!-- VIEW MODE: ADD COACH (CREATIVE GYM FORM) -->
+  <!-- ========================================== -->
+  <div *ngIf="viewMode === 'add'" class="animate-fade-in-up max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="flex items-center justify-between mb-8 pb-4 border-b border-slate-200">
+      <div>
+        <button (click)="setViewMode('list')" class="text-indigo-600 hover:text-indigo-700 font-bold text-sm flex items-center gap-1 mb-2 transition-colors">
+          ⬅️ Back to Roster List
+        </button>
+        <h2 class="text-3xl font-extrabold text-slate-800 tracking-tight flex items-center gap-3">
+          <span>💪</span> Recruter un Coach Sportif
+        </h2>
+        <p class="text-sm text-slate-500 mt-1">Créez le compte d'accès et le profil technique de votre futur entraîneur.</p>
+      </div>
+
+      <!-- Gym Dumbbell Icon decoration -->
+      <div class="w-16 h-16 bg-gradient-to-tr from-indigo-500 to-blue-500 rounded-2xl flex items-center justify-center text-white text-2xl shadow-lg rotate-12">
+        🏋️‍♂️
+      </div>
+    </div>
+
+    <!-- Main Creative Form -->
+    <form [formGroup]="coachForm" (ngSubmit)="onAddCoachSubmit()" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
       
-      <div class="mb-5">
-        <h3 class="text-lg font-bold text-slate-800">{{ isEditMode ? 'Edit Profile' : 'Add Coach' }}</h3>
-        <p class="text-xs text-slate-400 mt-1">Configure SmartTrainer coach account details.</p>
-      </div>
-
-      <div class="space-y-4">
+      <!-- COLUMN 1: ACCOUNT DETAILS (Glassmorphic) -->
+      <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm glass-panel flex flex-col justify-between">
         <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Coach Name</label>
-          <input type="text" [(ngModel)]="currentCoach.name" placeholder="e.g. Thomas Leroy" 
-                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm">01</span>
+            <h3 class="text-lg font-bold text-slate-800">Compte Utilisateur (Accès)</h3>
+          </div>
+
+          <div class="space-y-5">
+            <!-- Firstname -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Prénom du Coach</label>
+              <div class="relative">
+                <input type="text" formControlName="firstname" placeholder="Ex: Jean" 
+                       [class.border-red-500]="isFieldInvalid('firstname')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">👤</span>
+              </div>
+              <span *ngIf="isFieldInvalid('firstname')" class="text-[11px] text-red-500 font-semibold mt-1 block">Prénom requis (min 2 lettres)</span>
+            </div>
+
+            <!-- Lastname -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Nom du Coach</label>
+              <div class="relative">
+                <input type="text" formControlName="lastname" placeholder="Ex: Dupont" 
+                       [class.border-red-500]="isFieldInvalid('lastname')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">👤</span>
+              </div>
+              <span *ngIf="isFieldInvalid('lastname')" class="text-[11px] text-red-500 font-semibold mt-1 block">Nom requis (min 2 lettres)</span>
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Adresse E-mail d'accès</label>
+              <div class="relative">
+                <input type="email" formControlName="email" placeholder="coach.dupont@smarttrainer.com" 
+                       [class.border-red-500]="isFieldInvalid('email')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">📧</span>
+              </div>
+              <span *ngIf="isFieldInvalid('email')" class="text-[11px] text-red-500 font-semibold mt-1 block">E-mail invalide</span>
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Mot de passe temporaire</label>
+              <div class="relative">
+                <input type="password" formControlName="password" placeholder="••••••••" 
+                       [class.border-red-500]="isFieldInvalid('password')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🔒</span>
+              </div>
+              <span *ngIf="isFieldInvalid('password')" class="text-[11px] text-red-500 font-semibold mt-1 block">Requis (8 caractères minimum)</span>
+            </div>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1.5">Specialty</label>
-          <input type="text" [(ngModel)]="currentCoach.specialty" placeholder="e.g. CrossFit / Bodybuilding" 
-                 class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all text-slate-800">
+        <!-- Gym Motivation slogan -->
+        <div class="mt-8 p-4 bg-blue-50/50 rounded-2xl border border-blue-100/60 flex items-center gap-3 text-blue-900">
+          <span class="text-2xl">🔥</span>
+          <p class="text-xs font-medium">Un compte utilisateur ROLE_COACH sera créé automatiquement avec ces identifiants.</p>
         </div>
       </div>
 
-      <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
-        <button (click)="closeModal()" class="w-1/2 py-2.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">Cancel</button>
-        <button (click)="saveCoach()" class="w-1/2 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold shadow-md transition-colors">Save</button>
+      <!-- COLUMN 2: PROFESSIONAL PROFILE DETAILS (Glassmorphic) -->
+      <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm glass-panel flex flex-col justify-between">
+        <div>
+          <div class="flex items-center gap-2 mb-6">
+            <span class="w-8 h-8 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-sm">02</span>
+            <h3 class="text-lg font-bold text-slate-800">Fiche Profil Entraîneur</h3>
+          </div>
+
+          <div class="space-y-5">
+            <!-- Speciality with creative visual options -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Spécialité Sportive</label>
+              <select formControlName="speciality" 
+                      class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <option value="Bodybuilding">💪 Musculation & Force (Bodybuilding)</option>
+                <option value="Cardio Training">🏃 Endurance & Cardio Training</option>
+                <option value="CrossFit">🏋️ HIIT & CrossFit</option>
+                <option value="Nutrition">🥗 Diététique & Nutrition</option>
+                <option value="Yoga & Wellness">🧘 Souplesse & Yoga</option>
+              </select>
+            </div>
+
+            <!-- Experience -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Années d'expérience professionnelle</label>
+              <div class="flex items-center gap-3">
+                <input type="range" min="0" max="25" formControlName="experience" 
+                       class="w-full accent-indigo-600 h-2 bg-slate-100 rounded-lg cursor-pointer">
+                <span class="font-extrabold text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg text-sm min-w-[70px] text-center">
+                  {{ coachForm.get('experience')?.value || 0 }} Ans
+                </span>
+              </div>
+            </div>
+
+            <!-- Certifications -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Diplômes & Certifications</label>
+              <div class="relative">
+                <input type="text" formControlName="certifications" placeholder="Ex: Master STAPS, Certifié NASM-CPT" 
+                       [class.border-red-500]="isFieldInvalid('certifications')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">📜</span>
+              </div>
+              <span *ngIf="isFieldInvalid('certifications')" class="text-[11px] text-red-500 font-semibold mt-1 block">Veuillez renseigner les diplômes</span>
+            </div>
+
+            <!-- Tariff Rate (DH/Hr) -->
+            <div>
+              <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tarif de Prestation (DH / Heure)</label>
+              <div class="relative">
+                <input type="number" formControlName="tariff" placeholder="Ex: 150" 
+                       [class.border-red-500]="isFieldInvalid('tariff')"
+                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:bg-white transition-all text-slate-800">
+                <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">💵</span>
+              </div>
+              <span *ngIf="isFieldInvalid('tariff')" class="text-[11px] text-red-500 font-semibold mt-1 block">Tarif horaire requis</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex gap-4 mt-8 pt-4 border-t border-slate-100">
+          <button type="button" (click)="setViewMode('list')" 
+                  class="w-1/2 py-3.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Annuler
+          </button>
+          
+          <button type="submit" [disabled]="isLoading"
+                  class="w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2">
+            <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full"></span>
+            Embaucher Coach
+          </button>
+        </div>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- POPUP STYLISÉ: MODIFIER PROFILE COACH -->
+  <!-- ========================================== -->
+  <div *ngIf="isEditModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div class="bg-white w-full max-w-lg rounded-3xl shadow-2xl border border-slate-100 p-8 relative animate-scale-up glass-modal">
+      <button (click)="closeEditModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+      
+      <div class="mb-6 flex items-center gap-3">
+        <div class="w-12 h-12 bg-amber-50 rounded-2xl flex items-center justify-center text-amber-500 text-xl">
+          ✏️
+        </div>
+        <div>
+          <h3 class="text-xl font-extrabold text-slate-800">Ajuster Profil Technique</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Modifiez les paramètres sportifs de <strong>{{ coachToEdit?.userName }}</strong>.</p>
+        </div>
+      </div>
+
+      <form [formGroup]="editForm" (ngSubmit)="onEditCoachSubmit()" class="space-y-5">
+        <!-- Speciality -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Spécialité Principale</label>
+          <select formControlName="speciality" 
+                  class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+            <option value="Bodybuilding">💪 Musculation & Force (Bodybuilding)</option>
+            <option value="Cardio Training">🏃 Endurance & Cardio Training</option>
+            <option value="CrossFit">🏋️ HIIT & CrossFit</option>
+            <option value="Nutrition">🥗 Diététique & Nutrition</option>
+            <option value="Yoga & Wellness">🧘 Souplesse & Yoga</option>
+          </select>
+        </div>
+
+        <!-- Experience -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Expérience professionnelle</label>
+          <div class="flex items-center gap-3">
+            <input type="range" min="0" max="25" formControlName="experience" 
+                   class="w-full accent-indigo-600 h-2 bg-slate-100 rounded-lg cursor-pointer">
+            <span class="font-extrabold text-slate-800 bg-slate-100 px-3 py-1.5 rounded-lg text-sm min-w-[70px] text-center">
+              {{ editForm.get('experience')?.value || 0 }} Ans
+            </span>
+          </div>
+        </div>
+
+        <!-- Certifications -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Diplômes & Mentions</label>
+          <input type="text" formControlName="certifications" 
+                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+        </div>
+
+        <!-- Tariff -->
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Tarif Horaire (DH / Heure)</label>
+          <input type="number" formControlName="tariff" 
+                 class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+        </div>
+
+        <!-- Action Controls -->
+        <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+          <button type="button" (click)="closeEditModal()" 
+                  class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+            Cancel
+          </button>
+          
+          <button type="submit" [disabled]="isLoading"
+                  class="w-1/2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2">
+            <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full"></span>
+            Enregistrer Modifs
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- POPUP STYLISÉ DE CONFIRMATION (SUPPRESSION) -->
+  <!-- ========================================== -->
+  <div *ngIf="isDeleteConfirmOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+    <div class="bg-white w-full max-w-md rounded-3xl shadow-2xl border border-slate-100 p-8 text-center animate-scale-up glass-modal">
+      <!-- Warning graphic badge -->
+      <div class="w-20 h-20 bg-rose-50 rounded-full flex items-center justify-center mx-auto mb-5 border border-rose-100">
+        <!-- Realistic Danger / Kick-out illustration icon -->
+        <img src="https://cdn-icons-png.flaticon.com/512/9068/9068699.png" alt="Warning Danger" class="w-12 h-12 object-contain animate-pulse">
+      </div>
+
+      <h3 class="text-xl font-extrabold text-slate-800">Retirer Coach du Roster ?</h3>
+      <p class="text-sm text-slate-500 mt-2">
+        Êtes-vous sûr de vouloir révoquer l'accès de <strong>{{ coachToDelete?.userName }}</strong> de votre club? 
+        Ses sessions planifiées et son profil de club seront définitivement supprimés.
+      </p>
+
+      <!-- Confirmation Panel Controls -->
+      <div class="flex gap-4 mt-8">
+        <button type="button" (click)="closeDeleteConfirm()" 
+                class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+          Annuler, Garder
+        </button>
+        
+        <button type="button" (click)="executeDeleteCoach()" [disabled]="isLoading"
+                class="w-1/2 py-3 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-sm font-bold shadow-md shadow-rose-600/10 transition-colors flex items-center justify-center gap-2">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-rose-200 rounded-full"></span>
+          Oui, Supprimer
+        </button>
       </div>
     </div>
   </div>
+
 </div>

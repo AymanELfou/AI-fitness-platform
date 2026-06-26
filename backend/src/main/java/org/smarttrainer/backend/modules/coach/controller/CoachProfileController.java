@@ -20,7 +20,7 @@ public class CoachProfileController {
 
     // CREATE
     @PostMapping("{userId}/profile")
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<CoachProfileResponse> create(
             @PathVariable Long userId,
             @RequestBody CoachProfileRequest request
@@ -58,7 +58,7 @@ public class CoachProfileController {
 
     // UPDATE
     @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<CoachProfileResponse> update(
             @PathVariable Long id,
             @RequestBody CoachProfileRequest request
@@ -68,7 +68,7 @@ public class CoachProfileController {
 
     //DELETE
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLUB')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

@@ -38,7 +38,7 @@
     </div>
 
     <div class="form-ctrl span-2">
-      <label>Subscription Plan</label>
+      <label>Platform Subscription Plan (For Club Owner)</label>
       <select formControlName="subscriptionPlan" [ngClass]="{'invalid-touched': isInvalid('subscriptionPlan')}">
         <option value="" disabled selected>Select a subscription plan</option>
         <option value="BASIC">Basic Plan</option>
@@ -46,6 +46,87 @@
         <option value="ENTERPRISE">Enterprise Plan</option>
       </select>
       <div *ngIf="isInvalid('subscriptionPlan')" class="error-msg">⚠️ Please select a subscription plan.</div>
+    </div>
+
+    <!-- COMMUNITY SECTION -->
+    <div class="form-ctrl span-2" style="margin-top: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
+      <h3 style="font-size: 1.25rem; color: #1e293b; font-weight: 600;">🌐 Community Info</h3>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Community Name</label>
+      <input type="text" formControlName="communityName" placeholder="e.g., Titanium Gym Community"
+        [ngClass]="{'invalid-touched': isInvalid('communityName')}">
+      <div *ngIf="isInvalid('communityName')" class="error-msg">⚠️ Community name is required.</div>
+    </div>
+
+    <div class="form-ctrl span-2">
+      <label>Community Description</label>
+      <textarea formControlName="communityDescription" placeholder="A brief description of your community..." rows="3" style="width: 100%; padding: 0.75rem; border: 1px solid #e2e8f0; border-radius: 8px; font-family: inherit; font-size: 0.95rem;"
+        [ngClass]="{'invalid-touched': isInvalid('communityDescription')}"></textarea>
+      <div *ngIf="isInvalid('communityDescription')" class="error-msg">⚠️ Community description is required.</div>
+    </div>
+
+    <!-- SUBSCRIPTIONS SECTION -->
+    <div class="form-ctrl span-2" style="margin-top: 2rem; border-bottom: 1px solid #e2e8f0; padding-bottom: 0.5rem;">
+      <h3 style="font-size: 1.25rem; color: #1e293b; font-weight: 600;">💳 Club Subscriptions (Offered to Clients)</h3>
+    </div>
+
+    <!-- Basic Plan -->
+    <div class="form-ctrl span-2" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <h4 style="margin-top: 0; margin-bottom: 1rem; color: #3b82f6;">Basic Plan Details</h4>
+      <div class="form-grid-layout" style="gap: 1rem;">
+        <div class="form-ctrl">
+          <label>Price (DH)</label>
+          <input type="number" formControlName="basicPrice" placeholder="e.g., 200" [ngClass]="{'invalid-touched': isInvalid('basicPrice')}">
+        </div>
+        <div class="form-ctrl">
+          <label>Duration (Days)</label>
+          <input type="number" formControlName="basicDuration" placeholder="e.g., 30" [ngClass]="{'invalid-touched': isInvalid('basicDuration')}">
+        </div>
+        <div class="form-ctrl span-2">
+          <label>Description</label>
+          <input type="text" formControlName="basicDescription" placeholder="Basic access to cardio and weights" [ngClass]="{'invalid-touched': isInvalid('basicDescription')}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Premium Plan -->
+    <div class="form-ctrl span-2" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <h4 style="margin-top: 0; margin-bottom: 1rem; color: #8b5cf6;">Premium Plan Details</h4>
+      <div class="form-grid-layout" style="gap: 1rem;">
+        <div class="form-ctrl">
+          <label>Price (DH)</label>
+          <input type="number" formControlName="premiumPrice" placeholder="e.g., 400" [ngClass]="{'invalid-touched': isInvalid('premiumPrice')}">
+        </div>
+        <div class="form-ctrl">
+          <label>Duration (Days)</label>
+          <input type="number" formControlName="premiumDuration" placeholder="e.g., 30" [ngClass]="{'invalid-touched': isInvalid('premiumDuration')}">
+        </div>
+        <div class="form-ctrl span-2">
+          <label>Description</label>
+          <input type="text" formControlName="premiumDescription" placeholder="Full access + pool + classes" [ngClass]="{'invalid-touched': isInvalid('premiumDescription')}">
+        </div>
+      </div>
+    </div>
+
+    <!-- Enterprise Plan -->
+    <div class="form-ctrl span-2" style="background: #f8fafc; padding: 1.5rem; border-radius: 12px; border: 1px solid #e2e8f0;">
+      <h4 style="margin-top: 0; margin-bottom: 1rem; color: #10b981;">Enterprise Plan Details</h4>
+      <div class="form-grid-layout" style="gap: 1rem;">
+        <div class="form-ctrl">
+          <label>Price (DH)</label>
+          <input type="number" formControlName="enterprisePrice" placeholder="e.g., 800" [ngClass]="{'invalid-touched': isInvalid('enterprisePrice')}">
+        </div>
+        <div class="form-ctrl">
+          <label>Duration (Days)</label>
+          <input type="number" formControlName="enterpriseDuration" placeholder="e.g., 30" [ngClass]="{'invalid-touched': isInvalid('enterpriseDuration')}">
+        </div>
+        <div class="form-ctrl span-2">
+          <label>Description</label>
+          <input type="text" formControlName="enterpriseDescription" placeholder="Corporate access + personal trainer" [ngClass]="{'invalid-touched': isInvalid('enterpriseDescription')}">
+        </div>
+      </div>
     </div>
 
   </div>

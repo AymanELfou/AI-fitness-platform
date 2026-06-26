@@ -8,6 +8,7 @@ import { ClubService } from '../../../core/services/club.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { CoachService, CoachProfileResponse } from '../../../core/services/coach.service';
 import { ClientService } from '../../../core/services/client.service';
+import { AbonnementService, Abonnement } from '../../../core/services/abonnement.service';
 
 export interface Coach {
   id: number;
@@ -39,10 +40,14 @@ export class ClubsComponent implements OnInit {
   clubs: Club[] = [];
 
   // ── Modal state ──
+  showAbonnementModal = false;
   showCoachModal = false;
   showSuccessModal = false;
   selectedClub: Club | null = null;
+  selectedAbonnement: Abonnement | null = null;
   selectedCoach: Coach | null = null;
+
+  abonnements: Abonnement[] = [];
 
   coaches: Coach[] = [];
 
@@ -51,6 +56,7 @@ export class ClubsComponent implements OnInit {
     private authService: AuthService,
     private coachService: CoachService,
     private clientService: ClientService,
+    private abonnementService: AbonnementService,
     private router: Router
   ) {}
 
@@ -151,13 +157,57 @@ export class ClubsComponent implements OnInit {
   }
 
   // ── Modal actions ──
-  // Nouvelle modification: openCoachModal ne fait plus de fallback et affiche un message d'erreur si la liste est vide ou en cas d'erreur
-  openCoachModal(club: Club): void {
+  openAbonnementModal(club: Club): void {
     if (!this.authService.isLoggedIn()) {
       this.router.navigate(['/login']);
       return;
     }
 
+    this.selectedClub = club;
+    this.selectedAbonnement = null;
+    this.showAbonnementModal = true;
+    document.body.style.overflow = 'hidden';
+    
+    this.loading = true;
+    this.abonnements = [];
+    this.error = '';
+    this.abonnementService.getByClubId(club.id).subscribe({
+      next: (data) => {
+        if (data && data.length > 0) {
+          this.abonnements = data;
+        } else {
+          this.abonnements = [];
+          this.error = "Aucun abonnement n'est disponible dans ce club pour le moment.";
+        }
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load abonnements:', err);
+        this.abonnements = [];
+        this.error = "Une erreur est survenue lors du chargement des abonnements.";
+        this.loading = false;
+      }
+    });
+  }
+
+  closeAbonnementModal(): void {
+    this.showAbonnementModal = false;
+    this.selectedClub = null;
+    document.body.style.overflow = '';
+  }
+
+  selectAbonnement(abonnement: Abonnement): void {
+    this.selectedAbonnement = abonnement;
+  }
+
+  confirmAbonnementSelection(): void {
+    if (!this.selectedAbonnement || !this.selectedClub) return;
+    this.showAbonnementModal = false;
+    this.openCoachModal(this.selectedClub);
+  }
+
+  // Nouvelle modification: openCoachModal ne fait plus de fallback et affiche un message d'erreur si la liste est vide ou en cas d'erreur
+  openCoachModal(club: Club): void {
     this.selectedClub = club;
     this.selectedCoach = null;
     this.showCoachModal = true;

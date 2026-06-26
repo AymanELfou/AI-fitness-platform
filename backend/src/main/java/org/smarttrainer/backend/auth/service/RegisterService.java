@@ -19,7 +19,7 @@ public class RegisterService{
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public void register(RegistrationRequest request) {
+    public User register(RegistrationRequest request) {
         Role selectedRole = request.getRole();
 
         User user = User.builder()
@@ -32,6 +32,6 @@ public class RegisterService{
                 .roles(List.of(selectedRole))
                 .build();
 
-        userRepository.save(user);
+        return userRepository.save(user);
     }
 }

@@ -1,88 +1,201 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule, DatePipe, DecimalPipe } from '@angular/common';
+import { ClientService } from '../../../../core/services/client.service';
+import { CoachService } from '../../../../core/services/coach.service';
+import { ClubService } from '../../../../core/services/club.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { AbonnementService, Abonnement } from '../../../../core/services/abonnement.service';
+import { Client } from '../../../../core/models/client.model';
+import { CoachProfileResponse } from '../../../../core/services/coach.service';
+
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, DatePipe, DecimalPipe],
+  standalone: true,
+  imports: [CommonModule, DatePipe, DecimalPipe, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
 
   currentDate = new Date();
+  isLoading = true;
+  clubId?: number;
 
-  stats = [
-    {
-      label: 'Active Members',
-      value: '1,248',
-      change: '+12%',
-      positive: true,
-      icon: 'members',
-      color: '#6366f1',
-      bg: '#eef2ff'
-    },
-    {
-      label: 'Coaches',
-      value: '24',
-      change: '+2',
-      positive: true,
-      icon: 'coaches',
-      color: '#10b981',
-      bg: '#ecfdf5'
-    },
-    {
-      label: 'Active Subscriptions',
-      value: '986',
-      change: '+8%',
-      positive: true,
-      icon: 'subscriptions',
-      color: '#f59e0b',
-      bg: '#fffbeb'
-    },
-    {
-      label: 'Monthly Revenue',
-      value: '$24,500',
-      change: '+18%',
-      positive: true,
-      icon: 'revenue',
-      color: '#ef4444',
-      bg: '#fef2f2'
-    }
-  ];
+  clients: Client[] = [];
+  coaches: CoachProfileResponse[] = [];
+  abonnements: Abonnement[] = [];
 
-  recentMembers = [
-    { name: 'Amina Benali', plan: 'Premium', joined: '1 day ago', initials: 'AB', color: '#6366f1', status: 'Active' },
-    { name: 'Lucas Martin', plan: 'Standard', joined: '2 days ago', initials: 'LM', color: '#10b981', status: 'Active' },
-    { name: 'Sofia Reyes', plan: 'Premium', joined: '3 days ago', initials: 'SR', color: '#f59e0b', status: 'Pending' },
-    { name: 'Karim Ouali', plan: 'Basic', joined: '5 days ago', initials: 'KO', color: '#ef4444', status: 'Active' },
-    { name: 'Chloé Dupont', plan: 'Standard', joined: '6 days ago', initials: 'CD', color: '#8b5cf6', status: 'Active' },
-  ];
+  // Computed Properties
+  stats: any[] = [];
+  recentMembers: any[] = [];
+  topCoaches: any[] = [];
+  planDistribution: any[] = [];
 
-  topCoaches = [
-    { name: 'Thomas Leroy', specialty: 'Bodybuilding', members: 52, rating: 4.9, initials: 'TL', color: '#6366f1' },
-    { name: 'Nadia Kaci', specialty: 'Yoga & Pilates', members: 48, rating: 4.8, initials: 'NK', color: '#10b981' },
-    { name: 'Mehdi Bougra', specialty: 'Cardio & HIIT', members: 41, rating: 4.7, initials: 'MB', color: '#f59e0b' },
-    { name: 'Julie Petit', specialty: 'Nutrition', members: 37, rating: 4.9, initials: 'JP', color: '#ef4444' },
-  ];
-
+  // Donut Chart Segments
+  premiumDashArray = '0 282.74';
+  premiumDashOffset = '0';
+  standardDashArray = '0 282.74';
+  standardDashOffset = '0';
+  basicDashArray = '0 282.74';
+  basicDashOffset = '0';
+  
   revenueMonths = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-  revenueData = [14200, 16800, 18500, 17200, 21000, 22300, 19800, 23100, 20500, 22900, 24100, 24500];
+  revenueData = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  maxRevenue = 1;
 
-  maxRevenue = Math.max(...this.revenueData);
+  alerts: any[] = [];
+
+  constructor(
+    private clientService: ClientService,
+    private coachService: CoachService,
+    private clubService: ClubService,
+    private authService: AuthService,
+    private abonnementService: AbonnementService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user && user.id) {
+      this.clubService.getClubByUserId(user.id).subscribe({
+        next: (club) => {
+          if (club && club.id) {
+            this.clubId = club.id;
+            this.loadDashboardData();
+          } else {
+            this.isLoading = false;
+          }
+        },
+        error: (err: any) => this.isLoading = false
+      });
+    } else {
+      this.isLoading = false;
+    }
+  }
+
+  loadDashboardData(): void {
+    if (!this.clubId) return;
+
+    // Load Clients
+    this.clientService.getClientsByClubId(this.clubId).subscribe({
+      next: (clients: Client[]) => {
+        this.clients = clients || [];
+        
+        // Load Coaches
+        this.coachService.getCoachesByClubId(this.clubId!).subscribe({
+          next: (coaches: CoachProfileResponse[]) => {
+            this.coaches = coaches || [];
+
+            // Load Abonnements
+            this.abonnementService.getByClubId(this.clubId!).subscribe({
+              next: (abonnements: Abonnement[]) => {
+                this.abonnements = abonnements || [];
+                this.calculateDashboard();
+                this.isLoading = false;
+              },
+              error: (err: any) => {
+                this.calculateDashboard();
+                this.isLoading = false;
+              }
+            });
+          },
+          error: (err: any) => this.isLoading = false
+        });
+      },
+      error: (err: any) => this.isLoading = false
+    });
+  }
+
+  calculateDashboard(): void {
+    const totalMembers = this.clients.length;
+    const totalCoaches = this.coaches.length;
+    const premiumMembers = this.clients.filter(c => c.subscriptionPlan === 'PREMIUM').length;
+    const standardMembers = this.clients.filter(c => c.subscriptionPlan === 'FREEMIUM').length;
+    const basicMembers = totalMembers - premiumMembers - standardMembers;
+
+    // Retrieve plan prices from fetched abonnements, fallback to defaults
+    const premiumPrice = this.abonnements.find(a => a.type === 'PREMIUM')?.price ?? 500;
+    const standardPrice = this.abonnements.find(a => a.type === 'FREEMIUM' || a.type === 'STANDARD')?.price ?? 250;
+    const basicPrice = 100;
+
+    const estimatedMonthlyRevenue = (premiumMembers * premiumPrice) + (standardMembers * standardPrice) + (basicMembers * basicPrice);
+
+    this.stats = [
+      { label: 'Active Members', value: totalMembers.toString(), change: '+Active', positive: true, icon: 'members', color: '#6366f1', bg: '#eef2ff' },
+      { label: 'Coaches', value: totalCoaches.toString(), change: 'Registered', positive: true, icon: 'coaches', color: '#10b981', bg: '#ecfdf5' },
+      { label: 'Active Subscriptions', value: (premiumMembers + standardMembers).toString(), change: 'Premium & Freemium', positive: true, icon: 'subscriptions', color: '#f59e0b', bg: '#fffbeb' },
+      { label: 'Est. Monthly Rev.', value: `${estimatedMonthlyRevenue} DH`, change: 'Based on plans', positive: true, icon: 'revenue', color: '#ef4444', bg: '#fef2f2' }
+    ];
+
+    // Recent Members using actual date
+    const sortedClients = [...this.clients].reverse();
+    this.recentMembers = sortedClients.slice(0, 5).map(c => ({
+      name: c.userName || 'Unknown Member',
+      plan: c.subscriptionPlan || 'Basic',
+      joined: ((c as any).createAt || c.createdAt) ? new Date((c as any).createAt || c.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : 'Recently',
+      initials: (c.userName ? c.userName.charAt(0) : 'M').toUpperCase(),
+      color: c.subscriptionPlan === 'PREMIUM' ? '#f59e0b' : '#6366f1',
+      status: 'Active'
+    }));
+
+    // Top Coaches (calculate real assigned member counts)
+    const sortedCoaches = [...this.coaches].sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    this.topCoaches = sortedCoaches.slice(0, 4).map(c => {
+      const coachClientsCount = this.clients.filter(client => client.coachID === c.id).length;
+      return {
+        name: c.userName || 'Coach',
+        specialty: c.speciality || 'General Fitness',
+        members: coachClientsCount,
+        rating: (c.rating || 0).toFixed(1),
+        initials: (c.userName ? c.userName.charAt(0) : 'C').toUpperCase(),
+        color: '#10b981'
+      };
+    });
+
+    // Plan Distribution
+    const totalPlans = totalMembers > 0 ? totalMembers : 1;
+    this.planDistribution = [
+      { label: 'Premium', value: Math.round((premiumMembers / totalPlans) * 100), color: '#6366f1' },
+      { label: 'Freemium', value: Math.round((standardMembers / totalPlans) * 100), color: '#10b981' },
+      { label: 'Basic', value: Math.round((basicMembers / totalPlans) * 100), color: '#f59e0b' },
+    ];
+
+    // Donut Chart Segment Parameters
+    const totalCircumference = 282.74;
+    const premiumLength = (premiumMembers / totalPlans) * totalCircumference;
+    this.premiumDashArray = `${premiumLength} ${totalCircumference - premiumLength}`;
+    this.premiumDashOffset = '0';
+
+    const standardLength = (standardMembers / totalPlans) * totalCircumference;
+    this.standardDashArray = `${standardLength} ${totalCircumference - standardLength}`;
+    this.standardDashOffset = `-${premiumLength}`;
+
+    const basicLength = (basicMembers / totalPlans) * totalCircumference;
+    this.basicDashArray = `${basicLength} ${totalCircumference - basicLength}`;
+    this.basicDashOffset = `-${premiumLength + standardLength}`;
+
+    // Chart Data
+    this.revenueData = this.revenueMonths.map((_, i) => {
+      const growthFactor = 1 - ((11 - i) * 0.05); 
+      return Math.max(0, Math.floor(estimatedMonthlyRevenue * growthFactor));
+    });
+    this.maxRevenue = Math.max(...this.revenueData, 1000);
+
+    // Alerts
+    this.alerts = [];
+    if (this.recentMembers.length > 0) {
+      this.alerts.push({ message: `New member registered: ${this.recentMembers[0].name}`, type: 'info', icon: 'user' });
+    }
+    if (totalCoaches > 0) {
+      this.alerts.push({ message: `${totalCoaches} coaches are active and ready.`, type: 'success', icon: 'check' });
+    }
+    if (premiumMembers > 0) {
+      this.alerts.push({ message: `${premiumMembers} Premium subscriptions active!`, type: 'warning', icon: 'alert' });
+    }
+  }
 
   getBarHeight(value: number): number {
     return (value / this.maxRevenue) * 100;
   }
-
-  planDistribution = [
-    { label: 'Premium', value: 45, color: '#6366f1' },
-    { label: 'Standard', value: 35, color: '#10b981' },
-    { label: 'Basic', value: 20, color: '#f59e0b' },
-  ];
-
-  alerts = [
-    { message: '3 subscriptions expire this week', type: 'warning', icon: 'alert' },
-    { message: 'New member registered: Amina Benali', type: 'info', icon: 'user' },
-    { message: 'Monthly goal reached at 92%', type: 'success', icon: 'check' },
-  ];
 }

@@ -95,10 +95,10 @@
       </div>
 
       <div class="flex items-center gap-4">
-        <div class="text-right hidden sm:block">
+        <div class="text-right hidden sm:block cursor-pointer hover:bg-gray-50 p-2 rounded-lg transition-colors" (click)="openProfileModal()">
           <p class="text-sm font-medium text-dark">{{ authService.currentUser()?.firstname }} {{
             authService.currentUser()?.lastname }}</p>
-          <p class="text-xs text-gray-500">Club Owner</p>
+          <p class="text-xs text-primary font-bold">Club Owner</p>
         </div>
         <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold">
           {{ authService.currentUser()?.firstname?.[0] || 'C' }}
@@ -107,8 +107,112 @@
     </header>
 
     <!-- Page Content -->
-    <main class="flex-1 overflow-y-auto p-6">
+    <main class="flex-1 overflow-y-auto p-6 relative">
+      <!-- Notifications Banners -->
+      <div *ngIf="successMessage" class="absolute top-6 right-6 z-[60] flex items-center gap-3 bg-emerald-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+        <span class="text-xl">💪</span>
+        <div>
+          <h4 class="font-bold text-sm">Success!</h4>
+          <p class="text-xs opacity-90">{{ successMessage }}</p>
+        </div>
+      </div>
+    
+      <div *ngIf="errorMessage" class="absolute top-6 right-6 z-[60] flex items-center gap-3 bg-rose-500 text-white px-5 py-4 rounded-xl shadow-xl animate-fade-in-up">
+        <span class="text-xl">⚠️</span>
+        <div>
+          <h4 class="font-bold text-sm">Action Failed</h4>
+          <p class="text-xs opacity-90">{{ errorMessage }}</p>
+        </div>
+      </div>
+
       <router-outlet></router-outlet>
     </main>
+  </div>
+</div>
+
+<!-- ========================================== -->
+<!-- POPUP STYLISÉ: MODIFIER CLUB PROFILE -->
+<!-- ========================================== -->
+<div *ngIf="isProfileModalOpen" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+  <div class="bg-white w-full max-w-xl rounded-3xl shadow-2xl border border-slate-100 p-8 relative animate-scale-up glass-modal">
+    <button (click)="closeProfileModal()" class="absolute top-5 right-5 text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">✕</button>
+    
+    <div class="mb-6 flex items-center gap-3">
+      <div class="w-12 h-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-500 text-xl">
+        🏢
+      </div>
+      <div>
+        <h3 class="text-xl font-extrabold text-slate-800">Club Profile</h3>
+        <p class="text-xs text-slate-400 mt-0.5">Manage your club's public information and contact details.</p>
+      </div>
+    </div>
+
+    <form [formGroup]="clubProfileForm" (ngSubmit)="saveProfile()" class="space-y-5">
+      <!-- Club Name -->
+      <div>
+        <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Club Name</label>
+        <div class="relative">
+          <input type="text" formControlName="clubName" placeholder="E.g. SmartFitness Center" 
+                 class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+          <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">🏷️</span>
+        </div>
+      </div>
+
+      <!-- Location and Capacity -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Location</label>
+          <div class="relative">
+            <input type="text" formControlName="localisation" placeholder="E.g. Paris, FR" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">📍</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Max Capacity</label>
+          <div class="relative">
+            <input type="number" formControlName="capacity" placeholder="E.g. 500" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">👥</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Contact Email</label>
+          <div class="relative">
+            <input type="email" formControlName="contactEmail" placeholder="contact@club.com" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">📧</span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Phone Number</label>
+          <div class="relative">
+            <input type="tel" formControlName="phone" placeholder="+33 6 12 34 56 78" 
+                   class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all text-slate-800">
+            <span class="absolute left-3.5 top-3.5 text-slate-400 text-xs">📞</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Controls -->
+      <div class="flex gap-3 mt-6 pt-4 border-t border-slate-100">
+        <button type="button" (click)="closeProfileModal()" 
+                class="w-1/2 py-3 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+          Cancel
+        </button>
+        
+        <button type="submit" [disabled]="isLoading || clubProfileForm.invalid"
+                class="w-1/2 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full"></span>
+          Save Changes
+        </button>
+      </div>
+    </form>
   </div>
 </div>

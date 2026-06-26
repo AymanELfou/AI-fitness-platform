@@ -11,6 +11,8 @@ export interface Client {
   subscriptionPlan?: 'FREEMIUM' | 'PREMIUM';
   coachID?: number;
   clubId?: number;
+  //UserName to response
+  userName?: string;
 }
 
 // Backward compatibility alias

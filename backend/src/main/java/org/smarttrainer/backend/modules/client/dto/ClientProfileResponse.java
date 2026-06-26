@@ -22,4 +22,6 @@ public class ClientProfileResponse {
     private Long coachID;
     private Long clubId;
     private SubscriptionPlan subscriptionPlan;
+    // Add Members UserName to user Entity
+    private String userName;
 }

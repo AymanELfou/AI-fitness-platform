@@ -42,21 +42,21 @@ public class CoachProfileService {
         coach.setClub(club);
 
         CoachProfile saved = coachRepository.save(coach);
-        return coachMapper.toResponse(saved, getRating(saved.getId()));
+        return coachMapper.toResponse(saved, getRating(saved));
     }
 
     public CoachProfileResponse getById(Long id) {
         CoachProfile coach = coachRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Coach profile not found"));
 
-        return coachMapper.toResponse(coach, getRating(id));
+        return coachMapper.toResponse(coach, getRating(coach));
     }
 
     public CoachProfileResponse getByUserId(Long userId) {
         CoachProfile coach = coachRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("Coach profile not found"));
 
-        return coachMapper.toResponse(coach, getRating(coach.getId()));
+        return coachMapper.toResponse(coach, getRating(coach));
     }
 
     public List<CoachProfileResponse> getAll() {
@@ -64,7 +64,7 @@ public class CoachProfileService {
                 .stream()
                 .map(coach -> coachMapper.toResponse(
                         coach,
-                        getRating(coach.getId())
+                        getRating(coach)
                 ))
                 .collect(Collectors.toList());
     }
@@ -74,7 +74,7 @@ public class CoachProfileService {
                 .stream()
                 .map(coach -> coachMapper.toResponse(
                         coach,
-                        getRating(coach.getId())
+                        getRating(coach)
                 ))
                 .collect(Collectors.toList());
     }
@@ -92,7 +92,7 @@ public class CoachProfileService {
 
         CoachProfile updated = coachRepository.save(coach);
 
-        return coachMapper.toResponse(updated, getRating(id));
+        return coachMapper.toResponse(updated, getRating(updated));
     }
 
     @Transactional
@@ -103,8 +103,11 @@ public class CoachProfileService {
         coachRepository.deleteById(id);
     }
 
-    private Double getRating(Long coachId) {
-        Double rating = coachRepository.getAverageRating(coachId);
-        return rating != null ? rating : 0.0;
+    private Double getRating(CoachProfile coach) {
+        Double rating = coachRepository.getAverageRating(coach.getId());
+        if (rating != null) {
+            return rating;
+        }
+        return coach.getRating() != null ? coach.getRating() : 0.0;
     }
 }
