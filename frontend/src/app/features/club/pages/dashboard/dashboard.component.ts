@@ -8,10 +8,12 @@ import { AbonnementService, Abonnement } from '../../../../core/services/abonnem
 import { Client } from '../../../../core/models/client.model';
 import { CoachProfileResponse } from '../../../../core/services/coach.service';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, DatePipe, DecimalPipe],
+  imports: [CommonModule, DatePipe, DecimalPipe, RouterModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })

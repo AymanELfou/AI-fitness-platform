@@ -7,6 +7,7 @@ import { Observable, catchError, tap, throwError } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { LoginRequest, RegisterRequest } from '../models/auth-request.model';
 import { AuthResponse } from '../models/auth-response.model';
+import { ClientService } from './client.service';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,8 @@ export class AuthService {
     private http: HttpClient,
     private api: ApiService,
     private router: Router,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private clientService: ClientService
 
   ) {
     // Load user and token data from localStorage when service starts
@@ -187,6 +189,20 @@ export class AuthService {
       this.router.navigate(['/club/dashboard']);
     } else if (user.roles.includes(Role.ROLE_COACH)) {
       this.router.navigate(['/coach/dashboard']);
+    } else if (user.roles.includes(Role.ROLE_CLIENT)) {
+      this.clientService.getClientByUserId(user.id).subscribe({
+        next: (client) => {
+          if (client && client.subscriptionPlan === 'PREMIUM') {
+            this.router.navigate(['/client/dashboard']);
+          } else {
+            this.router.navigate(['/dashboard']);
+          }
+        },
+        error: (err) => {
+          console.error('Error fetching client profile details, defaulting to dashboard:', err);
+          this.router.navigate(['/dashboard']);
+        }
+      });
     } else {
       this.router.navigate(['/']);
     }

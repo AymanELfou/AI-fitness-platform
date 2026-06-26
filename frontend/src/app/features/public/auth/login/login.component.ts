@@ -16,6 +16,7 @@ export class LoginComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   showPassword = false;
+  showLoginFirstPopup = false;
 
   constructor(
     private fb: FormBuilder,
@@ -28,12 +29,21 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  closeLoginFirstPopup(): void {
+    this.showLoginFirstPopup = false;
+  }
+
   ngOnInit(): void {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]],
       rememberMe: [false]
     });
+
+    const returnUrl = this.route.snapshot.queryParamMap.get('returnUrl');
+    if (returnUrl) {
+      this.showLoginFirstPopup = true;
+    }
   }
 
   onSubmit(): void {

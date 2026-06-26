@@ -58,6 +58,8 @@ import { ProgressComponent as ClientProgressComponent } from './features/client/
 import { ClientCommunityComponent } from './features/client/pages/community/community.component';
 import { ClientChatComponent } from './features/client/pages/chat/chat.component';
 
+import { authGuard } from './core/guards/auth.guard';
+
 // ==========================================
 // ROUTES CONFIGURATION
 // ==========================================
@@ -65,12 +67,13 @@ export const routes: Routes = [
 
   // Public routes
   { path: '', component: HomeComponent },
+  { path: 'dashboard', redirectTo: '', pathMatch: 'full' },
   { path: 'about', component: AboutComponent },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   { path: 'nutrition', component: NutritionComponent },
-  { path: 'clubs', component: ClubsComponent },
-  { path: 'workouts', component: WorkoutsComponent },
+  { path: 'clubs', component: ClubsComponent, canActivate: [authGuard] },
+  { path: 'workouts', component: WorkoutsComponent, canActivate: [authGuard] },
   { path: 'complete-profile', component: ProfilesComponent },
   { path: 'profiles', component: ProfilesComponent },
 

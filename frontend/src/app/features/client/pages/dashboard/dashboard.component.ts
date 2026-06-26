@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -8,8 +9,21 @@ import { CommonModule } from '@angular/common';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss'
 })
-export class DashboardComponent {
-  userName: string = 'Ayman';
+export class DashboardComponent implements OnInit {
+  userName: string = 'Client';
+
+  constructor(private authService: AuthService) {}
+
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.userName = `${user.firstname} ${user.lastname}`.trim() || user.email;
+    }
+  }
+
+  logout(): void {
+    this.authService.logout();
+  }
   
   stats = [
     { title: 'Workouts Completed', value: '24', icon: '🔥', color: 'text-orange-500', bg: 'bg-orange-500/10' },

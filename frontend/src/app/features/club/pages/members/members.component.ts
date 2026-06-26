@@ -17,6 +17,18 @@ import { Client } from '../../../../core/models/client.model';
 export class MembersComponent implements OnInit {
 
   members: Client[] = [];
+  searchTerm: string = '';
+
+  get filteredMembers(): Client[] {
+    if (!this.searchTerm.trim()) {
+      return this.members;
+    }
+    const lowerSearch = this.searchTerm.toLowerCase();
+    return this.members.filter(m => 
+      (m.userName && m.userName.toLowerCase().includes(lowerSearch)) ||
+      (m.but && m.but.toLowerCase().includes(lowerSearch))
+    );
+  }
 
   isModalOpen = false;
   isEditMode = false;

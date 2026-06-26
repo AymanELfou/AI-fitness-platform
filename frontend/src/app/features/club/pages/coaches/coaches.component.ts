@@ -14,9 +14,21 @@ import { AuthService } from '../../../../core/services/auth.service';
   styleUrls: ['./coaches.component.scss']
 })
 export class CoachesComponent implements OnInit {
-  
   coaches: CoachProfileResponse[] = [];
   clubId?: number;
+  
+  searchTerm: string = '';
+
+  get filteredCoaches(): CoachProfileResponse[] {
+    if (!this.searchTerm.trim()) {
+      return this.coaches;
+    }
+    const lowerSearch = this.searchTerm.toLowerCase();
+    return this.coaches.filter(c => 
+      (c.userName && c.userName.toLowerCase().includes(lowerSearch)) ||
+      (c.speciality && c.speciality.toLowerCase().includes(lowerSearch))
+    );
+  }
   
   // Navigation & View States
   viewMode: 'list' | 'add' = 'list';
