@@ -19,6 +19,7 @@ public class PostMapper {
                 .userName(post.getUser() != null ? post.getUser().fullName() : null)
                 .commentsCount(post.getComments() != null ? post.getComments().size() : 0)
                 .likesCount(post.getLikes() != null ? post.getLikes().size() : 0)
+                .userRole(post.getUser() != null && !post.getUser().getRoles().isEmpty() ? post.getUser().getRoles().get(0).name() : "ROLE_CLIENT")
                 .build();
     }
 

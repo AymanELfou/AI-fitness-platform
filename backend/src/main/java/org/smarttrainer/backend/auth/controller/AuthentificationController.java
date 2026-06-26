@@ -10,6 +10,7 @@ import org.smarttrainer.backend.auth.dto.RegistrationRequest;
 import org.smarttrainer.backend.auth.service.LoginService;
 import org.smarttrainer.backend.auth.service.LogoutService;
 import org.smarttrainer.backend.auth.service.RegisterService;
+import org.smarttrainer.backend.domain.user.User;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +29,11 @@ public class AuthentificationController {
 
     //Register end point
     @PostMapping(value = "/register")
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> register(
+    public ResponseEntity<User> register(
             @RequestBody @Valid RegistrationRequest request
     ){
-        registerService.register(request);
-        return ResponseEntity.accepted().build();
+        User user = registerService.register(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
 
     //Login end point

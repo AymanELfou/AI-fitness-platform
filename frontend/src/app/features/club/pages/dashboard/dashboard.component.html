@@ -90,7 +90,7 @@
       <div class="card-header">
         <div>
           <h3 class="card-title">Subscription Distribution</h3>
-          <p class="card-subtitle">986 active subscriptions</p>
+          <p class="card-subtitle">{{ clients.length }} active subscriptions</p>
         </div>
       </div>
       <div class="donut-wrapper">
@@ -98,21 +98,21 @@
           <svg viewBox="0 0 120 120" class="donut-svg">
             <!-- Background circle -->
             <circle cx="60" cy="60" r="45" fill="none" stroke="#f3f4f6" stroke-width="18"/>
-            <!-- Premium 45% -->
+            <!-- Premium -->
             <circle cx="60" cy="60" r="45" fill="none" stroke="#6366f1" stroke-width="18"
-                    stroke-dasharray="127.2 155.8" stroke-dashoffset="0"
+                    [attr.stroke-dasharray]="premiumDashArray" [attr.stroke-dashoffset]="premiumDashOffset"
                     transform="rotate(-90 60 60)"/>
-            <!-- Standard 35% -->
+            <!-- Standard -->
             <circle cx="60" cy="60" r="45" fill="none" stroke="#10b981" stroke-width="18"
-                    stroke-dasharray="98.9 184.1" stroke-dashoffset="-127.2"
+                    [attr.stroke-dasharray]="standardDashArray" [attr.stroke-dashoffset]="standardDashOffset"
                     transform="rotate(-90 60 60)"/>
-            <!-- Basic 20% -->
+            <!-- Basic -->
             <circle cx="60" cy="60" r="45" fill="none" stroke="#f59e0b" stroke-width="18"
-                    stroke-dasharray="56.5 226.5" stroke-dashoffset="-226.1"
+                    [attr.stroke-dasharray]="basicDashArray" [attr.stroke-dashoffset]="basicDashOffset"
                     transform="rotate(-90 60 60)"/>
             <!-- Center text -->
             <text x="60" y="55" text-anchor="middle" class="donut-center-label">Total</text>
-            <text x="60" y="72" text-anchor="middle" class="donut-center-value">986</text>
+            <text x="60" y="72" text-anchor="middle" class="donut-center-value">{{ clients.length }}</text>
           </svg>
         </div>
         <div class="donut-legend">

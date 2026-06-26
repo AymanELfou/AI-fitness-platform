@@ -35,4 +35,16 @@ export class CoachService {
   getCoachById(id: number): Observable<CoachProfileResponse> {
     return this.http.get<CoachProfileResponse>(`${this.apiUrl}/${id}`);
   }
+
+  createCoachProfile(userId: number, profileData: any): Observable<CoachProfileResponse> {
+    return this.http.post<CoachProfileResponse>(`${this.apiUrl}/${userId}/profile`, profileData);
+  }
+
+  updateCoachProfile(id: number, profileData: any): Observable<CoachProfileResponse> {
+    return this.http.put<CoachProfileResponse>(`${this.apiUrl}/${id}`, profileData);
+  }
+
+  deleteCoachProfile(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

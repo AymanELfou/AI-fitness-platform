@@ -23,6 +23,10 @@ export class ClientService {
     return this.http.get<Client>(`${this.apiUrl}/user/${userId}/profile`);
   }
 
+  getClientsByClubId(clubId: number): Observable<Client[]> {
+    return this.http.get<Client[]>(`${this.apiUrl}/club/${clubId}`);
+  }
+
   createClient(userId: number, clientData: Partial<Client>): Observable<Client> {
     return this.http.post<Client>(`${this.apiUrl}/${userId}/profile`, clientData);
   }

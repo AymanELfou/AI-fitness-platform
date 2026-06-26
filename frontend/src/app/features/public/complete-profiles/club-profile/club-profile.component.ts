@@ -36,7 +36,7 @@ export class ClubProfileComponent implements OnInit {
       capacity: ['', [Validators.required, Validators.min(1)]],
       contactEmail: ['', [Validators.required, Validators.email]],
       phone: ['', Validators.required],
-      subscriptionPlan: ['', Validators.required],
+      subscriptionPlan: [{value: 'PREMIUM', disabled: true}, Validators.required],
       // Community
       communityName: ['', Validators.required],
       communityDescription: ['', Validators.required],
@@ -61,8 +61,8 @@ export class ClubProfileComponent implements OnInit {
   }
 
   submit() {
-    if (this.clubForm.valid) {
-      const formValue = this.clubForm.value;   
+    if (this.clubForm.valid || this.clubForm.get('subscriptionPlan')?.disabled) {
+      const formValue = this.clubForm.getRawValue();   
       const clubData: Partial<club> = {
         clubName: formValue.clubName,
         localisation: formValue.localisation,

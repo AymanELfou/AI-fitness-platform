@@ -31,4 +31,8 @@ export class CommunityService {
   getByClubId(clubId: number): Observable<CommunityResponse> {
     return this.http.get<CommunityResponse>(`${this.apiUrl}/club/${clubId}`);
   }
+
+  update(id: number, community: CommunityRequest): Observable<CommunityResponse> {
+    return this.http.put<CommunityResponse>(`${this.apiUrl}/${id}`, community);
+  }
 }

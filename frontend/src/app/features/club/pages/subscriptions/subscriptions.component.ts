@@ -1,30 +1,77 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Plan {
-  id: number;
-  name: string;
-  price: number;
-  description: string;
-  features: string[];
-  isPopular: boolean;
-}
+import { FormsModule } from '@angular/forms';
+import { AbonnementService, Abonnement } from '../../../../core/services/abonnement.service';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ClubService } from '../../../../core/services/club.service';
 
 @Component({
   selector: 'app-subscriptions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './subscriptions.component.html',
   styleUrls: ['./subscriptions.component.scss']
 })
 export class SubscriptionsComponent implements OnInit {
 
-  plans: Plan[] = [
-    { id: 1, name: 'Basic Silver', price: 29, description: 'Perfect for standard gym access and simple setups.', features: ['Full Gym Floor Access', 'Locker Room & Showers', '1 Fitness Assessment/mo'], isPopular: false },
-    { id: 2, name: 'Premium Gold', price: 49, description: 'Accelerate results with customized coach plans.', features: ['All Basic Silver Features', 'Group Fitness Classes Included', '2 Personal Trainer Sessions'], isPopular: true },
-    { id: 3, name: 'Elite VIP Diamond', price: 89, description: 'Ultimate premium pass with total wellness coverage.', features: ['Unlimited Access 24/7', 'Private Dedicated Coach', 'Spa & Sauna Access'], isPopular: false }
-  ];
+  abonnements: Abonnement[] = [];
+  clubId?: number;
 
-  constructor() {}
-  ngOnInit(): void {}
+  isModalOpen = false;
+  currentAbonnement: Partial<Abonnement> = {};
+
+  constructor(
+    private abonnementService: AbonnementService,
+    private authService: AuthService,
+    private clubService: ClubService
+  ) {}
+
+  ngOnInit(): void {
+    const user = this.authService.currentUser();
+    if (user && user.id) {
+      this.clubService.getClubByUserId(user.id).subscribe({
+        next: (club) => {
+          if (club && club.id) {
+            this.clubId = club.id;
+            this.loadAbonnements();
+          }
+        }
+      });
+    }
+  }
+
+  loadAbonnements() {
+    if (this.clubId) {
+      this.abonnementService.getByClubId(this.clubId).subscribe({
+        next: (data) => this.abonnements = data
+      });
+    }
+  }
+
+  openEditModal(abonnement: Abonnement) {
+    this.currentAbonnement = { ...abonnement };
+    this.isModalOpen = true;
+  }
+
+  closeModal() {
+    this.isModalOpen = false;
+  }
+
+  saveAbonnement() {
+    if (this.currentAbonnement.id) {
+      this.abonnementService.update(this.currentAbonnement.id, this.currentAbonnement as any).subscribe({
+        next: (updated) => {
+          const idx = this.abonnements.findIndex(a => a.id === updated.id);
+          if (idx !== -1) {
+            this.abonnements[idx] = updated;
+          }
+          this.closeModal();
+        },
+        error: (err) => {
+          console.error('Failed to update abonnement', err);
+          alert('Error updating subscription');
+        }
+      });
+    }
+  }
 }

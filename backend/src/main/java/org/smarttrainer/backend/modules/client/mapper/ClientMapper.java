@@ -23,6 +23,8 @@ public class ClientMapper {
                 .coachID(profile.getCoach() != null ? profile.getCoach().getId() : null)
                 .clubId(profile.getClub() != null ? profile.getClub().getId() : null)
                 .subscriptionPlan(profile.getSubscriptionPlan())
+                // Add Members UserName to user Entity
+                .userName(profile.getUser() != null ? profile.getUser().fullName() : null)
                 .build();
     }
 

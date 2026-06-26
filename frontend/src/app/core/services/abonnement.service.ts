@@ -35,4 +35,8 @@ export class AbonnementService {
   create(abonnement: AbonnementRequest): Observable<Abonnement> {
     return this.http.post<Abonnement>(this.apiUrl, abonnement);
   }
+
+  update(id: number, abonnement: AbonnementRequest): Observable<Abonnement> {
+    return this.http.put<Abonnement>(`${this.apiUrl}/${id}`, abonnement);
+  }
 }

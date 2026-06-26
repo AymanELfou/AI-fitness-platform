@@ -44,8 +44,15 @@ public class ClientController {
         return ResponseEntity.ok(service.getAll());
     }
 
+    // Get all clients in a club
+    @GetMapping("club/{clubId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_CLUB', 'ROLE_ADMIN')")
+    public ResponseEntity<List<ClientProfileResponse>> getByClubIdList(@PathVariable Long clubId) {
+        return ResponseEntity.ok(service.getByClubId(clubId));
+    }
+
     @PutMapping("{id}/profile")
-    @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_CLUB')")
     public ResponseEntity<ClientProfileResponse> update(
             @PathVariable Long id,
             @RequestBody ClientProfileRequest request) {
@@ -62,7 +69,7 @@ public class ClientController {
     }
 
     @DeleteMapping("{id}/profile")
-    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN', 'ROLE_CLUB')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

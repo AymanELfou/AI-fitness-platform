@@ -17,4 +17,5 @@ public class PostResponse {
     private String userName;
     private int commentsCount;
     private int likesCount;
+    private String userRole;
 }
