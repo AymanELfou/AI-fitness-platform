@@ -4,39 +4,7 @@ import {
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
-/* ─── Types ─── */
-export type UserRole = 'client' | 'coach';
-
-export interface Comment {
-  id: number;
-  authorName: string;
-  authorInitial: string;
-  authorColor: string;
-  role: UserRole;
-  text: string;
-  timeAgo: string;
-  likes: number;
-  liked: boolean;
-}
-
-export interface Post {
-  id: number;
-  authorName: string;
-  authorInitial: string;
-  authorColor: string;
-  authorAvatar?: string;
-  role: UserRole;
-  timeAgo: string;
-  content: string;
-  image?: string;
-  tags: string[];
-  likes: number;
-  liked: boolean;
-  comments: Comment[];
-  showComments: boolean;
-  newComment: string;
-  menuOpen: boolean;
-}
+import { Comment, Post } from '../../../../core/models/community.model';
 
 export type FeedFilter = 'All' | 'Clients' | 'Coaches' | 'My Posts';
 
@@ -59,15 +27,9 @@ export class ClientCommunityComponent {
   showNewPostModal = signal<boolean>(false);
   newPostText = '';
   newPostTags = '';
+  newPostImage = '';
 
   /* ── Current user ── */
-  readonly currentUser = {
-    name: 'Alex Johnson',
-    initial: 'A',
-    color: '#2563EB',
-    role: 'client' as UserRole
-  };
-
   /* ── Posts ── */
   posts: Post[] = [
     {
@@ -148,22 +110,7 @@ export class ClientCommunityComponent {
       newComment: '',
       menuOpen: false
     },
-    {
-      id: 5,
-      authorName: 'Alex Johnson',
-      authorInitial: 'A',
-      authorColor: '#2563EB',
-      role: 'client',
-      timeAgo: '2 days ago',
-      content: 'Week 4 of the Upper/Lower program complete ✅ Feeling stronger than ever. Bench went up by 10 lbs this week alone. The progressive overload protocol in this app is absolutely dialed in. Who else is on the hypertrophy split?',
-      tags: ['Week4', 'Hypertrophy', 'Bench'],
-      likes: 89,
-      liked: false,
-      comments: [],
-      showComments: false,
-      newComment: '',
-      menuOpen: false
-    }
+    
   ];
 
   /* ── Computed filtered posts ── */
@@ -238,31 +185,51 @@ export class ClientCommunityComponent {
     const text = this.newPostText.trim();
     if (!text) return;
     const tags = this.newPostTags.split(',').map(t => t.trim()).filter(Boolean);
-    this.posts.unshift({
+    const parsedTags = this.newPostTags.split(',').map(t => t.trim()).filter(Boolean);
+    
+    const newPost: Post = {
       id: Date.now(),
       authorName: this.currentUser.name,
       authorInitial: this.currentUser.initial,
       authorColor: this.currentUser.color,
-      role: this.currentUser.role,
-      timeAgo: 'Just now',
-      content: text,
-      tags,
+      role: 'client',
+      timeAgo: 'À l\'instant',
+      content: this.newPostText,
+      image: this.newPostImage || undefined,
+      tags: parsedTags,
       likes: 0,
       liked: false,
       comments: [],
       showComments: false,
       newComment: '',
-      menuOpen: false
-    });
-    this.newPostText = '';
-    this.newPostTags = '';
-    this.showNewPostModal.set(false);
+      menuOpen: false,
+      userId: this.currentUser.id
+    };
+
+    this.posts.unshift(newPost);
+    this.closeModal();
   }
 
   closeModal(): void {
     this.showNewPostModal.set(false);
     this.newPostText = '';
     this.newPostTags = '';
+    this.newPostImage = '';
+  }
+
+  onImageSelected(event: any): void {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.newPostImage = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage(): void {
+    this.newPostImage = '';
   }
 
   toggleMenu(post: Post): void {

@@ -51,6 +51,13 @@ public class ClientController {
         return ResponseEntity.ok(service.getByClubId(clubId));
     }
 
+    // Get all clients for a coach (coache clients)
+    @GetMapping("coach/{coachId}")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_ADMIN')")
+    public ResponseEntity<List<ClientProfileResponse>> getByCoachIdList(@PathVariable Long coachId) {
+        return ResponseEntity.ok(service.getByCoachId(coachId));
+    }
+
     @PutMapping("{id}/profile")
     @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_CLUB')")
     public ResponseEntity<ClientProfileResponse> update(

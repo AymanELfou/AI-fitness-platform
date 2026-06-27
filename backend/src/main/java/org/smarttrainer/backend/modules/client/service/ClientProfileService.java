@@ -71,6 +71,13 @@ public class ClientProfileService {
                 .collect(Collectors.toList());
     }
 
+    public List<ClientProfileResponse> getByCoachId(Long coachId) {
+        return clientProfileRepository.findByCoachId(coachId)
+                .stream()
+                .map(clientMapper::toResponse)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public ClientProfileResponse update(Long id, ClientProfileRequest request){
         ClientProfile profile = clientProfileRepository.findById(id)

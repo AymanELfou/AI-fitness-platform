@@ -1,10 +1,26 @@
-import { Component, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { AdminUserService, AdminUserStatus } from '../../../../core/services/admin-user.service';
+import { User as ApiUser } from '../../../../core/models/user.model';
 
 interface User {
-  id: number; name: string; email: string; role: 'admin'|'coach'|'club'|'client';
-  status: 'active'|'pending'|'inactive'|'banned'; joined: string; initial: string; color: string;
+  id: number;
+  name: string;
+  email: string;
+  role: 'admin' | 'coach' | 'club' | 'client';
+  status: AdminUserStatus;
+  joined: string;
+  initial: string;
+  color: string;
+}
+
+interface ConfirmDialog {
+  title: string;
+  message: string;
+  confirmLabel: string;
+  tone: 'primary' | 'warning' | 'danger';
+  action: () => void;
 }
 
 @Component({
@@ -14,34 +30,49 @@ interface User {
   templateUrl: './users.component.html',
   styleUrl: './users.component.scss'
 })
-export class AdminUsersComponent {
+export class AdminUsersComponent implements OnInit {
   search = '';
   filterRole = 'All';
   filterStatus = 'All';
   currentPage = 1;
   pageSize = 8;
+  isLoading = false;
+  errorMessage = '';
+  confirmDialog: ConfirmDialog | null = null;
 
-  roles = ['All','admin','coach','club','client'];
-  statuses = ['All','active','pending','inactive','banned'];
+  roles = ['All', 'admin', 'coach', 'club', 'client'];
+  statuses = ['All', 'active', 'pending', 'inactive', 'banned'];
 
-  users: User[] = [
-    { id:1,  name:'Alex Johnson',    email:'alex@gmail.com',      role:'client', status:'active',   joined:'Jan 12, 2026', initial:'A', color:'#2563EB' },
-    { id:2,  name:'Coach Marcus',    email:'marcus@coach.com',    role:'coach',  status:'active',   joined:'Nov 3, 2025',  initial:'M', color:'#7C3AED' },
-    { id:3,  name:'FitZone Club',    email:'admin@fitzone.ma',    role:'club',   status:'active',   joined:'Sep 20, 2025', initial:'F', color:'#059669' },
-    { id:4,  name:'Sarah Jenkins',   email:'sarah@gmail.com',     role:'client', status:'active',   joined:'Feb 1, 2026',  initial:'S', color:'#DC2626' },
-    { id:5,  name:'Coach Elena V.',  email:'elena@coach.com',     role:'coach',  status:'pending',  joined:'May 30, 2026', initial:'E', color:'#0891B2' },
-    { id:6,  name:'Jordan Kim',      email:'jordan@gmail.com',    role:'client', status:'active',   joined:'Mar 14, 2026', initial:'J', color:'#F59E0B' },
-    { id:7,  name:'PowerHouse Club', email:'pw@powerhouse.ma',    role:'club',   status:'pending',  joined:'Jun 1, 2026',  initial:'P', color:'#7C3AED' },
-    { id:8,  name:'Lena Torres',     email:'lena@gmail.com',      role:'client', status:'inactive', joined:'Apr 5, 2026',  initial:'L', color:'#059669' },
-    { id:9,  name:'Coach David',     email:'david@coach.com',     role:'coach',  status:'active',   joined:'Dec 10, 2025', initial:'D', color:'#DC2626' },
-    { id:10, name:'Super Admin',     email:'admin@smart.com',     role:'admin',  status:'active',   joined:'Jan 1, 2025',  initial:'SA',color:'#0F172A' },
-    { id:11, name:'Mike Torres',     email:'mike@gmail.com',      role:'client', status:'banned',   joined:'Feb 20, 2026', initial:'M', color:'#EF4444' },
-    { id:12, name:'EliteFit Club',   email:'elite@elitefit.ma',   role:'club',   status:'active',   joined:'Oct 15, 2025', initial:'E', color:'#F59E0B' },
-  ];
+  users: User[] = [];
+
+  private colors = ['#2563EB', '#7C3AED', '#059669', '#DC2626', '#0891B2', '#F59E0B', '#0F172A'];
+
+  constructor(private adminUserService: AdminUserService) {}
+
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers(): void {
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.adminUserService.getAllUsers().subscribe({
+      next: users => {
+        this.users = users.map((user, index) => this.mapUser(user, index));
+        this.currentPage = 1;
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Impossible de charger les utilisateurs depuis l API.';
+        this.isLoading = false;
+      }
+    });
+  }
 
   get filtered(): User[] {
     return this.users.filter(u => {
-      const matchSearch = !this.search || u.name.toLowerCase().includes(this.search.toLowerCase()) || u.email.toLowerCase().includes(this.search.toLowerCase());
+      const q = this.search.toLowerCase();
+      const matchSearch = !q || u.name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q);
       const matchRole = this.filterRole === 'All' || u.role === this.filterRole;
       const matchStatus = this.filterStatus === 'All' || u.status === this.filterStatus;
       return matchSearch && matchRole && matchStatus;
@@ -53,20 +84,115 @@ export class AdminUsersComponent {
     return this.filtered.slice(start, start + this.pageSize);
   }
 
-  get totalPages(): number { return Math.ceil(this.filtered.length / this.pageSize); }
-  get pages(): number[] { return Array.from({length: this.totalPages}, (_, i) => i + 1); }
+  get totalPages(): number { return Math.max(Math.ceil(this.filtered.length / this.pageSize), 1); }
+  get pages(): number[] { return Array.from({ length: this.totalPages }, (_, i) => i + 1); }
 
   setPage(p: number): void { if (p >= 1 && p <= this.totalPages) this.currentPage = p; }
 
-  toggleStatus(u: User): void {
-    u.status = u.status === 'active' ? 'inactive' : 'active';
+  toggleStatus(user: User): void {
+    const activate = user.status !== 'active';
+    this.confirmDialog = {
+      title: activate ? 'Activer cet utilisateur ?' : 'Desactiver cet utilisateur ?',
+      message: `${user.name} sera ${activate ? 'autorise a acceder a la plateforme' : 'desactive temporairement'}.`,
+      confirmLabel: activate ? 'Activer' : 'Desactiver',
+      tone: activate ? 'primary' : 'warning',
+      action: () => {
+        const request = activate
+          ? this.adminUserService.activateUser(user.id)
+          : this.adminUserService.deactivateUser(user.id);
+
+        request.subscribe({
+          next: updated => this.replaceUser(updated),
+          error: () => this.errorMessage = 'Action utilisateur echouee.'
+        });
+      }
+    };
+  }
+
+  banUser(user: User): void {
+    this.confirmDialog = {
+      title: 'Bannir cet utilisateur ?',
+      message: `${user.name} sera bloque et ne pourra plus se connecter.`,
+      confirmLabel: 'Bannir',
+      tone: 'danger',
+      action: () => {
+        this.adminUserService.lockUser(user.id).subscribe({
+          next: updated => this.replaceUser(updated),
+          error: () => this.errorMessage = 'Impossible de bannir cet utilisateur.'
+        });
+      }
+    };
+  }
+
+  deleteUser(user: User): void {
+    this.confirmDialog = {
+      title: 'Supprimer cet utilisateur ?',
+      message: `Cette action archivera ${user.name} et bloquera son acces a la plateforme.`,
+      confirmLabel: 'Supprimer',
+      tone: 'danger',
+      action: () => {
+        this.adminUserService.deleteUser(user.id).subscribe({
+          next: () => this.users = this.users.filter(x => x.id !== user.id),
+          error: () => this.errorMessage = 'Suppression utilisateur echouee.'
+        });
+      }
+    };
+  }
+
+  confirmAction(): void {
+    const dialog = this.confirmDialog;
+    this.confirmDialog = null;
+    dialog?.action();
+  }
+
+  cancelConfirm(): void {
+    this.confirmDialog = null;
+  }
+
+  getPageStart(): number {
+    return this.filtered.length ? (this.currentPage - 1) * this.pageSize + 1 : 0;
   }
 
   getPageEnd(): number { return Math.min(this.currentPage * this.pageSize, this.filtered.length); }
-  deleteUser(u: User): void { this.users = this.users.filter(x => x.id !== u.id); }
 
   get clientCount(): number  { return this.users.filter(u => u.role === 'client').length; }
   get coachCount(): number   { return this.users.filter(u => u.role === 'coach').length; }
   get clubCount(): number    { return this.users.filter(u => u.role === 'club').length; }
   get pendingCount(): number { return this.users.filter(u => u.status === 'pending').length; }
+
+  private replaceUser(user: ApiUser): void {
+    const index = this.users.findIndex(item => item.id === user.id);
+    const mapped = this.mapUser(user, Math.max(index, 0));
+    if (index >= 0) {
+      this.users = this.users.map(item => item.id === mapped.id ? mapped : item);
+    }
+  }
+
+  private mapUser(user: ApiUser, index: number): User {
+    const name = `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim() || user.email;
+    return {
+      id: user.id,
+      name,
+      email: user.email,
+      role: this.adminUserService.getPrimaryRole(user),
+      status: this.adminUserService.getStatus(user),
+      joined: this.formatDate(user.createdDate),
+      initial: this.getInitials(name),
+      color: this.colors[index % this.colors.length]
+    };
+  }
+
+  private formatDate(value?: string): string {
+    if (!value) return '-';
+    return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(value));
+  }
+
+  private getInitials(name: string): string {
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase())
+      .join('');
+  }
 }

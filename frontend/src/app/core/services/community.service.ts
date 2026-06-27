@@ -32,6 +32,10 @@ export class CommunityService {
     return this.http.get<CommunityResponse>(`${this.apiUrl}/club/${clubId}`);
   }
 
+  getAll(): Observable<CommunityResponse[]> {
+    return this.http.get<CommunityResponse[]>(this.apiUrl);
+  }
+
   update(id: number, community: CommunityRequest): Observable<CommunityResponse> {
     return this.http.put<CommunityResponse>(`${this.apiUrl}/${id}`, community);
   }

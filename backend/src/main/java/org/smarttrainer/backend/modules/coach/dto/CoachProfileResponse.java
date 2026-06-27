@@ -14,6 +14,8 @@ public class CoachProfileResponse {
 
     private Long id;
     private LocalDateTime createdAt;
+    private Long userId;
+    private String email;
 
     private Integer experience;
     private String certifications;

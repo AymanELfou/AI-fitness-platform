@@ -30,6 +30,8 @@ public class SecurityConfig {
                                 .sessionManagement(session -> session
                                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                                 .authorizeHttpRequests(auth -> auth
+                                        // error and options and auth and exercises and clubs
+                                                .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
                                                 .requestMatchers("/auth/**").permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/clubs/**").permitAll()

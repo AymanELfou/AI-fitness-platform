@@ -35,10 +35,7 @@
 
   <!-- ══════════ FILTER TABS ══════════ -->
   <div class="filter-row">
-    <button
-      *ngFor="let f of filters"
-      class="filter-tab"
-      [class.filter-tab--active]="activeFilter() === f"
+    <button *ngFor="let f of filters" class="filter-tab" [class.filter-tab--active]="activeFilter() === f"
       (click)="setFilter(f)">
       {{ f }}
     </button>
@@ -55,15 +52,13 @@
         <p>Be the first to share something!</p>
       </div>
 
-      <div
-        *ngFor="let post of filteredPosts; trackBy: trackById"
-        class="post-card"
+      <div *ngFor="let post of filteredPosts; trackBy: trackById" class="post-card"
         [class.post-card--coach]="post.role === 'coach'">
 
         <!-- Coach banner -->
         <div class="coach-banner" *ngIf="post.role === 'coach'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="coach-banner-icon">
-            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
           </svg>
           Coach Post
         </div>
@@ -87,24 +82,29 @@
           <div class="post-menu-wrap" (click)="$event.stopPropagation()">
             <button class="post-menu-btn" (click)="toggleMenu(post)" aria-label="Post options">
               <svg viewBox="0 0 24 24" fill="currentColor">
-                <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                <circle cx="12" cy="5" r="1.5" />
+                <circle cx="12" cy="12" r="1.5" />
+                <circle cx="12" cy="19" r="1.5" />
               </svg>
             </button>
             <div class="post-dropdown" *ngIf="post.menuOpen">
               <button class="dropdown-item" (click)="sharePost(post)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="di-icon">
-                  <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+                  <circle cx="18" cy="5" r="3" />
+                  <circle cx="6" cy="12" r="3" />
+                  <circle cx="18" cy="19" r="3" />
+                  <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                  <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
                 </svg>
                 Share Post
               </button>
-              <button class="dropdown-item dropdown-item--danger"
-                *ngIf="post.authorName === currentUser.name"
+              <button class="dropdown-item dropdown-item--danger" *ngIf="post.authorName === currentUser.name"
                 (click)="deletePost(post)">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="di-icon">
-                  <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                  <path d="M10 11v6"/><path d="M14 11v6"/>
+                  <polyline points="3 6 5 6 21 6" />
+                  <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                  <path d="M10 11v6" />
+                  <path d="M14 11v6" />
                 </svg>
                 Delete
               </button>
@@ -130,9 +130,10 @@
           <div class="actions-left">
             <!-- Like -->
             <button class="action-btn" [class.action-btn--liked]="post.liked" (click)="toggleLike(post)">
-              <svg viewBox="0 0 24 24" [attr.fill]="post.liked ? 'currentColor' : 'none'"
-                stroke="currentColor" stroke-width="2" class="action-icon">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              <svg viewBox="0 0 24 24" [attr.fill]="post.liked ? 'currentColor' : 'none'" stroke="currentColor"
+                stroke-width="2" class="action-icon">
+                <path
+                  d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
               </svg>
               <span>{{ post.likes }}</span>
             </button>
@@ -140,7 +141,7 @@
             <!-- Comment -->
             <button class="action-btn" [class.action-btn--active]="post.showComments" (click)="toggleComments(post)">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
               <span>{{ post.comments.length }}</span>
             </button>
@@ -149,9 +150,11 @@
           <!-- Share -->
           <button class="share-btn" (click)="sharePost(post)" aria-label="Share">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon">
-              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
-              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/>
-              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/>
+              <circle cx="18" cy="5" r="3" />
+              <circle cx="6" cy="12" r="3" />
+              <circle cx="18" cy="19" r="3" />
+              <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+              <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
             </svg>
           </button>
         </div>
@@ -162,16 +165,11 @@
           <div class="comment-input-row">
             <div class="comment-avatar" [style.background]="currentUser.color">{{ currentUser.initial }}</div>
             <div class="comment-input-wrap">
-              <input
-                class="comment-input"
-                [(ngModel)]="post.newComment"
-                placeholder="Write a comment…"
+              <input class="comment-input" [(ngModel)]="post.newComment" placeholder="Write a comment…"
                 (keyup.enter)="submitComment(post)" />
-              <button class="comment-send-btn"
-                [disabled]="!post.newComment.trim()"
-                (click)="submitComment(post)">
+              <button class="comment-send-btn" [disabled]="!post.newComment.trim()" (click)="submitComment(post)">
                 <svg viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
                 </svg>
               </button>
             </div>
@@ -190,10 +188,12 @@
                   <span class="comment-time">• {{ c.timeAgo }}</span>
                 </div>
                 <p class="comment-text">{{ c.text }}</p>
-                <button class="comment-like-btn" [class.comment-like-btn--liked]="c.liked" (click)="toggleCommentLike(c)">
-                  <svg viewBox="0 0 24 24" [attr.fill]="c.liked ? 'currentColor' : 'none'"
-                    stroke="currentColor" stroke-width="2" class="cl-icon">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                <button class="comment-like-btn" [class.comment-like-btn--liked]="c.liked"
+                  (click)="toggleCommentLike(c)">
+                  <svg viewBox="0 0 24 24" [attr.fill]="c.liked ? 'currentColor' : 'none'" stroke="currentColor"
+                    stroke-width="2" class="cl-icon">
+                    <path
+                      d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
                   </svg>
                   {{ c.likes }}
                 </button>
@@ -254,7 +254,8 @@
   <!-- ══════════ FAB ══════════ -->
   <button class="fab" (click)="showNewPostModal.set(true)" aria-label="Create new post">
     <svg viewBox="0 0 24 24" fill="currentColor" class="fab-icon">
-      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+      <path
+        d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
     </svg>
   </button>
 
@@ -265,7 +266,8 @@
         <h2 class="modal-title">Create a Post</h2>
         <button class="modal-close" (click)="closeModal()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
           </svg>
         </button>
       </div>
@@ -280,21 +282,19 @@
       </div>
 
       <!-- Text area -->
-      <textarea
-        class="modal-textarea"
-        [(ngModel)]="newPostText"
-        placeholder="Share your achievement, tip, question or motivation…"
-        rows="5"
-        maxlength="500">
+      <textarea class="modal-textarea" [(ngModel)]="newPostText"
+        placeholder="Share your achievement, tip, question or motivation…" rows="5" maxlength="500">
       </textarea>
       <div class="char-count">{{ newPostText.length }} / 500</div>
 
       <!-- Tags input -->
       <div class="modal-tags-row">
         <svg viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" class="tag-input-icon">
-          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/>
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+          <line x1="7" y1="7" x2="7.01" y2="7" />
         </svg>
-        <input class="tag-input" [(ngModel)]="newPostTags" placeholder="Add tags separated by commas (e.g. PR, Bench, Week4)" />
+        <input class="tag-input" [(ngModel)]="newPostTags"
+          placeholder="Add tags separated by commas (e.g. PR, Bench, Week4)" />
       </div>
 
       <!-- Actions -->
@@ -302,7 +302,8 @@
         <button class="modal-cancel-btn" (click)="closeModal()">Cancel</button>
         <button class="modal-post-btn" [disabled]="!newPostText.trim()" (click)="submitPost()">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="post-btn-icon">
-            <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            <line x1="22" y1="2" x2="11" y2="13" />
+            <polygon points="22 2 15 22 11 13 2 9 22 2" />
           </svg>
           Post to Community
         </button>

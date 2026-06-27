@@ -17,7 +17,6 @@
     </div>
   </div>
 
-  <!-- Summary -->
   <div class="summary-pills">
     <div class="sum-pill"><span class="sp-val">{{ clubs.length }}</span><span class="sp-lbl">Total Clubs</span></div>
     <div class="sum-pill sum-pill--green"><span class="sp-val">{{ activeCount }}</span><span class="sp-lbl">Active</span></div>
@@ -25,18 +24,20 @@
     <div class="sum-pill sum-pill--blue"><span class="sp-val">{{ totalMembers }}</span><span class="sp-lbl">Total Members</span></div>
   </div>
 
-  <!-- Cards grid -->
-  <div class="club-cards">
+  <div class="admin-alert admin-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="admin-loading" *ngIf="isLoading">Chargement des clubs...</div>
+
+  <div class="club-cards" *ngIf="!isLoading">
     <div class="club-card" *ngFor="let c of paginated">
       <div class="cc-head">
         <div class="cc-avatar" [style.background]="c.color">{{ c.initial }}</div>
         <div class="cc-info">
           <div class="cc-name">{{ c.name }}</div>
-          <div class="cc-location">📍 {{ c.city }}, {{ c.country }}</div>
+          <div class="cc-location">{{ c.city }}, {{ c.country }}</div>
         </div>
         <div class="cc-actions-top">
           <span class="status-pill" [class]="'status-pill--' + c.status">{{ c.status }}</span>
-          <button class="tbl-btn tbl-btn--del" title="Remove" style="width:26px;height:26px">
+          <button class="tbl-btn tbl-btn--del" title="Remove" style="width:26px;height:26px" (click)="deleteClub(c)">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
           </button>
         </div>
@@ -51,7 +52,7 @@
       <div class="cc-footer">
         <span class="plan-badge" [class]="'plan-badge--' + c.plan.toLowerCase()">{{ c.plan }}</span>
         <span class="cc-joined">Since {{ c.joined }}</span>
-        <button class="cc-approve-btn" *ngIf="c.status === 'pending'" (click)="approveClub(c)">✓ Approve</button>
+        <button class="cc-approve-btn" *ngIf="c.status === 'pending'" (click)="approveClub(c)">Approve</button>
         <button class="cc-toggle-btn" *ngIf="c.status !== 'pending'" (click)="toggleStatus(c)">
           {{ c.status === 'active' ? 'Suspend' : 'Activate' }}
         </button>
@@ -59,12 +60,11 @@
     </div>
   </div>
 
-  <!-- Filter + Pagination -->
-  <div class="bottom-bar">
+  <div class="bottom-bar" *ngIf="!isLoading">
     <div class="dtc-controls">
       <div class="search-wrap">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" [(ngModel)]="search" (ngModelChange)="currentPage=1" placeholder="Search clubs…" />
+        <input class="search-input" [(ngModel)]="search" (ngModelChange)="currentPage=1" placeholder="Search clubs..." />
       </div>
       <select class="filter-select" [(ngModel)]="filterPlan" (ngModelChange)="currentPage=1">
         <option *ngFor="let p of plans">{{ p }}</option>
@@ -74,11 +74,25 @@
       </select>
     </div>
     <div class="pagination" style="border:none;padding:0;background:transparent">
-      <span class="pag-info">{{ (currentPage-1)*pageSize + 1 }}–{{ getPageEnd() }} of {{ filtered.length }}</span>
+      <span class="pag-info">{{ getPageStart() }}-{{ getPageEnd() }} of {{ filtered.length }}</span>
       <div class="pag-btns">
-        <button class="pag-btn" (click)="setPage(currentPage-1)" [disabled]="currentPage===1">‹</button>
+        <button class="pag-btn" (click)="setPage(currentPage-1)" [disabled]="currentPage===1">&lt;</button>
         <button class="pag-btn" *ngFor="let p of pages" [class.pag-btn--active]="p===currentPage" (click)="setPage(p)">{{ p }}</button>
-        <button class="pag-btn" (click)="setPage(currentPage+1)" [disabled]="currentPage===totalPages">›</button>
+        <button class="pag-btn" (click)="setPage(currentPage+1)" [disabled]="currentPage===totalPages">&gt;</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="confirm-backdrop" *ngIf="confirmDialog">
+    <div class="confirm-modal" [class.confirm-modal--danger]="confirmDialog.tone === 'danger'" [class.confirm-modal--warning]="confirmDialog.tone === 'warning'">
+      <div class="confirm-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      </div>
+      <h2>{{ confirmDialog.title }}</h2>
+      <p>{{ confirmDialog.message }}</p>
+      <div class="confirm-actions">
+        <button class="btn-outline" (click)="cancelConfirm()">Annuler</button>
+        <button class="btn-primary" (click)="confirmAction()">{{ confirmDialog.confirmLabel }}</button>
       </div>
     </div>
   </div>

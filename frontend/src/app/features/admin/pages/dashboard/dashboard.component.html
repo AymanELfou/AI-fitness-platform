@@ -1,6 +1,4 @@
 <div class="ap-root">
-
-  <!-- ══ HEADER ══ -->
   <div class="ap-header">
     <div>
       <div class="ap-eyebrow">SmartTrainer Admin</div>
@@ -12,15 +10,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Export
       </button>
-      <button class="btn-primary">
+      <a routerLink="/admin/users" class="btn-primary">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Add User
-      </button>
+      </a>
     </div>
   </div>
 
-  <!-- ══ STAT GRID ══ -->
-  <div class="stats-grid">
+  <div class="admin-alert admin-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="admin-loading" *ngIf="isLoading">Chargement du dashboard...</div>
+
+  <div class="stats-grid" *ngIf="!isLoading">
     <div class="stat-card" *ngFor="let s of stats">
       <div class="stat-card__left">
         <div class="stat-icon" [style.background]="s.color + '15'" [style.color]="s.color">{{ s.icon }}</div>
@@ -32,7 +32,7 @@
       </div>
       <div class="stat-trend" [class.stat-trend--up]="s.up" [class.stat-trend--down]="!s.up">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="trend-arr">
-          <polyline *ngIf="s.up"  points="18 15 12 9 6 15"/>
+          <polyline *ngIf="s.up" points="18 15 12 9 6 15"/>
           <polyline *ngIf="!s.up" points="6 9 12 15 18 9"/>
         </svg>
         {{ s.trend }}
@@ -40,14 +40,11 @@
     </div>
   </div>
 
-  <!-- ══ ROW 2 ══ -->
-  <div class="dash-row">
-
-    <!-- Activity Feed -->
+  <div class="dash-row" *ngIf="!isLoading">
     <div class="dash-card dash-card--activity">
       <div class="dash-card__head">
         <span class="dash-card__title">Recent Activity</span>
-        <a routerLink="/admin/reports" class="dash-card__link">View all →</a>
+        <a routerLink="/admin/reports" class="dash-card__link">View all</a>
       </div>
       <div class="activity-list">
         <div class="activity-item" *ngFor="let a of recentActivity">
@@ -61,11 +58,10 @@
       </div>
     </div>
 
-    <!-- Top Clubs -->
     <div class="dash-card">
       <div class="dash-card__head">
         <span class="dash-card__title">Top Clubs</span>
-        <a routerLink="/admin/clubs" class="dash-card__link">Manage →</a>
+        <a routerLink="/admin/clubs" class="dash-card__link">Manage</a>
       </div>
       <table class="mini-table">
         <thead>
@@ -85,13 +81,9 @@
         </tbody>
       </table>
     </div>
-
   </div>
 
-  <!-- ══ ROW 3 ══ -->
-  <div class="dash-row">
-
-    <!-- Plan Distribution -->
+  <div class="dash-row" *ngIf="!isLoading">
     <div class="dash-card">
       <div class="dash-card__head">
         <span class="dash-card__title">Plan Distribution</span>
@@ -109,38 +101,18 @@
       </div>
     </div>
 
-    <!-- Quick Actions -->
     <div class="dash-card">
       <div class="dash-card__head">
         <span class="dash-card__title">Quick Actions</span>
       </div>
       <div class="quick-actions">
-        <a routerLink="/admin/users" class="quick-action">
-          <span class="qa-icon">👥</span>
-          <span>Manage Users</span>
-        </a>
-        <a routerLink="/admin/clubs" class="quick-action">
-          <span class="qa-icon">🏠</span>
-          <span>Review Clubs</span>
-        </a>
-        <a routerLink="/admin/subscriptions" class="quick-action">
-          <span class="qa-icon">💳</span>
-          <span>Subscriptions</span>
-        </a>
-        <a routerLink="/admin/settings" class="quick-action">
-          <span class="qa-icon">⚙️</span>
-          <span>Settings</span>
-        </a>
-        <a routerLink="/admin/reports" class="quick-action">
-          <span class="qa-icon">📊</span>
-          <span>Reports</span>
-        </a>
-        <a routerLink="/admin/coaches" class="quick-action">
-          <span class="qa-icon">⭐</span>
-          <span>Coaches</span>
-        </a>
+        <a routerLink="/admin/users" class="quick-action"><span class="qa-icon">U</span><span>Manage Users</span></a>
+        <a routerLink="/admin/clubs" class="quick-action"><span class="qa-icon">C</span><span>Review Clubs</span></a>
+        <a routerLink="/admin/subscriptions" class="quick-action"><span class="qa-icon">S</span><span>Subscriptions</span></a>
+        <a routerLink="/admin/settings" class="quick-action"><span class="qa-icon">G</span><span>Settings</span></a>
+        <a routerLink="/admin/reports" class="quick-action"><span class="qa-icon">R</span><span>Reports</span></a>
+        <a routerLink="/admin/coaches" class="quick-action"><span class="qa-icon">T</span><span>Coaches</span></a>
       </div>
     </div>
-
   </div>
 </div>

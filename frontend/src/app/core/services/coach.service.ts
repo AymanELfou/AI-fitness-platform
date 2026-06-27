@@ -5,6 +5,8 @@ import { Observable } from 'rxjs';
 export interface CoachProfileResponse {
   id: number;
   createdAt?: string;
+  userId?: number;
+  email?: string;
   experience: number;
   certifications: string;
   speciality: string;
@@ -34,6 +36,10 @@ export class CoachService {
 
   getCoachById(id: number): Observable<CoachProfileResponse> {
     return this.http.get<CoachProfileResponse>(`${this.apiUrl}/${id}`);
+  }
+
+  getCoachByUserId(userId: number): Observable<CoachProfileResponse> {
+    return this.http.get<CoachProfileResponse>(`${this.apiUrl}/user/${userId}`);
   }
 
   createCoachProfile(userId: number, profileData: any): Observable<CoachProfileResponse> {

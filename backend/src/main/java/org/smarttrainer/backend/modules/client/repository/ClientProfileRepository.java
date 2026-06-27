@@ -12,5 +12,6 @@ public interface ClientProfileRepository extends JpaRepository<ClientProfile, Lo
     boolean existsByUserId(Long userId);
 
     List<ClientProfile> findByClubId(Long clubId);
+    List<ClientProfile> findByCoachId(Long coachId);
     Long user(User user);
 }

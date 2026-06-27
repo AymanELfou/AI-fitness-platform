@@ -25,7 +25,11 @@ import java.util.List;
 @AllArgsConstructor
 public class Post extends BaseEntity {
 
+    // the image url is long text   
+    @Column(columnDefinition = "TEXT")
     private String content;
+
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToOne

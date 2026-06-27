@@ -337,3 +337,89 @@ $shadow:  0 2px 12px rgba(0,0,0,0.06);
   .data-table { font-size: 0.75rem; }
   .data-table th, .data-table td { padding: 0.6rem 0.75rem; }
 }
+
+.admin-alert,
+.admin-loading {
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: $sub;
+  box-shadow: 0 1px 6px rgba(15,23,42,0.05);
+}
+
+.admin-alert--error {
+  border-color: rgba(239,68,68,0.28);
+  background: rgba(239,68,68,0.07);
+  color: #B91C1C;
+}
+
+.confirm-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(15,23,42,0.45);
+  backdrop-filter: blur(4px);
+}
+
+.confirm-modal {
+  width: min(420px, 100%);
+  background: $white;
+  border: 1px solid $border;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 22px 60px rgba(15,23,42,0.25);
+  animation: apFadeUp 0.2s ease both;
+
+  h2 {
+    margin: 0 0 0.35rem;
+    color: $text;
+    font-size: 1.15rem;
+    font-weight: 900;
+  }
+
+  p {
+    margin: 0;
+    color: $sub;
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+}
+
+.confirm-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.9rem;
+  background: rgba(37,99,235,0.1);
+  color: $blue;
+
+  svg { width: 22px; height: 22px; }
+}
+
+.confirm-modal--warning .confirm-icon {
+  background: rgba(245,158,11,0.12);
+  color: #D97706;
+}
+
+.confirm-modal--danger .confirm-icon {
+  background: rgba(239,68,68,0.1);
+  color: $red;
+}
+
+.confirm-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.625rem;
+  margin-top: 1.25rem;
+}

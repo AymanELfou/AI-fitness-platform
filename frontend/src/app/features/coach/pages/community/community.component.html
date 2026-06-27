@@ -1,54 +1,325 @@
-<div class="page-wrapper">
-  <div class="page-header">
-    <div>
-      <h2 class="page-title">Community</h2>
-      <p class="page-subtitle">Interagissez avec vos <strong>clients</strong> et la communauté</p>
-    </div>
-    <button class="btn-primary">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-      </svg>
-      Nouvelle Publication
-    </button>
+<div class="cp-root" (click)="closeAllMenus()">
+
+  <!-- Toast Notification System -->
+  <div *ngIf="successMessage" class="fixed top-5 right-5 z-[999] bg-emerald-500 text-white px-6 py-3 rounded-xl shadow-lg font-semibold animate-fade-in flex items-center gap-2">
+    <span class="material-icons">check_circle</span>
+    {{ successMessage }}
+  </div>
+  <div *ngIf="errorMessage" class="fixed top-5 right-5 z-[999] bg-rose-500 text-white px-6 py-3 rounded-xl shadow-lg font-semibold animate-fade-in flex items-center gap-2">
+    <span class="material-icons">error</span>
+    {{ errorMessage }}
   </div>
 
-  <div class="posts-feed">
-    @for (post of posts; track post.author) {
-      <div class="post-card">
-        <div class="post-header">
-          <div class="post-avatar" [style.background]="post.color">{{ post.initials }}</div>
-          <div class="post-author-info">
-            <p class="post-author">{{ post.author }}</p>
-            <span class="post-time">{{ post.time }}</span>
-          </div>
-          <button class="post-menu-btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01"/>
-            </svg>
-          </button>
+  <!-- ══════════ HEADER ══════════ -->
+  <div class="cp-header">
+    <div>
+      <h1 class="cp-title">Communauté</h1>
+      <p class="cp-subtitle">Suivez et interagissez avec les membres et les autres coachs.</p>
+    </div>
+
+    <!-- Stats chips -->
+    <div class="cp-stats">
+      <div class="cp-stat">
+        <span class="cp-stat__val">{{ totalPosts }}</span>
+        <span class="cp-stat__lbl">Publications</span>
+      </div>
+      <div class="cp-stat-sep"></div>
+      <div class="cp-stat">
+        <span class="cp-stat__val">{{ coachPosts }}</span>
+        <span class="cp-stat__lbl">Conseils Coach</span>
+      </div>
+      <div class="cp-stat-sep"></div>
+      <div class="cp-stat">
+        <span class="cp-stat__val">{{ totalLikes }}</span>
+        <span class="cp-stat__lbl">Total J'aime</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════ QUICK POST BAR ══════════ -->
+  <div class="quick-post-bar" (click)="showNewPostModal.set(true)">
+    <div class="qp-avatar" [style.background]="currentUser.color">{{ currentUser.initial }}</div>
+    <div class="qp-placeholder">Partagez un conseil, un encouragement ou une question...</div>
+    <button class="qp-btn">Publier</button>
+  </div>
+
+  <!-- ══════════ FILTER TABS ══════════ -->
+  <div class="filter-row">
+    @for (f of filters; track f) {
+      <button
+        class="filter-tab"
+        [class.filter-tab--active]="activeFilter() === f"
+        (click)="setFilter(f)">
+        {{ f === 'All' ? 'Tout' : f === 'Clients' ? 'Membres' : f === 'Coaches' ? 'Coachs' : 'Mes publications' }}
+      </button>
+    }
+  </div>
+
+  <!-- ══════════ TWO-COLUMN LAYOUT ══════════ -->
+  <div class="cp-body">
+
+    <!-- ── FEED ── -->
+    <div class="feed-col">
+      @if (isLoading) {
+        <div class="flex justify-center items-center py-20">
+          <div class="animate-spin w-10 h-10 border-4 border-t-indigo-600 border-indigo-200 rounded-full"></div>
         </div>
-        <p class="post-content">{{ post.content }}</p>
-        <div class="post-actions">
-          <button class="post-action-btn" [class.liked]="post.liked" (click)="toggleLike(post)">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24" [attr.fill]="post.liked ? 'currentColor' : 'none'">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-            </svg>
-            {{ post.likes }}
-          </button>
-          <button class="post-action-btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-            </svg>
-            {{ post.comments }}
-          </button>
-          <button class="post-action-btn">
-            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
-            </svg>
-            Partager
-          </button>
+      } @else if (filteredPosts.length === 0) {
+        <div class="empty-feed">
+          <div class="empty-icon">📭</div>
+          <h3>Aucune publication</h3>
+          <p>Soyez le premier à publier quelque chose !</p>
+        </div>
+      } @else {
+        @for (post of filteredPosts; track post.id) {
+          <div class="post-card" [class.post-card--coach]="post.role === 'coach'">
+
+            <!-- Coach banner -->
+            @if (post.role === 'coach') {
+              <div class="coach-banner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="coach-banner-icon">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                Conseil de Coach
+              </div>
+            }
+
+            <!-- Post header -->
+            <div class="post-header">
+              <div class="post-author">
+                <div class="author-avatar" [style.background]="post.authorColor">{{ post.authorInitial }}</div>
+                <div class="author-info">
+                  <div class="author-name">
+                    {{ post.authorName }}
+                    <span class="role-badge" [class.role-badge--coach]="post.role === 'coach'">
+                      {{ post.role === 'coach' ? '⭐ Coach' : 'Membre' }}
+                    </span>
+                  </div>
+                  <div class="post-time">{{ post.timeAgo }}</div>
+                </div>
+              </div>
+
+              <!-- Three-dot menu -->
+              <div class="post-menu-wrap" (click)="$event.stopPropagation()">
+                <button class="post-menu-btn" (click)="toggleMenu(post)" aria-label="Post options">
+                  <svg viewBox="0 0 24 24" fill="currentColor">
+                    <circle cx="12" cy="5" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="12" cy="19" r="1.5"/>
+                  </svg>
+                </button>
+                <div class="post-dropdown" *ngIf="post.menuOpen">
+                  @if (post.userId === currentUser.id) {
+                    <button class="dropdown-item dropdown-item--danger" (click)="deletePost(post)">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="di-icon">
+                        <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                        <path d="M10 11v6"/><path d="M14 11v6"/>
+                      </svg>
+                      Supprimer
+                    </button>
+                  } @else {
+                    <span class="px-3 py-1.5 text-xs text-slate-400 font-semibold block">Aucune option</span>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <!-- Post content -->
+            <p class="post-content">{{ post.content }}</p>
+
+            <!-- Tags -->
+            @if (post.tags.length > 0) {
+              <div class="post-tags">
+                @for (tag of post.tags; track tag) {
+                  <span class="post-tag">#{{ tag }}</span>
+                }
+              </div>
+            }
+
+            <!-- Post image -->
+            @if (post.image) {
+              <div class="post-img-wrap">
+                <img [src]="post.image" [alt]="post.authorName + ' post'" class="post-img" loading="lazy" />
+              </div>
+            }
+
+            <!-- Action bar -->
+            <div class="post-actions">
+              <div class="actions-left">
+                <!-- Like -->
+                <button class="action-btn" [class.action-btn--liked]="post.liked" (click)="toggleLike(post)">
+                  <svg viewBox="0 0 24 24" [attr.fill]="post.liked ? 'currentColor' : 'none'"
+                    stroke="currentColor" stroke-width="2" class="action-icon">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                  <span>{{ post.likes }}</span>
+                </button>
+
+                <!-- Comment -->
+                <button class="action-btn" [class.action-btn--active]="post.showComments" (click)="toggleComments(post)">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="action-icon">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  <span>{{ post.comments.length }}</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- ── COMMENTS SECTION ── -->
+            @if (post.showComments) {
+              <div class="comments-section">
+                <!-- Comment input -->
+                <div class="comment-input-row">
+                  <div class="comment-avatar" [style.background]="currentUser.color">{{ currentUser.initial }}</div>
+                  <div class="comment-input-wrap">
+                    <input
+                      class="comment-input"
+                      [(ngModel)]="post.newComment"
+                      placeholder="Écrire un commentaire..."
+                      (keyup.enter)="submitComment(post)" />
+                    <button class="comment-send-btn"
+                      [disabled]="!post.newComment.trim()"
+                      (click)="submitComment(post)">
+                      <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                      </svg>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Comments list -->
+                <div class="comment-list">
+                  @for (c of post.comments; track c.id) {
+                    <div class="comment-item">
+                      <div class="comment-avatar sm" [style.background]="c.authorColor">{{ c.authorInitial }}</div>
+                      <div class="comment-body">
+                        <div class="comment-meta">
+                          <span class="comment-author">{{ c.authorName }}</span>
+                          <span class="comment-role" [class.comment-role--coach]="c.role === 'coach'">
+                            {{ c.role === 'coach' ? '⭐ Coach' : 'Membre' }}
+                          </span>
+                          <span class="comment-time">• {{ c.timeAgo }}</span>
+                        </div>
+                        <p class="comment-text">{{ c.text }}</p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+
+          </div>
+        }
+      }
+    </div>
+
+    <!-- ── SIDEBAR ── -->
+    <aside class="sidebar-col">
+
+      <!-- Active Members -->
+      <div class="sidebar-card">
+        <div class="sc-title">🔥 Actifs cette semaine</div>
+        <div class="member-list">
+          @for (m of topMembers; track m.name) {
+            <div class="member-item">
+              <div class="member-avatar" [style.background]="m.color">{{ m.initial }}</div>
+              <div class="member-info">
+                <div class="member-name">{{ m.name }}</div>
+              </div>
+              <span class="member-badge" [class.member-badge--coach]="m.role === 'coach'">
+                {{ m.role === 'coach' ? '⭐' : '👤' }}
+              </span>
+            </div>
+          }
         </div>
       </div>
-    }
+
+      <!-- Trending Tags -->
+      <div class="sidebar-card">
+        <div class="sc-title">🏷️ Tags populaires</div>
+        <div class="tag-cloud">
+          @for (t of trendingTags; track t.tag) {
+            <span class="trend-tag" [style.font-size]="t.size">
+              #{{ t.tag }}
+              <span class="tag-count">{{ t.count }}</span>
+            </span>
+          }
+        </div>
+      </div>
+
+      <!-- Community Rules -->
+      <div class="sidebar-card sidebar-card--rules">
+        <div class="sc-title">📋 Directives de la communauté</div>
+        <ul class="rules-list">
+          <li>Soyez encourageant et bienveillant 💪</li>
+          <li>Partagez vos véritables progrès</li>
+          <li>Respectez les conseils des coachs</li>
+          <li>Gardez le contenu lié au fitness</li>
+          <li>Pas de spam ou d'auto-promotion</li>
+        </ul>
+      </div>
+    </aside>
+
+  </div>
+
+  <!-- ══════════ FLOATING ACTION BUTTON ══════════ -->
+  <button class="fab" (click)="showNewPostModal.set(true)" aria-label="Nouvelle publication">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="fab-icon">
+      <line x1="12" y1="5" x2="12" y2="19"/>
+      <line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+</div>
+
+<!-- ══════════ NEW POST MODAL ══════════ -->
+<div class="modal-backdrop" *ngIf="showNewPostModal()" (click)="closeModal()">
+  <div class="modal" (click)="$event.stopPropagation()">
+    
+    <div class="modal-header">
+      <h2 class="modal-title">Créer une publication</h2>
+      <button class="modal-close" (click)="closeModal()" aria-label="Fermer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="modal-author">
+      <div class="author-avatar" [style.background]="currentUser.color">{{ currentUser.initial }}</div>
+      <div>
+        <div class="author-name">{{ currentUser.name }}</div>
+        <div class="post-time">Publication en tant que Coach</div>
+      </div>
+    </div>
+
+    <textarea
+      class="modal-textarea"
+      rows="4"
+      placeholder="Partagez un conseil nutritionnel, un encouragement pour vos clients ou des félicitations..."
+      [(ngModel)]="newPostText">
+    </textarea>
+
+    <div class="modal-tags-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="tag-input-icon text-slate-400">
+        <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+        <line x1="7" y1="7" x2="7.01" y2="7"/>
+      </svg>
+      <input
+        type="text"
+        class="tag-input"
+        placeholder="Tags (séparés par des virgules, ex: PR, Nutrition, Cardio)"
+        [(ngModel)]="newPostTags" />
+    </div>
+
+    <div class="modal-actions">
+      <button class="modal-cancel-btn" (click)="closeModal()">Annuler</button>
+      <button
+        class="modal-post-btn"
+        [disabled]="!newPostText.trim()"
+        (click)="submitPost()">
+        Publier
+      </button>
+    </div>
+
   </div>
 </div>

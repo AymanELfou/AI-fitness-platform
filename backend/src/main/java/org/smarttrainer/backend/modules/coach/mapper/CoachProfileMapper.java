@@ -16,6 +16,8 @@ public class CoachProfileMapper {
         return CoachProfileResponse.builder()
                 .id(profile.getId())
                 .createdAt(profile.getCreatedAt())
+                .userId(profile.getUser().getId())
+                .email(profile.getUser().getEmail())
                 .experience(profile.getExperience())
                 .certifications(profile.getCertifications())
                 .speciality(profile.getSpeciality())
