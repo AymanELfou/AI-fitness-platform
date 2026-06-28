@@ -2,6 +2,9 @@
 .DS_Store
 Thumbs.db
 .vscode/
+# IA/coach-ai/
+IA/coach-ai/
+IA/models/
 .idea/
 *.iml
 
@@ -25,3 +28,7 @@ frontend/src/environments/environment.prod.ts
 .env
 .env.local
 **/temp/
+
+# --- PYTHON ---
+**/__pycache__/
+**/*.pyc
