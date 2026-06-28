@@ -310,6 +310,11 @@
         placeholder="Tags (séparés par des virgules, ex: PR, Nutrition, Cardio)"
         [(ngModel)]="newPostTags" />
     </div>
+    
+    <div class="modal-image-row" style="margin-top: 1rem;">
+      <label class="form-label" style="display: block; margin-bottom: 0.5rem; font-size: 0.85rem; font-weight: 600; color: #475569;">Image illustrative (optionnel)</label>
+      <input class="form-input" type="file" accept="image/*" (change)="onImageSelected($event)" id="communityFileInput" style="width: 100%; border: 1.5px solid #e2e8f0; border-radius: 8px; padding: 0.5rem; font-size: 0.85rem; color: #64748b;" />
+    </div>
 
     <div class="modal-actions">
       <button class="modal-cancel-btn" (click)="closeModal()">Annuler</button>

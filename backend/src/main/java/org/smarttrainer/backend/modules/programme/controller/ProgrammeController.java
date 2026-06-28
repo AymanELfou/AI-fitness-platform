@@ -13,6 +13,8 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/programmes")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
+
 public class ProgrammeController {
 
     private final ProgrammeService service;
@@ -48,6 +50,14 @@ public class ProgrammeController {
     @PreAuthorize("hasAuthority('ROLE_COACH')")
     public ResponseEntity<ProgrammeResponse> validate(@PathVariable Long id) {
         return ResponseEntity.ok(service.validate(id));
+    }
+
+    @PatchMapping("{id}/assign-clients")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_ADMIN')")
+    public ResponseEntity<ProgrammeResponse> assignClients(
+            @PathVariable Long id,
+            @RequestBody List<Long> clientIds) {
+        return ResponseEntity.ok(service.assignClients(id, clientIds));
     }
 
     @PutMapping("{id}")

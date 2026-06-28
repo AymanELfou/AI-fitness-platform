@@ -20,14 +20,21 @@ public class ProgrammeMapper {
                 .duration(programme.getDuration())
                 .level(programme.getLevel())
                 .objective(programme.getObjective())
-                .isGeneratedByAI(programme.isGeneratedByAI())
-                .isValidatedByCoach(programme.isValidatedByCoach())
+                .isGeneratedByAI(programme.getIsGeneratedByAI() != null ? programme.getIsGeneratedByAI() : false)
+                .isValidatedByCoach(programme.getIsValidatedByCoach() != null ? programme.getIsValidatedByCoach() : false)
                 .coachId(programme.getCoach().getId())
                 .coachName(programme.getCoach().getUser().fullName())
                 .exerciseIds(
                         programme.getExercises() == null ? List.of()
                                 : programme.getExercises().stream()
                                 .map(e -> e.getId())
+                                .collect(Collectors.toList())
+                )
+                // Clients Programme
+                .clientIds(
+                        programme.getClients() == null ? List.of()
+                                : programme.getClients().stream()
+                                .map(c -> c.getId())
                                 .collect(Collectors.toList())
                 )
                 .build();
@@ -40,8 +47,8 @@ public class ProgrammeMapper {
         programme.setDuration(request.getDuration());
         programme.setLevel(request.getLevel());
         programme.setObjective(request.getObjective());
-        programme.setGeneratedByAI(request.isGeneratedByAI());
-        programme.setValidatedByCoach(false); // always false on creation
+        programme.setIsGeneratedByAI(request.isGeneratedByAI());
+        programme.setIsValidatedByCoach(false); // always false on creation
         return programme;
     }
 }

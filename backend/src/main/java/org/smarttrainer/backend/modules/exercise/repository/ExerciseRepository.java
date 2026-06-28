@@ -14,4 +14,5 @@ public interface ExerciseRepository extends JpaRepository<Exercise, Long> {
     List<Exercise> findByDifficulty(Difficulty difficulty);
     List<Exercise> findByMusclesGroup(String musclesGroup);
     List<Exercise> findByCreatedByRole(CreatedByRole createdByRole);
+    List<Exercise> findByCreatedBy(Long createdBy);
 }

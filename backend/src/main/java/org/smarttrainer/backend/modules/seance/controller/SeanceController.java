@@ -13,6 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/seances")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:4200")
 public class SeanceController {
 
     private final SeanceService service;

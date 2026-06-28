@@ -1,36 +1,645 @@
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  PAGE WRAPPER                                                              -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="page-wrapper">
+
+  <!-- ── Header ── -->
   <div class="page-header">
     <div>
       <h2 class="page-title">Programmes d'Entraînement</h2>
       <p class="page-subtitle">Gérez et créez des <strong>plans personnalisés</strong> pour vos clients</p>
     </div>
-    <button class="btn-primary">
-      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+    <button class="btn-primary" id="btn-new-programme" (click)="openCreateModal()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
       Nouveau Programme
     </button>
   </div>
 
-  <div class="programs-grid">
-    @for (prog of programs; track prog.title) {
-      <div class="program-card">
-        <div class="program-card-top" [style.background]="prog.color + '18'">
-          <span class="prog-icon">{{ prog.icon }}</span>
-          <span class="prog-status" [class.stat-active]="prog.status === 'Actif'">{{ prog.status }}</span>
-        </div>
-        <div class="program-card-body">
-          <h3 class="prog-title">{{ prog.title }}</h3>
-          <p class="prog-client">👤 {{ prog.client }}</p>
-          <div class="prog-meta-row">
-            <span class="prog-meta"><strong>{{ prog.weeks }}</strong> semaines</span>
-            <span class="prog-meta"><strong>{{ prog.sessions }}j</strong>/semaine</span>
-            <span class="prog-level" [style.color]="prog.color" [style.background]="prog.color + '18'">{{ prog.level }}</span>
-          </div>
-          <div class="prog-actions">
-            <button class="prog-btn-edit">Modifier</button>
-            <button class="prog-btn-view">Voir →</button>
+  <!-- ── Loading skeleton ── -->
+  @if (isLoading) {
+    <div class="programs-grid">
+      @for (sk of [1,2,3,4,5,6]; track sk) {
+        <div class="program-card skeleton-card">
+          <div class="skeleton-top"></div>
+          <div class="skeleton-body">
+            <div class="skeleton-line w-70"></div>
+            <div class="skeleton-line w-45"></div>
+            <div class="skeleton-line w-55"></div>
           </div>
         </div>
+      }
+    </div>
+  }
+
+  <!-- ── Error ── -->
+  @if (!isLoading && errorMsg) {
+    <div class="empty-state">
+      <span class="empty-icon">⚠️</span>
+      <h3>Connexion impossible</h3>
+      <p>{{ errorMsg }}</p>
+      <button class="btn-primary" (click)="loadData()">Réessayer</button>
+    </div>
+  }
+
+  <!-- ── Grid des programmes ── -->
+  @if (!isLoading && !errorMsg) {
+    @if (programmes.length === 0) {
+      <div class="empty-state">
+        <span class="empty-icon">📋</span>
+        <h3>Aucun programme pour l'instant</h3>
+        <p>Créez votre premier programme d'entraînement pour vos clients.</p>
+        <button class="btn-primary" (click)="openCreateModal()">Créer un programme</button>
+      </div>
+    } @else {
+      <div class="programs-grid">
+        @for (prog of programmes; track prog.id) {
+          <div class="program-card" [style.--accent]="getLevelConfig(prog.level).color">
+            <div class="program-card-top" [style.background]="getCardGradient(prog.level)">
+              <span class="prog-icon">{{ getLevelConfig(prog.level).icon }}</span>
+              <span class="prog-status" [class.stat-validated]="prog.isValidatedByCoach">
+                {{ prog.isValidatedByCoach ? '✓ Validé' : '💪 Start Now' }}
+              </span>
+            </div>
+            <div class="program-card-body">
+              <h3 class="prog-title">{{ prog.title }}</h3>
+              @if (prog.description) {
+                <p class="prog-desc">{{ prog.description }}</p>
+              }
+              <div class="prog-meta-row">
+                <span class="prog-meta">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                  </svg>
+                  <strong>{{ prog.duration }}</strong> sem.
+                </span>
+                <span class="prog-meta">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                  </svg>
+                  <strong>{{ prog.exerciseIds?.length ?? 0 }}</strong> exos
+                </span>
+                <span class="prog-meta" style="margin-right: 15px;">
+                  <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  </svg>
+                  <strong>{{ prog.clientIds?.length ?? 0 }}</strong> clients
+                </span>
+                <span class="prog-level"
+                      [style.color]="getLevelConfig(prog.level).color"
+                      [style.background]="getCardGradient(prog.level)">
+                  {{ getLevelConfig(prog.level).label }}
+                </span>
+              </div>
+              @if (prog.objective) {
+                <p class="prog-objective">🎯 {{ prog.objective }}</p>
+              }
+              <div class="prog-actions">
+                <button class="prog-btn-edit" [id]="'btn-edit-' + prog.id" (click)="openEditModal(prog)">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                  </svg>
+                  Modifier
+                </button>
+                <button class="prog-btn-view" [id]="'btn-view-' + prog.id" (click)="openViewModal(prog)">
+                  <svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                  </svg>
+                  Voir →
+                </button>
+              </div>
+            </div>
+          </div>
+        }
       </div>
     }
-  </div>
+  }
 </div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL : VOIR UN PROGRAMME                                                 -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+@if (viewModalOpen && viewProgramme) {
+  <div class="modal-overlay" (click)="closeViewModal()">
+    <div class="modal-box modal-view" (click)="$event.stopPropagation()" id="modal-view-programme">
+
+      <!-- Header -->
+      <div class="modal-header" [style.background]="getCardGradient(viewProgramme.level)">
+        <div class="modal-header-left">
+          <span class="modal-icon">{{ getLevelConfig(viewProgramme.level).icon }}</span>
+          <div>
+            <h2 class="modal-title">{{ viewProgramme.title }}</h2>
+            <p class="modal-subtitle">{{ getLevelConfig(viewProgramme.level).label }} • {{ viewProgramme.duration }} semaines</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeViewModal()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        <!-- Chips -->
+        <div class="info-chips">
+          <span class="chip chip-level"
+                [style.color]="getLevelConfig(viewProgramme.level).color"
+                [style.background]="getCardGradient(viewProgramme.level)">
+            {{ getLevelConfig(viewProgramme.level).label }}
+          </span>
+          <span class="chip"
+                [class.chip-validated]="viewProgramme.isValidatedByCoach"
+                [class.chip-pending]="!viewProgramme.isValidatedByCoach">
+            {{ viewProgramme.isValidatedByCoach ? '✓ Validé par le coach' : '💪 Hard Work' }}
+          </span>
+        
+        </div>
+
+        <!-- Description + Objectif -->
+        @if (viewProgramme.description) {
+          <div class="view-section">
+            <h4 class="section-label">Description</h4>
+            <p class="view-text">{{ viewProgramme.description }}</p>
+          </div>
+        }
+        @if (viewProgramme.objective) {
+          <div class="view-section">
+            <h4 class="section-label">🎯 Objectif</h4>
+            <p class="view-text">{{ viewProgramme.objective }}</p>
+          </div>
+        }
+
+        <!-- Stats -->
+        <div class="stats-row">
+          <div class="stat-box">
+            <span class="stat-val">{{ viewProgramme.duration }}</span>
+            <span class="stat-lbl">Semaines</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">{{ viewProgramme.exerciseIds?.length ?? 0 }}</span>
+            <span class="stat-lbl">Exercices</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">{{ viewSeances.length }}</span>
+            <span class="stat-lbl">Séances</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-val">{{ viewClients.length }}</span>
+            <span class="stat-lbl">Clients</span>
+          </div>
+        </div>
+
+        @if (viewLoading) {
+          <div class="view-loading">
+            <div class="spinner"></div>
+            <span>Chargement des détails…</span>
+          </div>
+        }
+
+        @if (!viewLoading) {
+
+          <!-- ── Clients assignés ── -->
+          <div class="view-section">
+            <h4 class="section-label">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+              </svg>
+              Clients assignés ({{ viewClients.length }})
+            </h4>
+            @if (viewClients.length === 0) {
+              <p class="empty-section">Aucun client assigné à ce programme.</p>
+            } @else {
+              <div class="client-list">
+                @for (cl of viewClients; track cl.id) {
+                  <div class="client-item">
+                    <div class="client-avatar">{{ (cl.userName || 'C').charAt(0).toUpperCase() }}</div>
+                    <div class="client-info">
+                      <span class="client-name">{{ cl.userName || 'Client #' + cl.id }}</span>
+                      <span class="client-meta">{{ cl.niveau }} • {{ cl.but }}</span>
+                    </div>
+                    <span class="client-plan" [class.plan-premium]="cl.subscriptionPlan === 'PREMIUM'">
+                      {{ cl.subscriptionPlan }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- ── Exercices ── -->
+          <div class="view-section">
+            <h4 class="section-label">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+              Exercices ({{ viewExercises.length }})
+            </h4>
+            @if (viewExercises.length === 0) {
+              <p class="empty-section">Aucun exercice lié à ce programme.</p>
+            } @else {
+              <div class="exercise-list">
+                @for (ex of viewExercises; track ex.id) {
+                  <div class="exercise-item">
+                    @if (ex.imageUrl) {
+                      <img [src]="ex.imageUrl" [alt]="ex.name" class="ex-thumb" />
+                    } @else {
+                      <div class="ex-thumb-placeholder">💪</div>
+                    }
+                    <div class="ex-info">
+                      <span class="ex-name">{{ ex.name }}</span>
+                      <span class="ex-meta">{{ ex.musclesGroup }} • {{ ex.series }}×{{ ex.repetition }} reps • {{ ex.duration }}min</span>
+                    </div>
+                    <span class="ex-difficulty"
+                          [class.diff-easy]="ex.difficulty === 'EASY'"
+                          [class.diff-medium]="ex.difficulty === 'MEDIUM'"
+                          [class.diff-hard]="ex.difficulty === 'HARD'">
+                      {{ ex.difficulty }}
+                    </span>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- ── Séances ── -->
+          <div class="view-section">
+            <h4 class="section-label">
+              <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+              Séances ({{ viewSeances.length }})
+            </h4>
+            @if (viewSeances.length === 0) {
+              <p class="empty-section">Aucune séance planifiée pour ce programme.</p>
+            } @else {
+              <div class="seance-list">
+                @for (seance of viewSeances; track seance.id) {
+                  <div class="seance-item">
+                    <div class="seance-left">
+                      <span class="seance-status" [class]="'ss-' + seance.status.toLowerCase()">
+                        {{ seance.status }}
+                      </span>
+                      <span class="seance-duration">⏱ {{ seance.duration }} min</span>
+                    </div>
+                    @if (seance.notes) {
+                      <p class="seance-notes">{{ seance.notes }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+        }
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <button class="btn-secondary" (click)="closeViewModal()">Fermer</button>
+        <button class="btn-primary" (click)="closeViewModal(); openEditModal(viewProgramme!)">
+          <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+          </svg>
+          Modifier
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+<!--  MODAL : CRÉER / MODIFIER UN PROGRAMME (onglets)                           -->
+<!-- ═══════════════════════════════════════════════════════════════════════════ -->
+@if (formModalOpen) {
+  <div class="modal-overlay" (click)="closeFormModal()">
+    <div class="modal-box modal-form" (click)="$event.stopPropagation()" id="modal-form-programme">
+
+      <!-- Header -->
+      <div class="modal-header modal-header-form">
+        <div class="modal-header-left">
+          <span class="modal-icon">{{ formMode === 'create' ? '✨' : '✏️' }}</span>
+          <div>
+            <h2 class="modal-title">{{ formMode === 'create' ? 'Nouveau Programme' : 'Modifier le Programme' }}</h2>
+            <p class="modal-subtitle">Remplissez les informations ci-dessous</p>
+          </div>
+        </div>
+        <button class="modal-close" (click)="closeFormModal()">
+          <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Onglets de navigation -->
+      <div class="modal-tabs">
+        <button class="modal-tab" [class.active]="activeTab === 'info'" (click)="setTab('info')">
+          📋 Infos
+        </button>
+        <button class="modal-tab" [class.active]="activeTab === 'exercises'" (click)="setTab('exercises')">
+          💪 Exercices
+          @if (form.exerciseIds.length > 0) {
+            <span class="tab-badge">{{ form.exerciseIds.length }}</span>
+          }
+        </button>
+        <button class="modal-tab" [class.active]="activeTab === 'clients'" (click)="setTab('clients')">
+          👥 Clients
+          @if (form.clientIds.length > 0) {
+            <span class="tab-badge">{{ form.clientIds.length }}</span>
+          }
+        </button>
+        @if (formMode === 'create') {
+          <button class="modal-tab" [class.active]="activeTab === 'seances'" (click)="setTab('seances')">
+            📅 Séances
+            @if (form.seances.length > 0) {
+              <span class="tab-badge">{{ form.seances.length }}</span>
+            }
+          </button>
+        }
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+
+        @if (formSuccess) {
+          <div class="form-banner success">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Programme {{ formMode === 'create' ? 'créé' : 'mis à jour' }} avec succès !
+          </div>
+        }
+        @if (formError) {
+          <div class="form-banner error">
+            <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+            </svg>
+            {{ formError }}
+          </div>
+        }
+
+        <!-- ══ ONGLET : INFOS ══ -->
+        @if (activeTab === 'info') {
+          <div class="form-grid-2">
+            <div class="form-group form-col-2">
+              <label class="form-label">Titre du programme <span class="required">*</span></label>
+              <input id="prog-title" class="form-input" type="text" [(ngModel)]="form.title"
+                     placeholder="Ex : Force & Hypertrophie 12 semaines" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Niveau</label>
+              <select id="prog-level" class="form-input" [(ngModel)]="form.level">
+                @for (lvl of LEVELS; track lvl.value) {
+                  <option [value]="lvl.value">{{ lvl.label }}</option>
+                }
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Durée (semaines)</label>
+              <input id="prog-duration" class="form-input" type="number" min="1" max="52" [(ngModel)]="form.duration" />
+            </div>
+            <div class="form-group form-col-2">
+              <label class="form-label">Objectif</label>
+              <input id="prog-objective" class="form-input" type="text" [(ngModel)]="form.objective"
+                     placeholder="Ex : Augmenter la masse musculaire et la force maximale" />
+            </div>
+            <div class="form-group form-col-2">
+              <label class="form-label">Description</label>
+              <textarea id="prog-description" class="form-textarea" rows="3" [(ngModel)]="form.description"
+                        placeholder="Décrivez le programme en détail…"></textarea>
+            </div>
+          </div>
+        }
+
+        <!-- ══ ONGLET : EXERCICES ══ -->
+        @if (activeTab === 'exercises') {
+          <div class="tab-header">
+            <p class="tab-desc">Sélectionnez les exercices à inclure dans ce programme.</p>
+            <span class="count-badge-lg">{{ form.exerciseIds.length }} sélectionné(s)</span>
+          </div>
+          <div class="exercise-list-container" style="display: flex; flex-direction: column; gap: 1rem;">
+            <div class="exercise-picker">
+              @if (allExercises.length === 0) {
+                <p class="empty-section">Aucun exercice disponible.</p>
+              } @else {
+                <div class="ex-group-title">Vos exercices personnalisés</div>
+                @for (ex of allExercises; track ex.id) {
+                  <div class="ex-pick-item" [class.selected]="isExerciseSelected(ex.id)"
+                       (click)="toggleExercise(ex.id)" [id]="'ex-pick-' + ex.id">
+                    <div class="ex-pick-check">
+                      @if (isExerciseSelected(ex.id)) {
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                        </svg>
+                      }
+                    </div>
+                    <div class="ex-pick-info">
+                      <span class="ex-pick-name">{{ ex.name }} <span class="chip-sm">Perso</span></span>
+                      <span class="ex-pick-meta">{{ ex.musclesGroup }} • {{ ex.series }}×{{ ex.repetition }}</span>
+                    </div>
+                    <span class="ex-pick-diff"
+                          [class.diff-easy]="ex.difficulty === 'EASY'"
+                          [class.diff-medium]="ex.difficulty === 'MEDIUM'"
+                          [class.diff-hard]="ex.difficulty === 'HARD'">
+                      {{ ex.difficulty }}
+                    </span>
+                  </div>
+                }
+              }
+            </div>
+
+            <div class="exercise-creation-area">
+              @if (addingExercise) {
+                <div class="ex-add-form">
+                  <div class="form-grid-3">
+                    <div class="form-group form-col-3">
+                      <label class="form-label">Nom de l'exercice <span class="required">*</span></label>
+                      <input class="form-input" type="text" [(ngModel)]="exerciseForm.name" placeholder="Ex: Soulevé de terre roumain" />
+                    </div>
+                    <div class="form-group form-col-3">
+                      <label class="form-label">Description</label>
+                      <textarea class="form-input" [(ngModel)]="exerciseForm.description" rows="2" placeholder="Description de l'exercice"></textarea>
+                    </div>
+                    <div class="form-group form-col-3">
+                      <label class="form-label">Image illustrative (optionnel)</label>
+                      <input class="form-input" type="file" accept="image/*" id="exerciseFileInput" (change)="onExerciseImageSelected($event)" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Groupe musculaire <span class="required">*</span></label>
+                      <input class="form-input" type="text" [(ngModel)]="exerciseForm.musclesGroup" placeholder="Ex: Ischio-jambiers" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Difficulté</label>
+                      <select class="form-input" [(ngModel)]="exerciseForm.difficulty">
+                        <option value="EASY">Facile</option>
+                        <option value="MEDIUM">Moyen</option>
+                        <option value="HARD">Difficile</option>
+                      </select>
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Calories</label>
+                      <input class="form-input" type="number" [(ngModel)]="exerciseForm.calories" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Séries</label>
+                      <input class="form-input" type="number" [(ngModel)]="exerciseForm.series" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Répétitions</label>
+                      <input class="form-input" type="number" [(ngModel)]="exerciseForm.repetition" />
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label">Durée (min)</label>
+                      <input class="form-input" type="number" [(ngModel)]="exerciseForm.duration" />
+                    </div>
+                  </div>
+                  <div class="ex-add-actions">
+                    <button class="btn-secondary btn-sm" (click)="addingExercise = false">Annuler</button>
+                    <button class="btn-primary btn-sm" (click)="createExercise()" [disabled]="!exerciseForm.name || !exerciseForm.musclesGroup">Enregistrer</button>
+                  </div>
+                </div>
+              } @else {
+                <button class="btn-add-ex" (click)="addingExercise = true">
+                  <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+                  </svg>
+                  Créer un exercice personnalisé
+                </button>
+              }
+            </div>
+          </div>
+        }
+
+        <!-- ══ ONGLET : CLIENTS ══ -->
+        @if (activeTab === 'clients') {
+          <div class="tab-header">
+            <p class="tab-desc">Choisissez les clients de votre liste qui suivront ce programme.</p>
+            <span class="count-badge-lg">{{ form.clientIds.length }} client(s) sélectionné(s)</span>
+          </div>
+          @if (coachClients.length === 0) {
+            <div class="empty-section">
+              <p>Vous n'avez pas encore de clients assignés à votre profil.</p>
+            </div>
+          } @else {
+            <div class="client-picker">
+              @for (cl of coachClients; track cl.id) {
+                <div class="client-pick-item" [class.selected]="isClientSelected(cl.id!)"
+                     (click)="toggleClient(cl.id!)" [id]="'cl-pick-' + cl.id">
+                  <div class="client-pick-check">
+                    @if (isClientSelected(cl.id!)) {
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/>
+                      </svg>
+                    }
+                  </div>
+                  <div class="client-avatar-sm">{{ (cl.userName || 'C').charAt(0).toUpperCase() }}</div>
+                  <div class="client-pick-info">
+                    <span class="client-pick-name">{{ cl.userName || 'Client #' + cl.id }}</span>
+                    <span class="client-pick-meta">{{ cl.niveau }} • {{ cl.but }}</span>
+                  </div>
+                  <span class="client-plan" [class.plan-premium]="cl.subscriptionPlan === 'PREMIUM'">
+                    {{ cl.subscriptionPlan }}
+                  </span>
+                </div>
+              }
+            </div>
+          }
+        }
+
+        <!-- ══ ONGLET : SÉANCES (création seulement) ══ -->
+        @if (activeTab === 'seances' && formMode === 'create') {
+          <div class="tab-header">
+            <p class="tab-desc">Planifiez les séances qui seront créées avec ce programme.</p>
+            <span class="count-badge-lg">{{ form.seances.length }} séance(s)</span>
+          </div>
+
+          @if (form.seances.length > 0) {
+            <div class="seance-form-list">
+              @for (s of form.seances; track $index; let i = $index) {
+                <div class="seance-form-item">
+                  <span class="seance-status" [class]="'ss-' + s.status.toLowerCase()">{{ s.status }}</span>
+                  <span>⏱ {{ s.duration }} min</span>
+                  @if (s.notes) { <span class="seance-notes">{{ s.notes }}</span> }
+                  <button class="btn-remove" (click)="removeSeance(i)">✕</button>
+                </div>
+              }
+            </div>
+          }
+
+          @if (addingSeance) {
+            <div class="seance-add-form">
+              <div class="form-grid-3">
+                <div class="form-group">
+                  <label class="form-label">Statut</label>
+                  <select class="form-input" [(ngModel)]="seanceForm.status">
+                    @for (s of SEANCE_STATUSES; track s) {
+                      <option [value]="s">{{ s }}</option>
+                    }
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Durée (min)</label>
+                  <input class="form-input" type="number" min="15" [(ngModel)]="seanceForm.duration" />
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Notes</label>
+                  <input class="form-input" type="text" [(ngModel)]="seanceForm.notes" placeholder="Optionnel" />
+                </div>
+              </div>
+              <div class="seance-add-actions">
+                <button class="btn-secondary" (click)="addingSeance = false">Annuler</button>
+                <button class="btn-primary btn-sm" (click)="addSeanceToForm()">Ajouter</button>
+              </div>
+            </div>
+          } @else {
+            <button class="btn-add-seance" (click)="addingSeance = true">
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+              </svg>
+              Ajouter une séance
+            </button>
+          }
+        }
+
+      </div><!-- /modal-body -->
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <div class="footer-nav">
+          @if (activeTab !== 'info') {
+            <button class="btn-secondary btn-sm"
+                    (click)="setTab(activeTab === 'exercises' ? 'info' : activeTab === 'clients' ? 'exercises' : 'clients')">
+              ← Précédent
+            </button>
+          }
+          @if (activeTab !== 'seances' && !(activeTab === 'clients' && formMode === 'edit')) {
+            <button class="btn-secondary btn-sm"
+                    (click)="setTab(activeTab === 'info' ? 'exercises' : activeTab === 'exercises' ? 'clients' : 'seances')">
+              Suivant →
+            </button>
+          }
+        </div>
+        <div class="footer-actions">
+          <button class="btn-secondary" (click)="closeFormModal()" [disabled]="formSaving">Annuler</button>
+          <button class="btn-primary" id="btn-save-programme" (click)="saveForm()" [disabled]="formSaving">
+            @if (formSaving) {
+              <div class="btn-spinner"></div>
+              Enregistrement…
+            } @else {
+              <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+              </svg>
+              {{ formMode === 'create' ? 'Créer le Programme' : 'Enregistrer' }}
+            }
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+}

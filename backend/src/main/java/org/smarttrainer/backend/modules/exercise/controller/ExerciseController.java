@@ -74,4 +74,10 @@ public class ExerciseController {
             @RequestParam Long clientId) {
         return ResponseEntity.ok(service.getCoachExercisesForClient(clientId));
     }
+
+    @GetMapping("coach/{coachId}")
+    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    public ResponseEntity<List<ExerciseResponse>> getByCoach(@PathVariable Long coachId) {
+        return ResponseEntity.ok(service.getExercisesByCoach(coachId));
+    }
 }

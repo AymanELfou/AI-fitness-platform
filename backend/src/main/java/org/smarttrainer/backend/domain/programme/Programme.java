@@ -23,8 +23,8 @@ public class Programme extends BaseEntity {
     private int duration;
     private String level;
     private String objective;
-    private boolean isGeneratedByAI;
-    private boolean isValidatedByCoach;
+    private Boolean isGeneratedByAI;
+    private Boolean isValidatedByCoach;
 
     @ManyToOne
     @JoinColumn(name = "coach_id",nullable = false)

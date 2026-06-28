@@ -19,6 +19,7 @@ import java.util.List;
 public class Exercise extends BaseEntity {
 
     private String name;
+    @Column(columnDefinition = "TEXT")
     private String description;
     private String musclesGroup;
     @Enumerated(EnumType.STRING)
@@ -28,6 +29,8 @@ public class Exercise extends BaseEntity {
     private int repetition;
     private int duration;
     private int calories;
+    //image must be TEXT
+    @Column(columnDefinition = "TEXT")
     private String imageUrl;
 
     @ManyToMany(mappedBy = "exercises")

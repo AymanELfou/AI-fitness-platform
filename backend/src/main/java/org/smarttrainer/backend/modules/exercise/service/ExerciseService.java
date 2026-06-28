@@ -103,4 +103,11 @@ public class ExerciseService {
                 .map(exerciseMapper::toResponse)
                 .collect(Collectors.toList());
     }
+
+    public List<ExerciseResponse> getExercisesByCoach(Long coachId) {
+        return exerciseRepository.findByCreatedBy(coachId)
+                .stream()
+                .map(exerciseMapper::toResponse)
+                .collect(Collectors.toList());
+    }
 }

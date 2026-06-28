@@ -21,6 +21,23 @@ public class DatabaseFixer {
             } catch (Exception e) {
                 log.warn("Could not alter post table columns (they might already be TEXT or table doesn't exist): " + e.getMessage());
             }
+
+            try {
+                log.info("Attempting to alter exercise table columns to TEXT...");
+                jdbcTemplate.execute("ALTER TABLE exercise ALTER COLUMN image_url TYPE TEXT;");
+                jdbcTemplate.execute("ALTER TABLE exercise ALTER COLUMN description TYPE TEXT;");
+                log.info("Successfully altered exercise table columns.");
+            } catch (Exception e) {
+                log.warn("Could not alter exercise table columns: " + e.getMessage());
+            }
+
+            try {
+                log.info("Attempting to fix exercise_id_seq sequence...");
+                jdbcTemplate.execute("SELECT setval('exercise_id_seq', COALESCE((SELECT MAX(id) FROM exercise), 1));");
+                log.info("Successfully fixed exercise sequence.");
+            } catch (Exception e) {
+                log.warn("Could not fix exercise sequence: " + e.getMessage());
+            }
         };
     }
 }

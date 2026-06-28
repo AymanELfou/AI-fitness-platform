@@ -1,9 +1,9 @@
-<div class="page-wrapper">
+<div class="page-wrapper" *ngIf="profile">
 
   <div class="page-header">
     <div>
       <h2 class="page-title">Mon Profil</h2>
-      <p class="page-subtitle">Consultez et modifiez vos <strong>informations personnelles</strong></p>
+      <p class="page-subtitle">Consultez et modifiez vos <strong>informations professionnelles</strong></p>
     </div>
     <div class="header-actions">
       @if (saved) {
@@ -38,80 +38,59 @@
     <!-- Left: Avatar & Quick Info -->
     <div class="profile-sidebar-card">
       <div class="profile-avatar-lg">
-        {{ profile.firstname[0] || 'C' }}{{ profile.lastname[0] || '' }}
+        {{ profile.userName.charAt(0).toUpperCase() || 'C' }}
       </div>
-      <h3 class="profile-fullname">{{ profile.firstname }} {{ profile.lastname }}</h3>
+      <h3 class="profile-fullname">{{ profile.userName }}</h3>
       <p class="profile-email">{{ profile.email }}</p>
       <span class="profile-role-badge">Coach</span>
 
       <div class="profile-quick-stats">
         <div class="pq-stat">
+          <span class="pq-val">{{ profile.rating | number:'1.1-1' }}</span>
+          <span class="pq-label">Note</span>
+        </div>
+        <div class="pq-stat">
+          <span class="pq-val">{{ profile.clubName || '-' }}</span>
+          <span class="pq-label">Club</span>
+        </div>
+        <div class="pq-stat">
           <span class="pq-val">18</span>
           <span class="pq-label">Clients</span>
-        </div>
-        <div class="pq-stat">
-          <span class="pq-val">64</span>
-          <span class="pq-label">Séances/mois</span>
-        </div>
-        <div class="pq-stat">
-          <span class="pq-val">4.9</span>
-          <span class="pq-label">Note</span>
         </div>
       </div>
     </div>
 
     <!-- Right: Form -->
     <div class="profile-form-card">
-      <h3 class="form-section-title">Informations Personnelles</h3>
+      <h3 class="form-section-title">Profil Professionnel</h3>
 
       <div class="form-grid">
         <div class="form-group">
-          <label class="form-label">Prénom</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.firstname" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Nom</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.lastname" />
+          <label class="form-label">Nom complet</label>
+          <input class="form-input" [disabled]="true" [value]="profile.userName" />
+          <small class="form-help" style="color: #ef4444; font-weight: bold;">Le Nom et l'Email sont gérés depuis le Club que vous représentez.</small>
         </div>
         <div class="form-group">
           <label class="form-label">Email</label>
-          <input class="form-input" type="email" [disabled]="!isEditing" [(ngModel)]="profile.email" />
+          <input class="form-input" [disabled]="true" [value]="profile.email" />
         </div>
-        <div class="form-group">
-          <label class="form-label">Téléphone</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.phone" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Ville</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.city" />
-        </div>
-        <div class="form-group">
-          <label class="form-label">Disponibilité</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.availability" />
-        </div>
-      </div>
-
-      <h3 class="form-section-title section-mt">Profil Professionnel</h3>
-
-      <div class="form-grid">
         <div class="form-group">
           <label class="form-label">Spécialité</label>
           <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.speciality" />
         </div>
         <div class="form-group">
-          <label class="form-label">Expérience</label>
-          <input class="form-input" [disabled]="!isEditing" [(ngModel)]="profile.experience" />
+          <label class="form-label">Expérience (années)</label>
+          <input class="form-input" type="number" [disabled]="!isEditing" [(ngModel)]="profile.experience" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tarif ($)</label>
+          <input class="form-input" type="number" [disabled]="!isEditing" [(ngModel)]="profile.tariff" />
         </div>
       </div>
 
-      <div class="form-group form-full">
-        <label class="form-label">Bio</label>
-        <textarea class="form-textarea" [disabled]="!isEditing" [(ngModel)]="profile.bio" rows="3"></textarea>
-      </div>
-
-      <div class="form-group form-full">
+      <div class="form-group form-full section-mt">
         <label class="form-label">Certifications</label>
-        <textarea class="form-textarea" [disabled]="!isEditing" [(ngModel)]="profile.certifications" rows="2"></textarea>
+        <textarea class="form-textarea" [disabled]="!isEditing" [(ngModel)]="profile.certifications" rows="3"></textarea>
       </div>
 
     </div>

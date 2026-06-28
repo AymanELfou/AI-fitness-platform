@@ -21,4 +21,5 @@ public class ProgrammeResponse {
     private Long coachId;
     private String coachName;
     private List<Long> exerciseIds;
+    private List<Long> clientIds;
 }
