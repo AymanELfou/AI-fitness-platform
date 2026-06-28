@@ -14,4 +14,6 @@ public class ProgrammeRequest {
     private boolean isGeneratedByAI;
     private Long coachId;
     private List<Long> exerciseIds;
+    // IDs des clients auxquels ce programme est assigné
+    private List<Long> clientIds;
 }

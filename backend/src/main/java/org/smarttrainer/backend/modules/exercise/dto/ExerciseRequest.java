@@ -16,4 +16,5 @@ public class ExerciseRequest {
     private int calories;
     private String imageUrl;
     private CreatedByRole createdByRole;
+    private Long createdBy;
 }

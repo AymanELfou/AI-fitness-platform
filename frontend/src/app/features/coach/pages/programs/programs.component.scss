@@ -1,20 +1,511 @@
-$primary: #6366f1; $dark: #0f172a; $muted: #64748b; $border: #e2e8f0; $white: #fff;
+// ── Design tokens ──────────────────────────────────────────────────────────────
+$primary:   #6366f1;
+$primary-d: #4f46e5;
+$success:   #10b981;
+$danger:    #ef4444;
+$warn:      #f59e0b;
+$dark:      #0f172a;
+$mid:       #334155;
+$muted:     #64748b;
+$border:    #e2e8f0;
+$surface:   #f8fafc;
+$white:     #fff;
+
+// ── Page layout ────────────────────────────────────────────────────────────────
 .page-wrapper { display: flex; flex-direction: column; gap: 1.5rem; }
-.page-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-.page-title { font-size: 1.6rem; font-weight: 800; color: $dark; letter-spacing: -0.5px; margin: 0; }
-.page-subtitle { font-size: 0.875rem; color: $muted; margin: 0.25rem 0 0; strong { color: $primary; } }
-.btn-primary { display: flex; align-items: center; gap: 0.4rem; background: linear-gradient(135deg, $primary, #818cf8); color: white; border: none; border-radius: 10px; padding: 0.55rem 1.2rem; font-size: 0.82rem; font-weight: 600; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(99,102,241,0.3); &:hover { transform: translateY(-1px); } }
-.programs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.25rem; }
-.program-card { background: $white; border-radius: 18px; border: 1px solid $border; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.05); transition: all 0.25s; &:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); } }
-.program-card-top { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.3rem; }
+
+.page-header {
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem;
+}
+.page-title   { font-size: 1.6rem; font-weight: 800; color: $dark; letter-spacing: -.5px; margin: 0; }
+.page-subtitle { font-size: .875rem; color: $muted; margin: .25rem 0 0; strong { color: $primary; } }
+
+// ── Buttons ────────────────────────────────────────────────────────────────────
+.btn-primary {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: linear-gradient(135deg, $primary, #818cf8);
+  color: $white; border: none; border-radius: 10px;
+  padding: .55rem 1.2rem; font-size: .82rem; font-weight: 600;
+  cursor: pointer; transition: all .2s;
+  box-shadow: 0 4px 12px rgba(99,102,241,.28);
+  &:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(99,102,241,.36); }
+  &:disabled { opacity: .6; cursor: not-allowed; }
+}
+.btn-secondary {
+  display: inline-flex; align-items: center; gap: .45rem;
+  background: $white; color: $mid; border: 1.5px solid $border;
+  border-radius: 10px; padding: .55rem 1.2rem;
+  font-size: .82rem; font-weight: 600; cursor: pointer; transition: all .2s;
+  &:hover:not(:disabled) { background: $surface; }
+  &:disabled { opacity: .6; cursor: not-allowed; }
+}
+.btn-sm { padding: .4rem .9rem; font-size: .78rem; }
+
+// ── Programs grid ──────────────────────────────────────────────────────────────
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+  gap: 1.25rem;
+}
+
+// ── Program card ──────────────────────────────────────────────────────────────
+.program-card {
+  background: $white; border-radius: 18px;
+  border: 1px solid $border; overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.05);
+  transition: all .25s;
+  &:hover { transform: translateY(-3px); box-shadow: 0 8px 28px rgba(0,0,0,.09); }
+}
+
+.program-card-top {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.1rem 1.3rem;
+}
 .prog-icon { font-size: 1.8rem; }
-.prog-status { font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 20px; background: #fffbeb; color: #f59e0b; &.stat-active { background: #ecfdf5; color: #10b981; } }
-.program-card-body { padding: 1.1rem 1.3rem 1.3rem; }
-.prog-title { font-size: 0.95rem; font-weight: 700; color: $dark; margin: 0 0 0.35rem; }
-.prog-client { font-size: 0.78rem; color: $muted; margin: 0 0 0.85rem; }
-.prog-meta-row { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; flex-wrap: wrap; }
-.prog-meta { font-size: 0.75rem; color: $muted; }
-.prog-level { font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.5rem; border-radius: 20px; }
-.prog-actions { display: flex; gap: 0.5rem; }
-.prog-btn-edit { flex: 1; padding: 0.5rem; border: 1px solid $border; border-radius: 8px; background: white; font-size: 0.78rem; font-weight: 600; color: $muted; cursor: pointer; transition: all 0.2s; &:hover { background: #f1f5f9; } }
-.prog-btn-view { flex: 1; padding: 0.5rem; border: none; border-radius: 8px; background: $primary; color: white; font-size: 0.78rem; font-weight: 600; cursor: pointer; transition: all 0.2s; &:hover { background: #4f46e5; } }
+
+.prog-status {
+  font-size: .7rem; font-weight: 600;
+  padding: .2rem .65rem; border-radius: 20px;
+  background: #fffbeb; color: $warn;
+  &.stat-validated { background: #ecfdf5; color: $success; }
+}
+
+.program-card-body { padding: 1rem 1.3rem 1.3rem; }
+.prog-title  { font-size: .95rem; font-weight: 700; color: $dark; margin: 0 0 .25rem; }
+.prog-desc   { font-size: .75rem; color: $muted; margin: 0 0 .7rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prog-objective { font-size: .73rem; color: $muted; margin: 0 0 .85rem; }
+
+.prog-meta-row { display: flex; align-items: center; gap: .5rem; margin-bottom: .85rem; flex-wrap: wrap; }
+.prog-meta {
+  display: inline-flex; align-items: center; gap: .25rem;
+  font-size: .73rem; color: $muted;
+  strong { color: $dark; }
+}
+.prog-level { font-size: .68rem; font-weight: 600; padding: .15rem .5rem; border-radius: 20px; }
+
+.prog-actions { display: flex; gap: .5rem; }
+.prog-btn-edit {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: .3rem;
+  padding: .5rem; border: 1px solid $border; border-radius: 8px;
+  background: $white; font-size: .76rem; font-weight: 600; color: $muted;
+  cursor: pointer; transition: all .2s;
+  &:hover { background: $surface; color: $dark; }
+}
+.prog-btn-view {
+  flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: .3rem;
+  padding: .5rem; border: none; border-radius: 8px;
+  background: $primary; color: $white;
+  font-size: .76rem; font-weight: 600; cursor: pointer; transition: all .2s;
+  &:hover { background: $primary-d; }
+}
+
+// ── Skeleton loading ───────────────────────────────────────────────────────────
+@keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }
+
+$shimmer: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+
+.skeleton-card { background: $white; border-radius: 18px; border: 1px solid $border; overflow: hidden; }
+.skeleton-top  { height: 70px; background: $shimmer; background-size: 800px 100%; animation: shimmer 1.4s infinite; }
+.skeleton-body { padding: 1rem 1.3rem 1.3rem; display: flex; flex-direction: column; gap: .7rem; }
+.skeleton-line {
+  height: 12px; border-radius: 6px;
+  background: $shimmer; background-size: 800px 100%; animation: shimmer 1.4s infinite;
+  &.w-70 { width: 70%; }
+  &.w-45 { width: 45%; }
+  &.w-55 { width: 55%; }
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+.empty-state {
+  text-align: center; padding: 4rem 2rem;
+  display: flex; flex-direction: column; align-items: center; gap: .75rem;
+  .empty-icon { font-size: 3.5rem; }
+  h3 { font-size: 1.1rem; font-weight: 700; color: $dark; margin: 0; }
+  p  { font-size: .875rem; color: $muted; margin: 0; }
+}
+.empty-section { font-size: .8rem; color: $muted; font-style: italic; padding: .5rem 0; }
+
+// ── MODAL overlay ─────────────────────────────────────────────────────────────
+@keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { opacity: 0; transform: translateY(24px) scale(.97); } to { opacity: 1; transform: none; } }
+
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(15,23,42,.55);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center; padding: 1.5rem;
+  animation: fadeIn .2s ease;
+}
+
+.modal-box {
+  background: $white; border-radius: 22px;
+  box-shadow: 0 25px 60px rgba(0,0,0,.2);
+  width: 100%; display: flex; flex-direction: column;
+  max-height: 90vh; overflow: hidden;
+  animation: slideUp .25s cubic-bezier(.16,1,.3,1);
+}
+.modal-view { max-width: 680px; }
+.modal-form { max-width: 780px; }
+
+// ── Modal header ──────────────────────────────────────────────────────────────
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.4rem 1.8rem;
+  border-bottom: 1px solid $border;
+  flex-shrink: 0;
+}
+.modal-header-form { background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(129,140,248,.05)); }
+
+.modal-header-left { display: flex; align-items: center; gap: 1rem; }
+.modal-icon { font-size: 2rem; }
+.modal-title  { font-size: 1.15rem; font-weight: 800; color: $dark; margin: 0; }
+.modal-subtitle { font-size: .8rem; color: $muted; margin: .15rem 0 0; }
+
+.modal-close {
+  background: none; border: none; cursor: pointer; color: $muted;
+  width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+  transition: all .2s; flex-shrink: 0;
+  &:hover { background: $surface; color: $dark; }
+}
+
+// ── Modal body ────────────────────────────────────────────────────────────────
+.modal-body {
+  padding: 1.6rem 1.8rem; overflow-y: auto; flex: 1;
+  display: flex; flex-direction: column; gap: 1.2rem;
+}
+
+// ── Modal footer ─────────────────────────────────────────────────────────────
+.modal-footer {
+  display: flex; align-items: center; justify-content: flex-end; gap: .75rem;
+  padding: 1rem 1.8rem;
+  border-top: 1px solid $border;
+  flex-shrink: 0;
+}
+
+// ── Info chips (view modal) ───────────────────────────────────────────────────
+.info-chips { display: flex; flex-wrap: wrap; gap: .5rem; }
+.chip {
+  display: inline-flex; align-items: center; gap: .3rem;
+  padding: .25rem .7rem; border-radius: 20px; font-size: .72rem; font-weight: 600;
+  background: $surface; color: $mid; border: 1px solid $border;
+}
+.chip-validated { background: #ecfdf5; color: $success; border-color: #a7f3d0; }
+.chip-pending   { background: #fffbeb; color: $warn;    border-color: #fde68a; }
+.chip-ai        { background: #eff6ff; color: #3b82f6;  border-color: #bfdbfe; }
+
+// ── Stats row (view modal) ─────────────────────────────────────────────────────
+.stats-row {
+  display: flex; gap: 1rem;
+  .stat-box {
+    flex: 1; background: $surface; border: 1px solid $border;
+    border-radius: 14px; padding: .9rem; text-align: center;
+    .stat-val { display: block; font-size: 1.6rem; font-weight: 800; color: $primary; }
+    .stat-lbl { display: block; font-size: .72rem; color: $muted; margin-top: .15rem; }
+  }
+}
+
+// ── View section ─────────────────────────────────────────────────────────────
+.view-section { display: flex; flex-direction: column; gap: .6rem; }
+.section-label {
+  display: flex; align-items: center; gap: .4rem;
+  font-size: .8rem; font-weight: 700; color: $mid;
+  text-transform: uppercase; letter-spacing: .5px;
+}
+.view-text { font-size: .875rem; color: $mid; line-height: 1.6; margin: 0; }
+
+// ── View loading ──────────────────────────────────────────────────────────────
+.view-loading {
+  display: flex; align-items: center; gap: .75rem; justify-content: center; padding: 2rem;
+  color: $muted; font-size: .875rem;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 22px; height: 22px; border: 2.5px solid $border;
+  border-top-color: $primary; border-radius: 50%; animation: spin .75s linear infinite;
+}
+.btn-spinner {
+  width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.4);
+  border-top-color: $white; border-radius: 50%; animation: spin .75s linear infinite;
+  display: inline-block;
+}
+
+// ── Exercise list (view modal) ─────────────────────────────────────────────────
+.exercise-list { display: flex; flex-direction: column; gap: .6rem; }
+.exercise-item {
+  display: flex; align-items: center; gap: .85rem;
+  padding: .7rem .9rem; background: $surface; border: 1px solid $border;
+  border-radius: 12px; transition: all .15s;
+  &:hover { border-color: rgba(99,102,241,.3); }
+}
+.ex-thumb {
+  width: 44px; height: 44px; border-radius: 8px; object-fit: cover; flex-shrink: 0;
+}
+.ex-thumb-placeholder {
+  width: 44px; height: 44px; border-radius: 8px; background: #e0e7ff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.ex-info { flex: 1; display: flex; flex-direction: column; gap: .15rem; }
+.ex-name { font-size: .85rem; font-weight: 600; color: $dark; }
+.ex-meta { font-size: .72rem; color: $muted; }
+
+.ex-difficulty {
+  font-size: .68rem; font-weight: 700; padding: .2rem .55rem; border-radius: 20px;
+}
+.diff-easy   { background: #dcfce7; color: #16a34a; }
+.diff-medium { background: #fef3c7; color: #d97706; }
+.diff-hard   { background: #fee2e2; color: $danger; }
+
+// ── Seance list (view modal) ───────────────────────────────────────────────────
+.seance-list { display: flex; flex-direction: column; gap: .5rem; }
+.seance-item {
+  padding: .7rem .9rem; background: $surface; border: 1px solid $border;
+  border-radius: 12px;
+}
+.seance-left { display: flex; align-items: center; gap: .75rem; }
+.seance-duration { font-size: .8rem; color: $muted; }
+.seance-notes { font-size: .75rem; color: $muted; margin: .35rem 0 0; font-style: italic; }
+.seance-status {
+  font-size: .68rem; font-weight: 700; padding: .2rem .55rem; border-radius: 20px;
+  &.ss-planifiee  { background: #eff6ff; color: #2563eb; }
+  &.ss-en_cours   { background: #fef3c7; color: #d97706; }
+  &.ss-terminee   { background: #dcfce7; color: #16a34a; }
+  &.ss-annulee    { background: #fee2e2; color: $danger; }
+}
+
+// ── Form modal ─────────────────────────────────────────────────────────────────
+.form-section-title {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .78rem; font-weight: 700; color: $primary;
+  text-transform: uppercase; letter-spacing: .5px;
+  padding-bottom: .5rem; border-bottom: 2px solid rgba(99,102,241,.12);
+  margin-bottom: .1rem;
+  .count-badge {
+    margin-left: auto; font-size: .68rem; background: rgba(99,102,241,.12);
+    color: $primary; padding: .15rem .5rem; border-radius: 20px;
+  }
+}
+
+.form-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: .85rem;
+  .form-col-2 { grid-column: 1 / -1; }
+}
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: .85rem; }
+
+.form-group { display: flex; flex-direction: column; gap: .3rem; }
+.form-label { font-size: .78rem; font-weight: 600; color: $mid; }
+.required { color: $danger; }
+
+.form-input, .form-textarea {
+  border: 1.5px solid $border; border-radius: 10px;
+  padding: .55rem .8rem; font-size: .85rem; color: $dark;
+  background: $white; transition: border-color .2s;
+  outline: none; width: 100%; box-sizing: border-box;
+  font-family: inherit;
+  &:focus { border-color: $primary; box-shadow: 0 0 0 3px rgba(99,102,241,.1); }
+}
+.form-textarea { resize: vertical; }
+
+.form-check-label {
+  display: inline-flex; align-items: center; gap: .5rem;
+  font-size: .85rem; color: $mid; cursor: pointer;
+  .form-check { accent-color: $primary; width: 16px; height: 16px; cursor: pointer; }
+}
+
+// ── Exercise picker ───────────────────────────────────────────────────────────
+.exercise-picker {
+  display: flex; flex-direction: column; gap: .45rem;
+  max-height: 220px; overflow-y: auto;
+  padding-right: .3rem;
+  scrollbar-width: thin; scrollbar-color: $border transparent;
+}
+.ex-pick-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem .85rem; border: 1.5px solid $border;
+  border-radius: 10px; cursor: pointer; transition: all .15s;
+  &:hover { border-color: rgba(99,102,241,.4); background: rgba(99,102,241,.03); }
+  &.selected { border-color: $primary; background: rgba(99,102,241,.07); }
+}
+.ex-pick-check {
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 2px solid $border; background: $white;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all .15s;
+  .ex-pick-item.selected & { background: $primary; border-color: $primary; color: $white; }
+}
+.ex-pick-info { flex: 1; display: flex; flex-direction: column; gap: .1rem; }
+.ex-pick-name { font-size: .82rem; font-weight: 600; color: $dark; }
+.ex-pick-meta { font-size: .7rem; color: $muted; }
+.ex-pick-diff { font-size: .65rem; font-weight: 700; padding: .15rem .45rem; border-radius: 20px; }
+
+// ── Seance form list (create modal) ──────────────────────────────────────────
+.seance-form-list { display: flex; flex-direction: column; gap: .4rem; }
+.seance-form-item {
+  display: flex; align-items: center; gap: .7rem;
+  padding: .55rem .85rem; background: $surface; border: 1px solid $border;
+  border-radius: 10px; font-size: .78rem; color: $mid;
+}
+.btn-remove {
+  margin-left: auto; background: none; border: none; cursor: pointer;
+  color: $muted; font-size: .85rem; width: 24px; height: 24px;
+  border-radius: 6px; display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  &:hover { background: #fee2e2; color: $danger; }
+}
+
+.seance-add-form {
+  background: $surface; border: 1.5px dashed $border;
+  border-radius: 12px; padding: 1rem;
+}
+.seance-add-actions { display: flex; gap: .6rem; justify-content: flex-end; margin-top: .7rem; }
+
+.btn-add-seance {
+  display: inline-flex; align-items: center; gap: .4rem;
+  padding: .5rem 1rem; border: 1.5px dashed rgba(99,102,241,.4);
+  border-radius: 10px; background: none; cursor: pointer;
+  color: $primary; font-size: .8rem; font-weight: 600;
+  transition: all .2s;
+  &:hover { background: rgba(99,102,241,.06); border-style: solid; }
+}
+
+// ── Form banners ──────────────────────────────────────────────────────────────
+.form-banner {
+  display: flex; align-items: center; gap: .6rem;
+  padding: .7rem 1rem; border-radius: 10px; font-size: .82rem; font-weight: 600;
+  &.success { background: #ecfdf5; color: $success; border: 1px solid #a7f3d0; }
+  &.error   { background: #fef2f2; color: $danger;  border: 1px solid #fecaca; }
+}
+
+// ── Responsive ────────────────────────────────────────────────────────────────
+@media (max-width: 640px) {
+  .modal-overlay { padding: .75rem; }
+  .modal-header, .modal-body, .modal-footer { padding-left: 1.1rem; padding-right: 1.1rem; }
+  .form-grid-2 { grid-template-columns: 1fr; .form-col-2 { grid-column: 1; } }
+  .form-grid-3 { grid-template-columns: 1fr; }
+  .stats-row   { flex-direction: column; }
+}
+
+// ── Modal tabs ────────────────────────────────────────────────────────────────
+.modal-tabs {
+  display: flex; border-bottom: 2px solid $border;
+  padding: 0 1.8rem; gap: .25rem; flex-shrink: 0;
+  background: $white;
+}
+.modal-tab {
+  display: inline-flex; align-items: center; gap: .35rem;
+  padding: .7rem 1rem; font-size: .8rem; font-weight: 600; color: $muted;
+  background: none; border: none; border-bottom: 2px solid transparent;
+  margin-bottom: -2px; cursor: pointer; transition: all .2s;
+  &:hover { color: $primary; }
+  &.active { color: $primary; border-bottom-color: $primary; }
+}
+.tab-badge {
+  background: $primary; color: $white;
+  font-size: .65rem; font-weight: 700; padding: .1rem .4rem;
+  border-radius: 20px; min-width: 18px; text-align: center;
+}
+
+// ── Tab header ────────────────────────────────────────────────────────────────
+.tab-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  margin-bottom: .25rem;
+}
+.tab-desc { font-size: .82rem; color: $muted; margin: 0; }
+.count-badge-lg {
+  font-size: .72rem; font-weight: 700; padding: .25rem .7rem;
+  background: rgba(99,102,241,.1); color: $primary; border-radius: 20px;
+  white-space: nowrap;
+}
+
+// ── Client list (view modal) ──────────────────────────────────────────────────
+.client-list { display: flex; flex-direction: column; gap: .5rem; }
+.client-item {
+  display: flex; align-items: center; gap: .8rem;
+  padding: .65rem .9rem; background: $surface; border: 1px solid $border;
+  border-radius: 12px; transition: all .15s;
+  &:hover { border-color: rgba(99,102,241,.3); }
+}
+.client-avatar {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, $primary, #818cf8);
+  color: $white; font-weight: 700; font-size: .95rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.client-info { flex: 1; display: flex; flex-direction: column; gap: .1rem; }
+.client-name { font-size: .85rem; font-weight: 600; color: $dark; }
+.client-meta { font-size: .72rem; color: $muted; }
+.client-plan {
+  font-size: .65rem; font-weight: 700; padding: .2rem .55rem; border-radius: 20px;
+  background: $surface; color: $muted; border: 1px solid $border;
+  &.plan-premium { background: #fef3c7; color: #b45309; border-color: #fde68a; }
+}
+
+// ── Client picker (form modal) ────────────────────────────────────────────────
+.client-picker {
+  display: flex; flex-direction: column; gap: .45rem;
+  max-height: 280px; overflow-y: auto;
+  padding-right: .3rem;
+  scrollbar-width: thin; scrollbar-color: $border transparent;
+}
+.client-pick-item {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .6rem .85rem; border: 1.5px solid $border;
+  border-radius: 10px; cursor: pointer; transition: all .15s;
+  &:hover { border-color: rgba(99,102,241,.4); background: rgba(99,102,241,.03); }
+  &.selected { border-color: $primary; background: rgba(99,102,241,.07); }
+}
+.client-pick-check {
+  width: 20px; height: 20px; border-radius: 6px;
+  border: 2px solid $border; background: $white;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: all .15s;
+  .client-pick-item.selected & { background: $primary; border-color: $primary; color: $white; }
+}
+.client-avatar-sm {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, $primary, #818cf8);
+  color: $white; font-weight: 700; font-size: .8rem;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.client-pick-info { flex: 1; display: flex; flex-direction: column; gap: .1rem; }
+.client-pick-name { font-size: .82rem; font-weight: 600; color: $dark; }
+.client-pick-meta { font-size: .7rem; color: $muted; }
+
+// ── Footer layout (tabs + actions) ───────────────────────────────────────────
+.modal-footer {
+  display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+  padding: 1rem 1.8rem;
+  border-top: 1px solid $border;
+  flex-shrink: 0;
+}
+.footer-nav { display: flex; gap: .5rem; }
+.footer-actions { display: flex; gap: .6rem; }
+
+// ── Exercices section additions ───────────────────────────────────────────────
+.ex-group-title {
+  font-size: .85rem; font-weight: 700; color: $dark;
+  text-transform: uppercase; letter-spacing: .5px;
+  padding-bottom: .25rem; border-bottom: 1px solid $border;
+  margin: .5rem 0;
+}
+.mt-3 { margin-top: 1rem; }
+.chip-sm {
+  font-size: .6rem; padding: .1rem .3rem; border-radius: 4px;
+  background: rgba(99,102,241,.1); color: $primary; font-weight: 700;
+  vertical-align: middle; margin-left: .25rem;
+}
+.btn-add-ex {
+  display: flex; align-items: center; justify-content: center; gap: .4rem;
+  width: 100%; padding: .65rem; border: 1.5px dashed $border; border-radius: 10px;
+  background: transparent; color: $muted; font-weight: 600; font-size: .85rem;
+  cursor: pointer; transition: all .15s; margin-top: .5rem;
+  &:hover { border-color: $primary; color: $primary; background: rgba(99,102,241,.03); }
+}
+.ex-add-form {
+  background: $surface; padding: 1rem; border-radius: 10px; border: 1px solid $border;
+  margin-top: .5rem;
+}
+.ex-add-actions {
+  display: flex; justify-content: flex-end; gap: .5rem; margin-top: 1rem;
+}
+

@@ -1,38 +1,33 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../../../core/services/auth.service';
+import { CoachService, CoachProfileResponse } from '../../../../core/services/coach.service';
 
 @Component({
   selector: 'app-profile',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './profile.component.html',
   styleUrl: './profile.component.scss'
 })
-export class ProfileComponent {
+export class ProfileComponent implements OnInit {
   authService = inject(AuthService);
+  coachService = inject(CoachService);
   isEditing = false;
   saved = false;
 
-  profile = {
-    firstname: '',
-    lastname: '',
-    email: '',
-    phone: '+212 6 12 34 56 78',
-    speciality: 'Musculation & HIIT',
-    experience: '8 ans',
-    bio: 'Coach certifié passionné par la transformation physique et mentale. Spécialisé en musculation, HIIT et nutrition sportive.',
-    certifications: 'BPJEPS APT, Certified Personal Trainer (NSCA), Nutrition Sportive Level 2',
-    city: 'Casablanca',
-    availability: 'Lun-Ven : 08h-18h | Sam : 09h-13h'
-  };
+  profile: CoachProfileResponse | null = null;
 
-  constructor() {
+  ngOnInit() {
     const user = this.authService.currentUser();
-    if (user) {
-      this.profile.firstname = user.firstname || '';
-      this.profile.lastname = user.lastname || '';
-      this.profile.email = user.email || '';
+    if (user && user.id) {
+      this.coachService.getCoachByUserId(user.id).subscribe({
+        next: (coach) => {
+          this.profile = coach;
+        },
+        error: (err) => console.error('Failed to load coach profile', err)
+      });
     }
   }
 
@@ -42,12 +37,29 @@ export class ProfileComponent {
   }
 
   saveProfile() {
-    this.isEditing = false;
-    this.saved = true;
-    setTimeout(() => this.saved = false, 3000);
+    if (this.profile && this.profile.id) {
+      const request = {
+        experience: Number(this.profile.experience) || 0,
+        certifications: this.profile.certifications,
+        speciality: this.profile.speciality,
+        tariff: this.profile.tariff,
+        clubId: this.profile.clubId
+      };
+
+      this.coachService.updateCoachProfile(this.profile.id, request).subscribe({
+        next: (updated) => {
+          this.profile = updated;
+          this.isEditing = false;
+          this.saved = true;
+          setTimeout(() => this.saved = false, 3000);
+        },
+        error: (err) => console.error('Failed to update coach profile', err)
+      });
+    }
   }
 
   cancelEdit() {
     this.isEditing = false;
+    this.ngOnInit(); // reload to discard changes
   }
 }

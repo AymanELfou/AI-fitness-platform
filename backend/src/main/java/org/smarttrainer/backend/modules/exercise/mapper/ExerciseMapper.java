@@ -22,6 +22,7 @@ public class ExerciseMapper {
                 .imageUrl(exercise.getImageUrl())
                 .calories(exercise.getCalories())
                 .createdByRole(exercise.getCreatedByRole())
+                .createdBy(exercise.getCreatedBy())
                 .build();
     }
 
@@ -37,6 +38,7 @@ public class ExerciseMapper {
         exercise.setCalories(request.getCalories());
         exercise.setImageUrl(request.getImageUrl());
         exercise.setCreatedByRole(request.getCreatedByRole());
+        exercise.setCreatedBy(request.getCreatedBy());
         return exercise;
     }
 }

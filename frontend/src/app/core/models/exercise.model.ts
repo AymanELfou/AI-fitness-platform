@@ -11,4 +11,5 @@ export interface Exercise {
   imageUrl?: string;              //image_url
   createdAt?: string;
   createdBy?: number;
+  createdByRole?: 'ADMIN' | 'COACH';
 }

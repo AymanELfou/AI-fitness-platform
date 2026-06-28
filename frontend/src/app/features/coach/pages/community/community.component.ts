@@ -352,6 +352,8 @@ export class CommunityComponent implements OnInit {
     this.newPostText = '';
     this.newPostTags = '';
     this.newPostImage = '';
+    const fileInput = document.getElementById('communityFileInput') as HTMLInputElement;
+    if (fileInput) fileInput.value = '';
   }
 
   onImageSelected(event: any): void {

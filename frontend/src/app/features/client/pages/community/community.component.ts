@@ -1,10 +1,16 @@
 import {
-  Component, signal, computed, PLATFORM_ID, Inject
+  Component, signal, PLATFORM_ID, Inject, OnInit, inject
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 
 import { Comment, Post } from '../../../../core/models/community.model';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ClientService } from '../../../../core/services/client.service';
+import { CommunityService, CommunityResponse } from '../../../../core/services/community.service';
+import { PostService, PostResponse } from '../../../../core/services/post.service';
+import { LikeService, LikeResponse } from '../../../../core/services/like.service';
+import { CommentService, CommentResponse } from '../../../../core/services/comment.service';
 
 export type FeedFilter = 'All' | 'Clients' | 'Coaches' | 'My Posts';
 
@@ -15,9 +21,14 @@ export type FeedFilter = 'All' | 'Clients' | 'Coaches' | 'My Posts';
   templateUrl: './community.component.html',
   styleUrl: './community.component.scss'
 })
-export class ClientCommunityComponent {
+export class ClientCommunityComponent implements OnInit {
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  authService = inject(AuthService);
+  clientService = inject(ClientService);
+  communityService = inject(CommunityService);
+  postService = inject(PostService);
+  likeService = inject(LikeService);
+  commentService = inject(CommentService);
 
   /* ── Feed Filter ── */
   activeFilter = signal<FeedFilter>('All');
@@ -30,111 +41,22 @@ export class ClientCommunityComponent {
   newPostImage = '';
 
   /* ── Current user ── */
-  /* ── Posts ── */
-  posts: Post[] = [
-    {
-      id: 1,
-      authorName: 'Sarah Jenkins',
-      authorInitial: 'S',
-      authorColor: '#7C3AED',
-      role: 'client',
-      timeAgo: '2 hours ago',
-      content: 'Just crushed the new HIIT sequence in the Advanced Program! 💥 The data tracking was completely spot on. Heart rate stayed in the optimal zone for 85% of the session. Who else is hitting their targets this week?',
-      image: 'images/community/post_kettlebell.png',
-      tags: [],
-      likes: 248,
-      liked: false,
-      comments: [
-        { id: 1, authorName: 'Marcus Chen', authorInitial: 'M', authorColor: '#2563EB', role: 'coach', text: 'Amazing work Sarah! Your consistency is paying off 🔥', timeAgo: '1h', likes: 12, liked: false },
-        { id: 2, authorName: 'Lena Torres', authorInitial: 'L', authorColor: '#059669', role: 'client', text: 'Goals!! I need to get to this level 💪', timeAgo: '45m', likes: 5, liked: false }
-      ],
-      showComments: false,
-      newComment: '',
-      menuOpen: false
-    },
-    {
-      id: 2,
-      authorName: 'Coach Marcus Chen',
-      authorInitial: 'M',
-      authorColor: '#2563EB',
-      role: 'coach',
-      timeAgo: '5 hours ago',
-      content: 'Reminder: Rest days are just as important as training days. Your central nervous system needs recovery to maintain high output. Trust the clinical data and take it easy today if your metrics show high strain.',
-      tags: ['Recovery', 'Data Driven'],
-      likes: 856,
-      liked: true,
-      comments: [
-        { id: 3, authorName: 'Alex Johnson', authorInitial: 'A', authorColor: '#2563EB', role: 'client', text: 'This is exactly what I needed to hear. Taking my rest day seriously today 🙏', timeAgo: '4h', likes: 8, liked: false }
-      ],
-      showComments: false,
-      newComment: '',
-      menuOpen: false
-    },
-    {
-      id: 3,
-      authorName: 'Jordan Kim',
-      authorInitial: 'J',
-      authorColor: '#DC2626',
-      role: 'client',
-      timeAgo: '8 hours ago',
-      content: 'NEW PR ALERT! 🏆 Finally hit 315 lbs on deadlift — a goal I\'ve been chasing for 6 months! The programming in this platform is next level. Shoutout to Coach Marcus for the technique adjustments last session!',
-      image: 'images/community/post_deadlift.png',
-      tags: ['PR', 'Deadlift', 'Milestone'],
-      likes: 412,
-      liked: false,
-      comments: [
-        { id: 4, authorName: 'Coach Marcus Chen', authorInitial: 'M', authorColor: '#2563EB', role: 'coach', text: 'LETS GOOO Jordan!! This is what we\'ve been building toward. 315 is just the beginning 🎯', timeAgo: '7h', likes: 32, liked: false },
-        { id: 5, authorName: 'Sarah Jenkins', authorInitial: 'S', authorColor: '#7C3AED', role: 'client', text: 'Insane progress!! You\'re an inspiration 🙌', timeAgo: '6h', likes: 14, liked: false }
-      ],
-      showComments: false,
-      newComment: '',
-      menuOpen: false
-    },
-    {
-      id: 4,
-      authorName: 'Coach Elena Vasquez',
-      authorInitial: 'E',
-      authorColor: '#059669',
-      role: 'coach',
-      timeAgo: '1 day ago',
-      content: '📊 Weekly Nutrition Tip: Don\'t underestimate the power of meal prep. Clients who prep their meals on Sunday see 40% better macro adherence throughout the week. Here\'s my Sunday prep spread — 5 days of fuel, locked in!',
-      image: 'images/community/post_meal.png',
-      tags: ['Nutrition', 'Meal Prep', 'Coach Tip'],
-      likes: 1024,
-      liked: false,
-      comments: [
-        { id: 6, authorName: 'Lena Torres', authorInitial: 'L', authorColor: '#059669', role: 'client', text: 'This is so motivating! Starting my meal prep journey this weekend 🥗', timeAgo: '20h', likes: 6, liked: false },
-        { id: 7, authorName: 'Jordan Kim', authorInitial: 'J', authorColor: '#DC2626', role: 'client', text: 'What containers are those? They look amazing!', timeAgo: '18h', likes: 3, liked: false }
-      ],
-      showComments: false,
-      newComment: '',
-      menuOpen: false
-    },
-    
-  ];
+  currentUser = {
+    id: 0,
+    name: 'Athlete',
+    initial: 'A',
+    color: '#2563EB',
+    role: 'client'
+  };
 
-  /* ── Computed filtered posts ── */
-  get filteredPosts(): Post[] {
-    const f = this.activeFilter();
-    if (f === 'All') return this.posts;
-    if (f === 'Coaches') return this.posts.filter(p => p.role === 'coach');
-    if (f === 'Clients') return this.posts.filter(p => p.role === 'client');
-    if (f === 'My Posts') return this.posts.filter(p => p.authorName === this.currentUser.name);
-    return this.posts;
-  }
+  colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#0ea5e9', '#ec4899'];
 
-  get totalPosts(): number { return this.posts.length; }
-  get coachPosts(): number { return this.posts.filter(p => p.role === 'coach').length; }
-  get totalLikes(): number { return this.posts.reduce((s, p) => s + p.likes, 0); }
+  community: CommunityResponse | null = null;
+  posts: Post[] = [];
+  isLoading = false;
 
   /* ── Sidebar data ── */
-  topMembers = [
-    { name: 'Coach Marcus Chen', initial: 'M', color: '#2563EB', role: 'coach', posts: 12, likes: 856 },
-    { name: 'Sarah Jenkins',     initial: 'S', color: '#7C3AED', role: 'client', posts: 8,  likes: 248 },
-    { name: 'Jordan Kim',        initial: 'J', color: '#DC2626', role: 'client', posts: 6,  likes: 412 },
-    { name: 'Coach Elena V.',    initial: 'E', color: '#059669', role: 'coach', posts: 9,  likes: 1024 },
-    { name: 'Alex Johnson',      initial: 'A', color: '#2563EB', role: 'client', posts: 3,  likes: 89 },
-  ];
+  topMembers: any[] = [];
 
   trendingTags = [
     { tag: 'PR',         count: 34, size: '0.95rem' },
@@ -147,12 +69,184 @@ export class ClientCommunityComponent {
     { tag: 'CoachTip',   count: 10, size: '0.75rem' },
   ];
 
+  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+
+  ngOnInit() {
+    this.setupCurrentUser();
+    this.loadCommunityAndPosts();
+  }
+
+  setupCurrentUser() {
+    const user = this.authService.currentUser();
+    if (user && user.id) {
+      this.currentUser.id = user.id;
+      this.currentUser.name = (user.firstname || '') + ' ' + (user.lastname || '');
+      if (!this.currentUser.name.trim()) this.currentUser.name = 'Athlete';
+      this.currentUser.initial = this.currentUser.name.charAt(0).toUpperCase();
+      this.currentUser.color = this.getColor(user.id);
+    }
+  }
+
+  loadCommunityAndPosts() {
+    const user = this.authService.currentUser();
+    if (!user || !user.id) return;
+
+    this.isLoading = true;
+    this.clientService.getClientByUserId(user.id).subscribe({
+      next: (clientProfile) => {
+        if (clientProfile && clientProfile.clubId) {
+          this.loadClubClients(clientProfile.clubId);
+          this.communityService.getByClubId(clientProfile.clubId).subscribe({
+            next: (community) => {
+              this.community = community;
+              this.loadPosts();
+            },
+            error: (err) => {
+              console.error('Failed to load club community, falling back', err);
+              this.fallbackToAnyCommunity();
+            }
+          });
+        } else {
+          this.fallbackToAnyCommunity();
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load client profile', err);
+        this.fallbackToAnyCommunity();
+      }
+    });
+  }
+
+  loadClubClients(clubId: number) {
+    this.clientService.getClientsByClubId(clubId).subscribe({
+      next: (clients) => {
+        this.topMembers = clients.map(c => ({
+          name: c.userName || 'Membre',
+          initial: (c.userName || 'M').charAt(0).toUpperCase(),
+          color: this.getColor(c.userId),
+          role: 'client',
+          posts: 0,
+          likes: 0
+        })).slice(0, 5);
+      },
+      error: (err) => console.error('Failed to load club clients', err)
+    });
+  }
+
+  fallbackToAnyCommunity() {
+    this.communityService.getAll().subscribe({
+      next: (communities) => {
+        if (communities && communities.length > 0) {
+          this.community = communities[0];
+          this.loadPosts();
+        } else {
+          this.isLoading = false;
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load all communities', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  loadPosts() {
+    if (!this.community) {
+      this.isLoading = false;
+      return;
+    }
+
+    this.postService.getByCommunityId(this.community.id).subscribe({
+      next: (dbPosts: PostResponse[]) => {
+        const currentUserId = this.currentUser.id;
+        const mappedPosts: Post[] = dbPosts.map(p => {
+          const postObj: Post = {
+            id: p.id,
+            authorName: p.userName || 'Utilisateur',
+            authorInitial: (p.userName || 'U').charAt(0).toUpperCase(),
+            authorColor: this.getColor(p.userId),
+            role: p.userRole === 'ROLE_COACH' ? 'coach' : 'client',
+            timeAgo: this.formatDate(p.createdAt),
+            content: p.content,
+            image: p.imageUrl,
+            tags: [],
+            likes: p.likesCount || 0,
+            liked: false,
+            comments: [],
+            showComments: false,
+            newComment: '',
+            menuOpen: false,
+            userId: p.userId
+          };
+
+          /* const hashtags = p.content.match(/#\w+/g);
+          if (hashtags) {
+            postObj.tags = hashtags.map( => t.substring(1));
+          } */
+
+          this.commentService.getCommentsByPostId(p.id).subscribe({
+            next: (comments: CommentResponse[]) => {
+              postObj.comments = comments.map(c => ({
+                id: c.id,
+                authorName: c.userName || 'Utilisateur',
+                authorInitial: (c.userName || 'U').charAt(0).toUpperCase(),
+                authorColor: this.getColor(c.userId),
+                role: 'client',
+                text: c.content,
+                timeAgo: this.formatDate(c.createdAt),
+                likes: 0,
+                liked: false
+              }));
+            }
+          });
+
+          this.likeService.getLikesByPostId(p.id).subscribe({
+            next: (likes: LikeResponse[]) => {
+              postObj.liked = likes.some(l => l.userId === currentUserId);
+              postObj.likes = likes.length;
+            }
+          });
+
+          return postObj;
+        });
+
+        this.posts = mappedPosts.sort((a, b) => b.id - a.id);
+        this.isLoading = false;
+      },
+      error: (err) => {
+        console.error('Failed to load posts', err);
+        this.isLoading = false;
+      }
+    });
+  }
+
+  /* ── Computed filtered posts ── */
+  get filteredPosts(): Post[] {
+    const f = this.activeFilter();
+    const currentUserId = this.currentUser.id;
+    if (f === 'All') return this.posts;
+    if (f === 'Coaches') return this.posts.filter(p => p.role === 'coach');
+    if (f === 'Clients') return this.posts.filter(p => p.role === 'client');
+    if (f === 'My Posts') return this.posts.filter(p => p.userId === currentUserId);
+    return this.posts;
+  }
+
+  get totalPosts(): number { return this.posts.length; }
+  get coachPosts(): number { return this.posts.filter(p => p.role === 'coach').length; }
+  get totalLikes(): number { return this.posts.reduce((s, p) => s + p.likes, 0); }
+
   /* ── Actions ── */
   setFilter(f: FeedFilter): void { this.activeFilter.set(f); }
 
   toggleLike(post: Post): void {
-    post.liked = !post.liked;
-    post.likes += post.liked ? 1 : -1;
+    if (!this.currentUser.id) return;
+    this.likeService.toggleLike(post.id, this.currentUser.id).subscribe({
+      next: () => {
+        post.liked = !post.liked;
+        post.likes += post.liked ? 1 : -1;
+      },
+      error: (err) => console.error('Failed to toggle like', err)
+    });
   }
 
   toggleCommentLike(c: Comment): void {
@@ -166,48 +260,61 @@ export class ClientCommunityComponent {
 
   submitComment(post: Post): void {
     const text = post.newComment.trim();
-    if (!text) return;
-    post.comments.unshift({
-      id: Date.now(),
-      authorName: this.currentUser.name,
-      authorInitial: this.currentUser.initial,
-      authorColor: this.currentUser.color,
-      role: this.currentUser.role,
-      text,
-      timeAgo: 'Just now',
-      likes: 0,
-      liked: false
+    if (!text || !this.currentUser.id) return;
+
+    const request = {
+      content: text,
+      postId: post.id
+    };
+
+    this.commentService.createComment(this.currentUser.id, request).subscribe({
+      next: (newComment: CommentResponse) => {
+        post.newComment = '';
+        post.comments.push({
+          id: newComment.id,
+          authorName: this.currentUser.name,
+          authorInitial: this.currentUser.initial,
+          authorColor: this.currentUser.color,
+          role: 'client',
+          text: newComment.content,
+          timeAgo: 'Just now',
+          likes: 0,
+          liked: false
+        });
+      },
+      error: (err) => console.error('Failed to submit comment', err)
     });
-    post.newComment = '';
   }
 
   submitPost(): void {
     const text = this.newPostText.trim();
-    if (!text) return;
-    const tags = this.newPostTags.split(',').map(t => t.trim()).filter(Boolean);
-    const parsedTags = this.newPostTags.split(',').map(t => t.trim()).filter(Boolean);
-    
-    const newPost: Post = {
-      id: Date.now(),
-      authorName: this.currentUser.name,
-      authorInitial: this.currentUser.initial,
-      authorColor: this.currentUser.color,
-      role: 'client',
-      timeAgo: 'À l\'instant',
-      content: this.newPostText,
-      image: this.newPostImage || undefined,
-      tags: parsedTags,
-      likes: 0,
-      liked: false,
-      comments: [],
-      showComments: false,
-      newComment: '',
-      menuOpen: false,
+    if (!text || !this.community || !this.currentUser.id) return;
+
+    let finalContent = text;
+    if (this.newPostTags.trim()) {
+      const parsedTags = this.newPostTags.split(',').map(t => t.trim()).filter(Boolean);
+      if (parsedTags.length > 0) {
+        finalContent += '\n\n' + parsedTags.map(t => '#' + t).join(' ');
+      }
+    }
+
+    const request = {
+      content: finalContent,
+      imageUrl: this.newPostImage,
+      communityId: this.community.id,
       userId: this.currentUser.id
     };
 
-    this.posts.unshift(newPost);
-    this.closeModal();
+    this.postService.create(this.currentUser.id, request).subscribe({
+      next: () => {
+        this.newPostText = '';
+        this.newPostTags = '';
+        this.newPostImage = '';
+        this.showNewPostModal.set(false);
+        this.loadPosts();
+      },
+      error: (err) => console.error('Failed to create post', err)
+    });
   }
 
   closeModal(): void {
@@ -238,7 +345,12 @@ export class ClientCommunityComponent {
   }
 
   deletePost(post: Post): void {
-    this.posts = this.posts.filter(p => p.id !== post.id);
+    this.postService.delete(post.id).subscribe({
+      next: () => {
+        this.posts = this.posts.filter(p => p.id !== post.id);
+      },
+      error: (err) => console.error('Failed to delete post', err)
+    });
   }
 
   sharePost(post: Post): void {
@@ -249,6 +361,26 @@ export class ClientCommunityComponent {
   }
 
   closeAllMenus(): void { this.posts.forEach(p => p.menuOpen = false); }
+
+  getColor(id?: number): string {
+    if (!id) return this.colors[0];
+    return this.colors[id % this.colors.length];
+  }
+
+  formatDate(dateStr?: string): string {
+    if (!dateStr) return 'Recently';
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('fr-FR', {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
+    } catch {
+      return 'Recently';
+    }
+  }
 
   trackById(_: number, item: { id: number }): number { return item.id; }
 }
