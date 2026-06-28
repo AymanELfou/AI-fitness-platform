@@ -34,7 +34,8 @@ services:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
     ports:
-      - "8080:8080"
+      - "8082:8082"
+      - "8080:8082"
     depends_on:
       postgres:
         condition: service_healthy
@@ -67,6 +68,29 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      mongodb:
+        condition: service_healthy
+
+  coach-ai:
+    build:
+      context: ./IA/coach-ai
+      dockerfile: Dockerfile
+    container_name: smart_trainer_coach_ai
+    restart: unless-stopped
+    env_file: ./IA/coach-ai/.env
+    ports:
+      - "8001:8000"
+    volumes:
+      - ./IA/coach-ai/app:/code/app
+      - ./IA/models:/code/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    depends_on:
       mongodb:
         condition: service_healthy
 

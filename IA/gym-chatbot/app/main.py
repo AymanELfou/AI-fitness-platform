@@ -12,9 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.db.postgresql import init_postgres, close_postgres
 from app.db.mongodb import init_mongodb, close_mongodb
-from app.api.chat import router as chat_router
-from app.api.users import router as users_router
-from app.api.history import router as history_router
+from app.api import chat, history, users
 
 
 @asynccontextmanager
@@ -55,9 +53,9 @@ app.add_middleware(
 )
 
 # Enregistrement des routes
-app.include_router(chat_router)
-app.include_router(users_router)
-app.include_router(history_router)
+app.include_router(chat.router, prefix="/api/chat", tags=["Chat"])
+app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(history.router, prefix="/api/history", tags=["History"])
 
 
 @app.get("/", tags=["Health"])
