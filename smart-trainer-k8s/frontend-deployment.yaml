@@ -20,6 +20,15 @@ spec:
           imagePullPolicy: Always
           ports:
             - containerPort: 4000 
+          # --- AJOUT DES RESSOURCES POUR METRICS SERVER & HPA ---
+          resources:
+            requests:
+              cpu: "100m"       # Minimum garanti (0.1 CPU)
+              memory: "256Mi"   # Minimum garanti (256 Mo)
+            limits:
+              cpu: "500m"       # Limite maximale (0.5 CPU)
+              memory: "512Mi"   # Limite maximale (512 Mo)
+          # ------------------------------------------------------
           env:
             - name: API_URL
               value: "http://backend-service:8082"
@@ -36,4 +45,4 @@ spec:
     - protocol: TCP
       port: 4000       
       targetPort: 4000 
-      nodePort: 32000  
+      nodePort: 32000
