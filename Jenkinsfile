@@ -49,31 +49,40 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
-            steps {
-                withCredentials([usernamePassword(
-                    credentialsId: 'docker-hub-credentials',
-                    usernameVariable: 'DOCKER_USER',
-                    passwordVariable: 'DOCKER_PASSWORD'
-                )]) {
-                    script {
-                        sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
+       stage('Docker Build, Scan & Push') {
+    steps {
+        withCredentials([usernamePassword(
+            credentialsId: 'docker-hub-credentials',
+            usernameVariable: 'DOCKER_USER',
+            passwordVariable: 'DOCKER_PASSWORD'
+        )]) {
+            script {
+                echo 'Construction de l\'image Docker Backend...'
+                sh "docker build -t ${DOCKER_USER}/smart-trainer-backend:latest ./backend"
 
-                        echo 'Construction de l\'image Docker Backend...'
-                        sh "docker build -t ${DOCKER_USER}/smart-trainer-backend:latest ./backend"
+                echo 'Construction de l\'image Docker Frontend (Angular SSR)...'
+                sh "docker build -t ${DOCKER_USER}/smart-trainer-frontend:latest ./frontend"
 
-                        echo 'Push de l\'image Backend sur Docker Hub...'
-                        sh "docker push ${DOCKER_USER}/smart-trainer-backend:latest"
 
-                        echo 'Construction de l\'image Docker Frontend (Angular SSR)...'
-                        sh "docker build -t ${DOCKER_USER}/smart-trainer-frontend:latest ./frontend"
+                echo '🛡️ Analyse de sécurité Trivy - Backend...'
 
-                        echo 'Push de l\'image Frontend sur Docker Hub...'
-                        sh "docker push ${DOCKER_USER}/smart-trainer-frontend:latest"
-                    }
-                }
+                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-backend:latest"
+
+                echo '🛡️ Analyse de sécurité Trivy - Frontend...'
+                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
+
+
+                sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
+
+                echo 'Push de l\'image Backend sur Docker Hub...'
+                sh "docker push ${DOCKER_USER}/smart-trainer-backend:latest"
+
+                echo 'Push de l\'image Frontend sur Docker Hub...'
+                sh "docker push ${DOCKER_USER}/smart-trainer-frontend:latest"
             }
         }
+    }
+}
 
         stage('Deploy with Ansible (Preprod)') {
             steps {
