@@ -127,4 +127,35 @@ pipeline {
             } 
         } 
     } 
-} 
+}
+    post {
+        always {
+            // Nettoie l'espace de travail
+            cleanWs()
+        }
+
+        success {
+            script {
+                withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{"text":"✅ *Build Réussi !*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Lien :* ${env.BUILD_URL}"}' \
+                        \$SLACK_URL
+                    """
+                }
+            }
+        }
+
+        failure {
+            script {
+                withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{"text":"❌ *Le Build a Échoué...*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Vérifie les logs ici :* ${env.BUILD_URL}console"}' \
+                        \$SLACK_URL
+                    """
+                }
+            }
+        }
+    }
+}
