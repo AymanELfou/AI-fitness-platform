@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: smart-trainer-config
+data:
+  DB_HOST: "postgres-service"
+  DB_PORT: "5432"
+  DB_NAME: "smarttrainer"
+  DB_USER: "postgres"
+  
+  SECRET_EXPIRATION: "86400000" # 24 heures
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: smart-trainer-secrets
+type: Opaque
+stringData:
+  DB_PASSWORD: "postgres123"
+  
+  SECRET_KEY: "MaCleSecreteSuperSecuriseePourLeTokenJWT2026!"
