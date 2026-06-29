@@ -65,11 +65,10 @@ pipeline {
 
 
                 echo '🛡️ Analyse de sécurité Trivy - Backend...'
-
-                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-backend:latest"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 0 ${DOCKER_USER}/smart-trainer-backend:latest"
 
                 echo '🛡️ Analyse de sécurité Trivy - Frontend...'
-                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
 
 
                 sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
@@ -100,32 +99,62 @@ pipeline {
             }
         }
 
-        stage('Deploy to Kubernetes (CD)') {
+       stage('Deploy to Kubernetes (CD)') {
             steps {
                 script {
                     echo "--- Début du Déploiement Continu sur Kubernetes ---"
-                    
+
                     sh 'curl -LO "https://dl.k8s.io/release/v1.30.0/bin/linux/amd64/kubectl"'
                     sh 'chmod +x ./kubectl'
-                    
+
                     withCredentials([file(credentialsId: 'k8s-kubeconfig', variable: 'KUBECONFIG')]) {
-                        
+
                         echo "--- Application des manifests Kubernetes ---"
                         sh './kubectl apply -f smart-trainer-k8s/backend-deployment.yaml'
                         sh './kubectl apply -f smart-trainer-k8s/backend-hpa.yaml'
                         sh './kubectl apply -f smart-trainer-k8s/frontend-deployment.yaml'
-                        
+
                         echo "--- Déclenchement du Rolling Update (Zéro coupure) ---"
                         sh './kubectl rollout restart deployment/backend-deployment'
                         sh './kubectl rollout restart deployment/frontend-deployment'
-                        
+
                         echo "--- Vérification de la stabilité du déploiement ---"
                         sh './kubectl rollout status deployment/backend-deployment --timeout=90s'
                     }
-                    
+
                     echo "--- Déploiement accompli avec succès ! ---"
-                } 
-            } 
-        } 
-    } 
-} 
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+
+        success {
+            script {
+                withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{"text":"✅ *Build Réussi !*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Lien :* ${env.BUILD_URL}"}' \
+                        \$SLACK_URL
+                    """
+                }
+            }
+        }
+
+        failure {
+            script {
+                withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
+                    sh """
+                        curl -X POST -H 'Content-type: application/json' \
+                        --data '{"text":"❌ *Le Build a Échoué...*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Vérifie les logs ici :* ${env.BUILD_URL}console"}' \
+                        \$SLACK_URL
+                    """
+                }
+            }
+        }
+    }
+}
