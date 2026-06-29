@@ -1,6 +1,8 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { UserService } from '../../../../core/services/user.service';
+import { SystemConfigService } from '../../../../core/services/system-config.service';
 
 @Component({
   selector: 'app-admin-settings',
@@ -10,44 +12,45 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './settings.component.scss'
 })
 export class AdminSettingsComponent {
-  activeTab = 'general';
-  tabs = [
-    { id:'general',   label:'General',       icon:'⚙️' },
-    { id:'security',  label:'Security',      icon:'🔒' },
-    { id:'plans',     label:'Plans & Pricing',icon:'💳' },
-    { id:'email',     label:'Email & Notifs', icon:'📧' },
-  ];
+  /* Personal Info */
+  firstname = '';
+  lastname = '';
+  email = '';
 
   /* General */
   platformName = 'SmartTrainer';
   tagline = 'Your AI-Powered Fitness Platform';
   supportEmail = 'support@smarttrainer.com';
   maintenanceMode = false;
-  allowRegistrations = true;
-
-  /* Security */
-  requireEmailVerif = true;
-  twoFactorForAdmin = true;
-  sessionTimeout = 60;
-  maxLoginAttempts = 5;
-
-  /* Plans */
-  plans = [
-    { name:'Basic',      price:9,   features:['5 Clients','Basic Analytics','Email Support'],                    color:'#475569' },
-    { name:'Pro',        price:49,  features:['50 Clients','Advanced Analytics','Priority Support','AI Tools'],   color:'#2563EB' },
-    { name:'Enterprise', price:299, features:['Unlimited','Full Analytics','Dedicated Manager','White Label'],    color:'#7C3AED' },
-  ];
-
-  /* Email */
-  emailProvider = 'SendGrid';
-  welcomeEmail = true;
-  progressEmail = true;
-  paymentEmail = true;
-  weeklyDigest = false;
 
   saved = false;
 
+  constructor(
+    private userService: UserService,
+    private configService: SystemConfigService
+  ) {}
+
+  ngOnInit() {
+    this.userService.getMe().subscribe(user => {
+      this.firstname = user.firstname;
+      this.lastname = user.lastname;
+      this.email = user.email;
+    });
+
+    this.configService.loadConfig().subscribe(config => {
+      this.maintenanceMode = config.maintenanceMode;
+    });
+  }
+
   save(): void {
+    this.userService.updateMe({
+      firstname: this.firstname,
+      lastname: this.lastname,
+      email: this.email
+    }).subscribe();
+
+    this.configService.updateMaintenanceMode(this.maintenanceMode).subscribe();
+
     this.saved = true;
     setTimeout(() => this.saved = false, 2500);
   }

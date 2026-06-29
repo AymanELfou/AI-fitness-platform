@@ -42,7 +42,6 @@ interface ConfirmDialog {
 })
 export class AdminClubsComponent implements OnInit {
   search = '';
-  filterPlan = 'All';
   filterStatus = 'All';
   currentPage = 1;
   pageSize = 6;
@@ -50,8 +49,7 @@ export class AdminClubsComponent implements OnInit {
   errorMessage = '';
   confirmDialog: ConfirmDialog | null = null;
 
-  plans = ['All', 'Basic', 'Pro', 'Enterprise'];
-  statuses = ['All', 'active', 'pending', 'inactive', 'banned'];
+  statuses = ['All', 'active', 'pending', 'banned'];
 
   clubs: Club[] = [];
 
@@ -99,9 +97,8 @@ export class AdminClubsComponent implements OnInit {
     return this.clubs.filter(c => {
       const q = this.search.toLowerCase();
       const ms = !q || c.name.toLowerCase().includes(q) || c.city.toLowerCase().includes(q);
-      const mp = this.filterPlan === 'All' || c.plan === this.filterPlan;
       const mst = this.filterStatus === 'All' || c.status === this.filterStatus;
-      return ms && mp && mst;
+      return ms && mst;
     });
   }
 

@@ -46,8 +46,10 @@ export class AdminCoachesComponent implements OnInit {
   isLoading = false;
   errorMessage = '';
   confirmDialog: ConfirmDialog | null = null;
+  viewModalOpen = false;
+  selectedCoach: Coach | null = null;
 
-  statuses = ['All', 'active', 'pending', 'inactive', 'banned'];
+  statuses = ['All', 'active', 'pending','banned'];
   coaches: Coach[] = [];
 
   private colors = ['#2563EB', '#059669', '#7C3AED', '#F59E0B', '#DC2626', '#0891B2', '#EC4899'];
@@ -145,6 +147,16 @@ export class AdminCoachesComponent implements OnInit {
         });
       }
     };
+  }
+
+  openCoachModal(coach: Coach): void {
+    this.selectedCoach = coach;
+    this.viewModalOpen = true;
+  }
+
+  closeCoachModal(): void {
+    this.viewModalOpen = false;
+    this.selectedCoach = null;
   }
 
   confirmAction(): void {

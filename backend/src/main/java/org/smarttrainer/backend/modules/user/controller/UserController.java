@@ -2,11 +2,13 @@ package org.smarttrainer.backend.modules.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.smarttrainer.backend.modules.user.dto.UserResponse;
+import org.smarttrainer.backend.modules.user.dto.UserUpdateRequest;
 import org.smarttrainer.backend.modules.user.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -21,6 +23,16 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<UserResponse>> getAllUsers() {
         return ResponseEntity.ok(userService.findAll());
+    }
+
+    @GetMapping("me")
+    public ResponseEntity<UserResponse> getMe(Principal principal) {
+        return ResponseEntity.ok(userService.getMe(principal.getName()));
+    }
+
+    @PutMapping("me")
+    public ResponseEntity<UserResponse> updateMe(Principal principal, @RequestBody UserUpdateRequest request) {
+        return ResponseEntity.ok(userService.updateMe(principal.getName(), request));
     }
 
     @GetMapping("{id}")

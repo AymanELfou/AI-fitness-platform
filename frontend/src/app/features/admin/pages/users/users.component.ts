@@ -40,8 +40,8 @@ export class AdminUsersComponent implements OnInit {
   errorMessage = '';
   confirmDialog: ConfirmDialog | null = null;
 
-  roles = ['All', 'admin', 'coach', 'club', 'client'];
-  statuses = ['All', 'active', 'pending', 'inactive', 'banned'];
+  roles = ['All', 'coach', 'club', 'client'];
+  statuses = ['All', 'active', 'pending', 'banned'];
 
   users: User[] = [];
 

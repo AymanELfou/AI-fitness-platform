@@ -63,7 +63,7 @@ public class ExerciseController {
     }
 
     @GetMapping("admin")
-    @PreAuthorize("hasAuthority('ROLE_CLIENT')") // both freemium and premium
+    @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_ADMIN', 'ROLE_COACH')") // accessible to all
     public ResponseEntity<List<ExerciseResponse>> getAdminExercises() {
         return ResponseEntity.ok(service.getAdminExercises());
     }

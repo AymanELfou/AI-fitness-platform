@@ -34,14 +34,11 @@
         <span class="nav-label" *ngIf="sidebarOpen">Dashboard</span>
       </a>
 
-      <a routerLink="/admin/reports" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Reports' : ''">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
-          </svg>
+      <a routerLink="/admin/platform-exercises" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Platform Exercices' : ''">
+        <span class="nav-icon" style="font-size: 1.2rem; display: flex; align-items: center; justify-content: center;">
+          🏋️
         </span>
-        <span class="nav-label" *ngIf="sidebarOpen">Reports</span>
-        <span class="nav-badge" *ngIf="sidebarOpen">New</span>
+        <span class="nav-label" *ngIf="sidebarOpen">Exercices (Platform)</span>
       </a>
 
       <div class="nav-section-label" *ngIf="sidebarOpen">MANAGEMENT</div>
@@ -54,7 +51,6 @@
           </svg>
         </span>
         <span class="nav-label" *ngIf="sidebarOpen">All Users</span>
-        <span class="nav-count" *ngIf="sidebarOpen">1,240</span>
       </a>
 
       <a routerLink="/admin/clubs" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Clubs' : ''">
@@ -65,7 +61,6 @@
           </svg>
         </span>
         <span class="nav-label" *ngIf="sidebarOpen">Clubs</span>
-        <span class="nav-count" *ngIf="sidebarOpen">48</span>
       </a>
 
       <a routerLink="/admin/coaches" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Coaches' : ''">
@@ -75,17 +70,6 @@
           </svg>
         </span>
         <span class="nav-label" *ngIf="sidebarOpen">Coaches</span>
-        <span class="nav-count" *ngIf="sidebarOpen">186</span>
-      </a>
-
-      <a routerLink="/admin/subscriptions" routerLinkActive="nav-link--active" class="nav-link" [title]="!sidebarOpen ? 'Subscriptions' : ''">
-        <span class="nav-icon">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
-            <line x1="1" y1="10" x2="23" y2="10"/>
-          </svg>
-        </span>
-        <span class="nav-label" *ngIf="sidebarOpen">Subscriptions</span>
       </a>
 
       <div class="nav-section-label" *ngIf="sidebarOpen">SYSTEM</div>
@@ -138,12 +122,7 @@
         <h1 class="topbar-title">Admin Panel</h1>
       </div>
       <div class="topbar-right">
-        <button class="topbar-icon-btn" title="Notifications">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-          </svg>
-          <span class="notif-dot"></span>
-        </button>
+        
         <div class="topbar-user">
           <div class="topbar-avatar">{{ (authService.currentUser()?.firstname || 'A')[0] }}</div>
         </div>

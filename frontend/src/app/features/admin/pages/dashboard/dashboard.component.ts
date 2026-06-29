@@ -61,12 +61,12 @@ export class DashboardComponent implements OnInit {
         }).length;
 
         this.stats = [
-          { label: 'Total Users', value: users.length.toString(), sub: 'Clients, Coaches, Clubs', trend: `${activeUsers} active`, up: true, icon: 'U', color: '#2563EB' },
-          { label: 'Active Clubs', value: activeClubs.toString(), sub: `${clubs.length} registered clubs`, trend: `${pendingUsers} pending users`, up: true, icon: 'C', color: '#7C3AED' },
-          { label: 'Total Coaches', value: coaches.length.toString(), sub: 'Coach profiles from API', trend: `${this.averageRating(coaches)} avg rating`, up: true, icon: 'T', color: '#059669' },
-          { label: 'Total Clients', value: clients.length.toString(), sub: 'Client profiles from API', trend: `${clients.filter(c => c.subscriptionPlan === 'PREMIUM').length} premium`, up: true, icon: 'M', color: '#F59E0B' },
-          { label: 'Inactive Users', value: users.filter(user => this.adminUserService.getStatus(user) === 'inactive').length.toString(), sub: 'Disabled accounts', trend: 'API live', up: false, icon: 'I', color: '#EF4444' },
-          { label: 'Banned Users', value: users.filter(user => this.adminUserService.getStatus(user) === 'banned').length.toString(), sub: 'Locked accounts', trend: 'Security', up: false, icon: 'B', color: '#0891B2' }
+          { label: 'Total Users', value: users.length.toString(), sub: 'Clients, Coaches, Clubs', trend: `${activeUsers} active`, up: true, icon: '👤', color: '#2563EB' },
+          { label: 'Active Clubs', value: activeClubs.toString(), sub: `${clubs.length} registered clubs`, trend: `${pendingUsers} pending users`, up: true, icon: '🏢', color: '#7C3AED' },
+          { label: 'Total Coaches', value: coaches.length.toString(), sub: 'Coach profiles from API', trend: `${this.averageRating(coaches)} avg rating`, up: true, icon: '⭐', color: '#059669' },
+          { label: 'Total Clients', value: clients.length.toString(), sub: 'Client profiles from API', trend: `${clients.filter(c => c.subscriptionPlan === 'PREMIUM').length} premium`, up: true, icon: '🏋️', color: '#F59E0B' },
+          { label: 'Inactive Users', value: users.filter(user => this.adminUserService.getStatus(user) === 'inactive').length.toString(), sub: 'Disabled accounts', trend: 'API live', up: false, icon: '💤', color: '#EF4444' },
+          { label: 'Banned Users', value: users.filter(user => this.adminUserService.getStatus(user) === 'banned').length.toString(), sub: 'Locked accounts', trend: 'Security', up: false, icon: '🚫', color: '#0891B2' }
         ];
 
         this.topClubs = clubs
@@ -88,8 +88,7 @@ export class DashboardComponent implements OnInit {
 
         const totalClubs = Math.max(clubs.length, 1);
         this.planDistribution = [
-          { plan: 'Pro', count: planCounts['Pro'] ?? 0, pct: ((planCounts['Pro'] ?? 0) / totalClubs) * 100, color: '#2563EB' },
-          { plan: 'Basic', count: planCounts['Basic'] ?? 0, pct: ((planCounts['Basic'] ?? 0) / totalClubs) * 100, color: '#059669' }
+          { plan: 'Premium', count: planCounts['Pro'] ?? 0, pct: ((planCounts['Pro'] ?? 0) / totalClubs) * 100, color: '#2563EB' }
         ];
 
         this.recentActivity = users
@@ -100,7 +99,7 @@ export class DashboardComponent implements OnInit {
             type: 'signup',
             message: `User registered: ${user.firstname ?? ''} ${user.lastname ?? ''}`.trim(),
             time: this.formatDate(user.createdDate),
-            icon: 'U',
+            icon: '👤',
             color: '#2563EB'
           }));
 

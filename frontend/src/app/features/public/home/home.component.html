@@ -1,4 +1,4 @@
-
+<div *ngIf="!maintenanceMode">
 <section class="hero-section">
   <div class="hero-container">
     <!-- Left Content -->
@@ -287,3 +287,16 @@
      CHATBOT WIDGET (fixed bottom-right)
 ═══════════════════════════════════════ -->
 <app-chatbot></app-chatbot>
+</div>
+
+<div class="ap-root" *ngIf="maintenanceMode" style="display: flex; align-items: center; justify-content: center; min-height: 100vh; background-color: #f8fafc;">
+  <div style="text-align: center; max-width: 500px; padding: 3rem; background: white; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.05);">
+    <div style="font-size: 4rem; margin-bottom: 1rem;">🚧</div>
+    <h1 style="color: #0f172a; font-size: 1.75rem; margin-bottom: 0.5rem; font-weight: 700;">Our Platform is on Maintenance Mode</h1>
+    <p style="color: #64748b; font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem;">
+      We are currently performing scheduled maintenance to improve your experience. 
+      Please check back later. We apologize for the inconvenience.
+    </p>
+    
+  </div>
+</div>

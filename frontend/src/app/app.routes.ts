@@ -43,9 +43,8 @@ import { DashboardComponent as AdminDashboardComponent } from './features/admin/
 import { AdminUsersComponent } from './features/admin/pages/users/users.component';
 import { AdminClubsComponent } from './features/admin/pages/clubs/clubs.component';
 import { AdminCoachesComponent } from './features/admin/pages/coaches/coaches.component';
-import { AdminSubscriptionsComponent } from './features/admin/pages/subscriptions/subscriptions.component';
-import { AdminReportsComponent } from './features/admin/pages/reports/reports.component';
 import { AdminSettingsComponent } from './features/admin/pages/settings/settings.component';
+import { PlatformExercisesComponent } from './features/admin/pages/platform-exercises/platform-exercises.component';
 
 // ==========================================
 // CLIENT COMPONENTS & LAYOUT
@@ -117,8 +116,7 @@ export const routes: Routes = [
       { path: 'users',         component: AdminUsersComponent         },
       { path: 'clubs',         component: AdminClubsComponent         },
       { path: 'coaches',       component: AdminCoachesComponent       },
-      { path: 'subscriptions', component: AdminSubscriptionsComponent },
-      { path: 'reports',       component: AdminReportsComponent       },
+      { path: 'platform-exercises', component: PlatformExercisesComponent },
       { path: 'settings',      component: AdminSettingsComponent      },
       { path: '',              redirectTo: 'dashboard', pathMatch: 'full' }
     ]

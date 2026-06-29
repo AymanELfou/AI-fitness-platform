@@ -6,14 +6,6 @@
       <p class="ap-subtitle">Manage and monitor all registered gym clubs and fitness centers.</p>
     </div>
     <div class="ap-header-actions">
-      <button class="btn-outline">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Export
-      </button>
-      <button class="btn-primary">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Add Club
-      </button>
     </div>
   </div>
 
@@ -22,6 +14,19 @@
     <div class="sum-pill sum-pill--green"><span class="sp-val">{{ activeCount }}</span><span class="sp-lbl">Active</span></div>
     <div class="sum-pill sum-pill--amber"><span class="sp-val">{{ pendingCount }}</span><span class="sp-lbl">Pending</span></div>
     <div class="sum-pill sum-pill--blue"><span class="sp-val">{{ totalMembers }}</span><span class="sp-lbl">Total Members</span></div>
+  </div>
+
+  <div class="data-table-card" *ngIf="!isLoading" style="margin-bottom: 2rem;">
+    <div class="dtc-controls" style="margin-bottom: 0;">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input class="search-input" [(ngModel)]="search" (ngModelChange)="currentPage=1" placeholder="Search clubs..." />
+      </div>
+      
+      <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="currentPage=1">
+        <option *ngFor="let s of statuses">{{ s }}</option>
+      </select>
+    </div>
   </div>
 
   <div class="admin-alert admin-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
@@ -37,8 +42,8 @@
         </div>
         <div class="cc-actions-top">
           <span class="status-pill" [class]="'status-pill--' + c.status">{{ c.status }}</span>
-          <button class="tbl-btn tbl-btn--del" title="Remove" style="width:26px;height:26px" (click)="deleteClub(c)">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          <button class="tbl-btn tbl-btn--del" title="Remove" style="width:26px;height:26px;font-size:0.9rem;" (click)="deleteClub(c)">
+            ❌
           </button>
         </div>
       </div>
@@ -46,14 +51,13 @@
       <div class="cc-stats">
         <div class="cc-stat"><span class="ccs-val">{{ c.members }}</span><span class="ccs-lbl">Members</span></div>
         <div class="cc-stat"><span class="ccs-val">{{ c.coaches }}</span><span class="ccs-lbl">Coaches</span></div>
-        <div class="cc-stat"><span class="ccs-val" style="color:#059669">{{ c.revenue }}</span><span class="ccs-lbl">Revenue</span></div>
       </div>
 
       <div class="cc-footer">
         <span class="plan-badge" [class]="'plan-badge--' + c.plan.toLowerCase()">{{ c.plan }}</span>
         <span class="cc-joined">Since {{ c.joined }}</span>
         <button class="cc-approve-btn" *ngIf="c.status === 'pending'" (click)="approveClub(c)">Approve</button>
-        <button class="cc-toggle-btn" *ngIf="c.status !== 'pending'" (click)="toggleStatus(c)">
+        <button class="cc-toggle-btn" *ngIf="c.status !== 'pending'" [style.color]="c.status === 'active' ? '#ef4444' : ''" [style.background]="c.status === 'active' ? '#fee2e2' : ''" (click)="toggleStatus(c)">
           {{ c.status === 'active' ? 'Suspend' : 'Activate' }}
         </button>
       </div>
@@ -61,19 +65,7 @@
   </div>
 
   <div class="bottom-bar" *ngIf="!isLoading">
-    <div class="dtc-controls">
-      <div class="search-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input class="search-input" [(ngModel)]="search" (ngModelChange)="currentPage=1" placeholder="Search clubs..." />
-      </div>
-      <select class="filter-select" [(ngModel)]="filterPlan" (ngModelChange)="currentPage=1">
-        <option *ngFor="let p of plans">{{ p }}</option>
-      </select>
-      <select class="filter-select" [(ngModel)]="filterStatus" (ngModelChange)="currentPage=1">
-        <option *ngFor="let s of statuses">{{ s }}</option>
-      </select>
-    </div>
-    <div class="pagination" style="border:none;padding:0;background:transparent">
+    <div class="pagination" style="border:none;padding:0;background:transparent;width:100%;justify-content:space-between">
       <span class="pag-info">{{ getPageStart() }}-{{ getPageEnd() }} of {{ filtered.length }}</span>
       <div class="pag-btns">
         <button class="pag-btn" (click)="setPage(currentPage-1)" [disabled]="currentPage===1">&lt;</button>

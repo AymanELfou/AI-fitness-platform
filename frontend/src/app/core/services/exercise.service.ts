@@ -38,4 +38,12 @@ export class ExerciseService {
   getByMusclesGroup(musclesGroup: string): Observable<Exercise[]> {
     return this.http.get<Exercise[]>(`${this.apiUrl}/muscles/${musclesGroup}`);
   }
+
+  updateExercise(id: number, exercise: Partial<Exercise>): Observable<Exercise> {
+    return this.http.put<Exercise>(`${this.apiUrl}/${id}`, exercise);
+  }
+
+  deleteExercise(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${id}`);
+  }
 }

@@ -3,6 +3,7 @@ package org.smarttrainer.backend.modules.user.service;
 import lombok.RequiredArgsConstructor;
 import org.smarttrainer.backend.domain.user.User;
 import org.smarttrainer.backend.modules.user.dto.UserResponse;
+import org.smarttrainer.backend.modules.user.dto.UserUpdateRequest;
 import org.smarttrainer.backend.modules.user.mapper.UserMapper;
 import org.smarttrainer.backend.modules.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -63,6 +64,25 @@ public class UserService {
         user.setLastname("User");
         user.setEmail("deleted-user-" + id + "@smarttrainer.local");
         userRepository.save(user);
+    }
+
+    @Transactional(readOnly = true)
+    public UserResponse getMe(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+        return userMapper.toResponse(user);
+    }
+
+    @Transactional
+    public UserResponse updateMe(String email, UserUpdateRequest request) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + email));
+        
+        if (request.getFirstname() != null) user.setFirstname(request.getFirstname());
+        if (request.getLastname() != null) user.setLastname(request.getLastname());
+        if (request.getEmail() != null) user.setEmail(request.getEmail());
+        
+        return userMapper.toResponse(userRepository.save(user));
     }
 
     private User getUser(Long id) {

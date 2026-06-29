@@ -15,13 +15,28 @@
 
   <!-- Tabs -->
   <div class="settings-tabs">
-    <button class="stab" *ngFor="let t of tabs" [class.stab--active]="activeTab === t.id" (click)="activeTab = t.id">
-      <span>{{ t.icon }}</span> {{ t.label }}
+    <button class="stab stab--active">
+      <span>⚙️</span> General
     </button>
   </div>
 
   <!-- General Tab -->
-  <div class="settings-grid" *ngIf="activeTab === 'general'">
+  <div class="settings-grid">
+    <div class="settings-card">
+      <div class="sc-title">Personal Info</div>
+      <div class="field-group">
+        <label class="field-label">First Name</label>
+        <input class="field-input" [(ngModel)]="firstname" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Last Name</label>
+        <input class="field-input" [(ngModel)]="lastname" />
+      </div>
+      <div class="field-group">
+        <label class="field-label">Email</label>
+        <input class="field-input" [(ngModel)]="email" type="email" />
+      </div>
+    </div>
     <div class="settings-card">
       <div class="sc-title">Platform Identity</div>
       <div class="field-group">
@@ -49,101 +64,9 @@
             <span class="toggle-knob"></span>
           </button>
         </div>
-        <div class="toggle-item">
-          <div>
-            <div class="toggle-label">Allow New Registrations</div>
-            <div class="toggle-desc">Let new users sign up to the platform</div>
-          </div>
-          <button class="toggle-btn" [class.toggle-btn--on]="allowRegistrations" (click)="allowRegistrations = !allowRegistrations">
-            <span class="toggle-knob"></span>
-          </button>
-        </div>
+
       </div>
     </div>
   </div>
 
-  <!-- Security Tab -->
-  <div class="settings-grid" *ngIf="activeTab === 'security'">
-    <div class="settings-card">
-      <div class="sc-title">Authentication</div>
-      <div class="toggle-group">
-        <div class="toggle-item">
-          <div><div class="toggle-label">Email Verification Required</div><div class="toggle-desc">New users must verify their email</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="requireEmailVerif" (click)="requireEmailVerif = !requireEmailVerif"><span class="toggle-knob"></span></button>
-        </div>
-        <div class="toggle-item">
-          <div><div class="toggle-label">2FA for Admins</div><div class="toggle-desc">Enforce 2-factor auth for admin accounts</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="twoFactorForAdmin" (click)="twoFactorForAdmin = !twoFactorForAdmin"><span class="toggle-knob"></span></button>
-        </div>
-      </div>
-    </div>
-    <div class="settings-card">
-      <div class="sc-title">Session & Limits</div>
-      <div class="field-group">
-        <label class="field-label">Session Timeout (minutes)</label>
-        <input class="field-input" [(ngModel)]="sessionTimeout" type="number" min="15" max="480" />
-      </div>
-      <div class="field-group">
-        <label class="field-label">Max Login Attempts</label>
-        <input class="field-input" [(ngModel)]="maxLoginAttempts" type="number" min="3" max="10" />
-      </div>
-    </div>
-  </div>
 
-  <!-- Plans Tab -->
-  <div class="plans-grid" *ngIf="activeTab === 'plans'">
-    <div class="plan-edit-card" *ngFor="let p of plans">
-      <div class="pec-head" [style.background]="p.color">
-        <div class="pec-name">{{ p.name }}</div>
-        <div class="pec-price">${{ p.price }}<span>/mo</span></div>
-      </div>
-      <div class="pec-body">
-        <div class="field-group">
-          <label class="field-label">Monthly Price ($)</label>
-          <input class="field-input" [(ngModel)]="p.price" type="number" />
-        </div>
-        <div class="pec-features">
-          <div class="feature-item" *ngFor="let f of p.features">
-            <svg viewBox="0 0 24 24" fill="none" stroke="#059669" stroke-width="2.5" class="feat-icon"><polyline points="20 6 9 17 4 12"/></svg>
-            {{ f }}
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Email Tab -->
-  <div class="settings-grid" *ngIf="activeTab === 'email'">
-    <div class="settings-card">
-      <div class="sc-title">Email Provider</div>
-      <div class="field-group">
-        <label class="field-label">Provider</label>
-        <select class="field-input" [(ngModel)]="emailProvider">
-          <option>SendGrid</option><option>Mailgun</option><option>AWS SES</option><option>SMTP</option>
-        </select>
-      </div>
-    </div>
-    <div class="settings-card">
-      <div class="sc-title">Notification Triggers</div>
-      <div class="toggle-group">
-        <div class="toggle-item">
-          <div><div class="toggle-label">Welcome Email</div><div class="toggle-desc">Send on new registration</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="welcomeEmail" (click)="welcomeEmail = !welcomeEmail"><span class="toggle-knob"></span></button>
-        </div>
-        <div class="toggle-item">
-          <div><div class="toggle-label">Progress Report Email</div><div class="toggle-desc">Weekly summary for clients</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="progressEmail" (click)="progressEmail = !progressEmail"><span class="toggle-knob"></span></button>
-        </div>
-        <div class="toggle-item">
-          <div><div class="toggle-label">Payment Receipts</div><div class="toggle-desc">Send invoice on billing</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="paymentEmail" (click)="paymentEmail = !paymentEmail"><span class="toggle-knob"></span></button>
-        </div>
-        <div class="toggle-item">
-          <div><div class="toggle-label">Weekly Admin Digest</div><div class="toggle-desc">Platform stats digest</div></div>
-          <button class="toggle-btn" [class.toggle-btn--on]="weeklyDigest" (click)="weeklyDigest = !weeklyDigest"><span class="toggle-knob"></span></button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div>
