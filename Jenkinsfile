@@ -65,11 +65,10 @@ pipeline {
 
 
                 echo '🛡️ Analyse de sécurité Trivy - Backend...'
-
-                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-backend:latest"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-backend:latest"
 
                 echo '🛡️ Analyse de sécurité Trivy - Frontend...'
-                sh "trivy image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
+                sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
 
 
                 sh "echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USER} --password-stdin"
