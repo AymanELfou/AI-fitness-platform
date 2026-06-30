@@ -32,6 +32,7 @@ public class SecurityConfig {
                                 .authorizeHttpRequests(auth -> auth
                                         // error and options and auth and exercises and clubs
                                                 .dispatcherTypeMatchers(jakarta.servlet.DispatcherType.ERROR).permitAll()
+                                                .requestMatchers("/actuator/**").permitAll()
                                                 .requestMatchers("/auth/**").permitAll()
                                                 .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                                                 .requestMatchers(HttpMethod.GET, "/api/v1/clubs/**").permitAll()
