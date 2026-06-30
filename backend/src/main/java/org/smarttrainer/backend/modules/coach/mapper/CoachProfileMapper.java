@@ -21,7 +21,7 @@ public class CoachProfileMapper {
                 .experience(profile.getExperience())
                 .certifications(profile.getCertifications())
                 .speciality(profile.getSpeciality())
-                .tariff(profile.getTariff())
+                .tariff(profile.getTarif())
                 .rating(rating)
                 .clubId(profile.getClub() != null ? profile.getClub().getId() : null)
                 .clubName(profile.getClub() != null ? profile.getClub().getClubName() : null)
@@ -46,7 +46,7 @@ public class CoachProfileMapper {
         profile.setExperience(request.getExperience());
         profile.setCertifications(request.getCertifications());
         profile.setSpeciality(request.getSpeciality());
-        profile.setTariff(request.getTariff());
+        profile.setTarif(request.getTariff());
 
         return profile;
     }

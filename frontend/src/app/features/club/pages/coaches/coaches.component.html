@@ -351,23 +351,83 @@
             </div>
           </div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="flex gap-4 mt-8 pt-4 border-t border-slate-100">
-          <button type="button" (click)="setViewMode('list')" 
-                  class="w-1/2 py-3.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
-            Annuler
-          </button>
-          
-          <button type="submit" [disabled]="isLoading"
-                  class="w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2">
-            <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full"></span>
-            Embaucher Coach
-          </button>
-        </div>
       </div>
 
     </form>
+
+    <!-- AVAILABILITY SECTION (full width, below the 2-column grid) -->
+    <div class="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm mt-6">
+      <div class="flex items-center gap-2 mb-5">
+        <span class="w-8 h-8 rounded-lg bg-green-50 text-green-600 flex items-center justify-center font-bold text-sm">03</span>
+        <div>
+          <h3 class="text-lg font-bold text-slate-800">Disponibilités Hebdomadaires</h3>
+          <p class="text-xs text-slate-400 mt-0.5">Choisissez les jours et horaires où le coach sera disponible (optionnel).</p>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+        <div *ngFor="let day of weekDays"
+             class="flex flex-col items-center gap-2 p-3 rounded-2xl border-2 cursor-pointer transition-all select-none"
+             [class.border-indigo-500]="day.selected"
+             [class.bg-indigo-50]="day.selected"
+             [class.border-slate-200]="!day.selected"
+             [class.bg-slate-50]="!day.selected"
+             (click)="toggleDay(day)">
+
+          <!-- Day checkbox indicator -->
+          <div class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-black transition-all"
+               [class.bg-indigo-600]="day.selected"
+               [class.text-white]="day.selected"
+               [class.bg-slate-200]="!day.selected"
+               [class.text-slate-400]="!day.selected">
+            {{ day.selected ? '✓' : '' }}
+          </div>
+
+          <span class="text-xs font-bold" [class.text-indigo-700]="day.selected" [class.text-slate-500]="!day.selected">
+            {{ day.label.slice(0, 3) }}
+          </span>
+
+          <!-- Time pickers shown only when day is selected -->
+          <div *ngIf="day.selected" class="w-full flex flex-col gap-1 mt-1" (click)="$event.stopPropagation()">
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-bold text-slate-400 uppercase">De</label>
+              <input type="time" [(ngModel)]="day.startTime"
+                     class="w-full text-xs bg-white border border-indigo-200 rounded-lg px-1.5 py-1 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-400">
+            </div>
+            <div class="flex flex-col gap-0.5">
+              <label class="text-[9px] font-bold text-slate-400 uppercase">À</label>
+              <input type="time" [(ngModel)]="day.endTime"
+                     class="w-full text-xs bg-white border border-indigo-200 rounded-lg px-1.5 py-1 text-slate-700 focus:outline-none focus:ring-1 focus:ring-indigo-400">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected days summary -->
+      <div *ngIf="selectedDays.length > 0" class="mt-4 p-3 bg-indigo-50 rounded-xl border border-indigo-100 text-xs text-indigo-700 font-medium flex flex-wrap gap-2">
+        <span>📅 Jours sélectionnés :</span>
+        <span *ngFor="let d of selectedDays" class="bg-indigo-100 px-2 py-0.5 rounded-full font-bold">
+          {{ d.label.slice(0,3) }} {{ d.startTime }}–{{ d.endTime }}
+        </span>
+      </div>
+      <p *ngIf="selectedDays.length === 0" class="mt-3 text-xs text-slate-400 italic">
+        Aucun jour sélectionné — les disponibilités pourront être configurées plus tard.
+      </p>
+
+      <!-- Final submit button -->
+      <div class="flex gap-4 mt-6 pt-4 border-t border-slate-100">
+        <button type="button" (click)="setViewMode('list')"
+                class="w-1/2 py-3.5 rounded-xl border border-slate-200 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors">
+          Annuler
+        </button>
+        <button type="button" [disabled]="isLoading || coachForm.invalid" (click)="onAddCoachSubmit()"
+                class="w-1/2 py-3.5 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white text-sm font-bold shadow-md transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+          <span *ngIf="isLoading" class="animate-spin w-4 h-4 border-2 border-t-white border-indigo-200 rounded-full"></span>
+          <span *ngIf="!isLoading">🏋️ Embaucher Coach</span>
+          <span *ngIf="isLoading">Création en cours…</span>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- ========================================== -->

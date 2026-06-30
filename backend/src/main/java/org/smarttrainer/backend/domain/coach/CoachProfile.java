@@ -35,7 +35,7 @@ public class CoachProfile extends BaseEntity {
     private String speciality;
 
     @Column(name = "tarif", nullable = false)
-    private BigDecimal tariff;
+    private BigDecimal tarif;
 
     @Column(nullable = false)
     private Double rating = 0.0;

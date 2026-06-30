@@ -5,6 +5,18 @@ import { FormsModule, ReactiveFormsModule, FormBuilder, FormGroup, Validators } 
 import { CoachService, CoachProfileResponse } from '../../../../core/services/coach.service';
 import { ClubService } from '../../../../core/services/club.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { AvailabilityService } from '../../../../core/services/availability.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError } from 'rxjs/operators';
+
+// Weekday structure for availability UI
+export interface WeekDay {
+  key: string;
+  label: string;
+  selected: boolean;
+  startTime: string;
+  endTime: string;
+}
 
 @Component({
   selector: 'app-coaches',
@@ -46,10 +58,22 @@ export class CoachesComponent implements OnInit {
   coachToEdit: CoachProfileResponse | null = null;
   coachToDelete: CoachProfileResponse | null = null;
 
+  // Availability days
+  weekDays: WeekDay[] = [
+    { key: 'MON', label: 'Monday',    selected: false, startTime: '08:00', endTime: '17:00' },
+    { key: 'TUE', label: 'Tuesday',   selected: false, startTime: '08:00', endTime: '17:00' },
+    { key: 'WED', label: 'Wednesday', selected: false, startTime: '08:00', endTime: '17:00' },
+    { key: 'THU', label: 'Thursday',  selected: false, startTime: '08:00', endTime: '17:00' },
+    { key: 'FRI', label: 'Friday',    selected: false, startTime: '08:00', endTime: '17:00' },
+    { key: 'SAT', label: 'Saturday',  selected: false, startTime: '09:00', endTime: '14:00' },
+    { key: 'SUN', label: 'Sunday',    selected: false, startTime: '09:00', endTime: '14:00' },
+  ];
+
   constructor(
     private coachService: CoachService,
     private clubService: ClubService,
     private authService: AuthService,
+    private availabilityService: AvailabilityService,
     private fb: FormBuilder
   ) {}
 
@@ -64,7 +88,7 @@ export class CoachesComponent implements OnInit {
             this.loadCoaches();
           }
         },
-        error: (err) => {
+        error: () => {
           this.showNotification('Error loading club profile details.', 'error');
         }
       });
@@ -72,26 +96,22 @@ export class CoachesComponent implements OnInit {
   }
 
   initForms() {
-    // Add Coach form (User account + Coach Profile details)
     this.coachForm = this.fb.group({
-      // Account Details
-      firstname: ['', [Validators.required, Validators.minLength(2)]],
-      lastname: ['', [Validators.required, Validators.minLength(2)]],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(8)]],
-      // Profile Details
-      speciality: ['Bodybuilding', Validators.required],
-      experience: [1, [Validators.required, Validators.min(0)]],
+      firstname:      ['', [Validators.required, Validators.minLength(2)]],
+      lastname:       ['', [Validators.required, Validators.minLength(2)]],
+      email:          ['', [Validators.required, Validators.email]],
+      password:       ['', [Validators.required, Validators.minLength(8)]],
+      speciality:     ['Bodybuilding', Validators.required],
+      experience:     [1, [Validators.required, Validators.min(0)]],
       certifications: ['', Validators.required],
-      tariff: [100, [Validators.required, Validators.min(0)]]
+      tariff:         [100, [Validators.required, Validators.min(0)]]
     });
 
-    // Edit Coach Profile form
     this.editForm = this.fb.group({
-      speciality: ['', Validators.required],
-      experience: [0, [Validators.required, Validators.min(0)]],
+      speciality:     ['', Validators.required],
+      experience:     [0, [Validators.required, Validators.min(0)]],
       certifications: ['', Validators.required],
-      tariff: [0, [Validators.required, Validators.min(0)]]
+      tariff:         [0, [Validators.required, Validators.min(0)]]
     });
   }
 
@@ -103,7 +123,7 @@ export class CoachesComponent implements OnInit {
           this.coaches = data;
           this.isLoading = false;
         },
-        error: (err) => {
+        error: () => {
           this.isLoading = false;
           this.showNotification('Failed to fetch coaches list.', 'error');
         }
@@ -114,21 +134,28 @@ export class CoachesComponent implements OnInit {
   setViewMode(mode: 'list' | 'add') {
     this.viewMode = mode;
     if (mode === 'add') {
-      this.coachForm.reset({
-        speciality: 'Bodybuilding',
-        experience: 1,
-        tariff: 100
+      this.coachForm.reset({ speciality: 'Bodybuilding', experience: 1, tariff: 100 });
+      this.weekDays.forEach(d => {
+        d.selected = false;
+        d.startTime = (d.key === 'SAT' || d.key === 'SUN') ? '09:00' : '08:00';
+        d.endTime   = (d.key === 'SAT' || d.key === 'SUN') ? '14:00' : '17:00';
       });
     }
   }
 
-  // CREATE COACH ACCOUNT AND PROFILE
+  toggleDay(day: WeekDay) {
+    day.selected = !day.selected;
+  }
+
+  get selectedDays(): WeekDay[] {
+    return this.weekDays.filter(d => d.selected);
+  }
+
   onAddCoachSubmit() {
     if (this.coachForm.invalid) {
       this.coachForm.markAllAsTouched();
       return;
     }
-
     if (!this.clubId) {
       this.showNotification('Club ID not identified. Action cancelled.', 'error');
       return;
@@ -137,13 +164,12 @@ export class CoachesComponent implements OnInit {
     this.isLoading = true;
     const formVal = this.coachForm.value;
 
-    // 1. Register user first (role ROLE_COACH)
     const registerPayload = {
       firstname: formVal.firstname,
-      lastname: formVal.lastname,
-      email: formVal.email,
-      password: formVal.password,
-      role: 'ROLE_COACH'
+      lastname:  formVal.lastname,
+      email:     formVal.email,
+      password:  formVal.password,
+      role:      'ROLE_COACH'
     };
 
     this.authService.register(registerPayload).subscribe({
@@ -155,43 +181,101 @@ export class CoachesComponent implements OnInit {
           return;
         }
 
-        // 2. Create Coach Profile associated with this Club
         const profilePayload = {
-          experience: formVal.experience,
+          experience:     formVal.experience,
           certifications: formVal.certifications,
-          speciality: formVal.speciality,
-          tariff: formVal.tariff,
-          clubId: this.clubId
+          speciality:     formVal.speciality,
+          tariff:         formVal.tariff,
+          clubId:         this.clubId
         };
 
         this.coachService.createCoachProfile(userId, profilePayload).subscribe({
-          next: () => {
-            this.isLoading = false;
-            this.showNotification('Coach account and profile created successfully!', 'success');
-            this.setViewMode('list');
-            this.loadCoaches();
+          next: (createdCoach: any) => {
+            const coachId: number = createdCoach?.id;
+
+            if (coachId && this.selectedDays.length > 0) {
+              this.createAvailabilities(coachId);
+            } else {
+              this.isLoading = false;
+              this.showNotification('Coach account and profile created successfully!', 'success');
+              this.setViewMode('list');
+              this.loadCoaches();
+            }
           },
           error: (profileErr) => {
             this.isLoading = false;
-            this.showNotification('User created, but coach profile setup failed: ' + (profileErr.error?.message || profileErr.message), 'error');
+            this.showNotification(
+              'User created, but coach profile setup failed: ' +
+              (profileErr.error?.message || profileErr.message),
+              'error'
+            );
           }
         });
       },
       error: (registerErr) => {
         this.isLoading = false;
-        this.showNotification('Registration failed: ' + (registerErr.error?.message || registerErr.message), 'error');
+        this.showNotification(
+          'Registration failed: ' + (registerErr.error?.message || registerErr.message),
+          'error'
+        );
       }
     });
   }
 
-  // EDIT ACTIONS
+  private createAvailabilities(coachId: number) {
+    const today  = new Date();
+    const monday = new Date(today);
+    // Next Monday
+    const daysUntilMonday = (1 + 7 - today.getDay()) % 7 || 7;
+    monday.setDate(today.getDate() + daysUntilMonday);
+
+    const dayOffsets: Record<string, number> = {
+      MON: 0, TUE: 1, WED: 2, THU: 3, FRI: 4, SAT: 5, SUN: 6
+    };
+
+    const requests = this.selectedDays.map(day => {
+      const offset  = dayOffsets[day.key] ?? 0;
+      const dayDate = new Date(monday);
+      dayDate.setDate(monday.getDate() + offset);
+
+      const [sh, sm] = day.startTime.split(':').map(Number);
+      const [eh, em] = day.endTime.split(':').map(Number);
+
+      const startDt = new Date(dayDate);
+      startDt.setHours(sh, sm, 0, 0);
+      const endDt = new Date(dayDate);
+      endDt.setHours(eh, em, 0, 0);
+
+      return this.availabilityService.create({
+        coachId,
+        startTime: startDt.toISOString().slice(0, 19),
+        endTime:   endDt.toISOString().slice(0, 19)
+      }).pipe(catchError(() => of(null)));
+    });
+
+    forkJoin(requests).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.showNotification('Coach account, profile and availability created successfully! 🎉', 'success');
+        this.setViewMode('list');
+        this.loadCoaches();
+      },
+      error: () => {
+        this.isLoading = false;
+        this.showNotification('Coach created but some availability slots failed.', 'error');
+        this.setViewMode('list');
+        this.loadCoaches();
+      }
+    });
+  }
+
   openEditModal(coach: CoachProfileResponse) {
     this.coachToEdit = coach;
     this.editForm.patchValue({
-      speciality: coach.speciality,
-      experience: coach.experience,
+      speciality:     coach.speciality,
+      experience:     coach.experience,
       certifications: coach.certifications,
-      tariff: coach.tariff
+      tariff:         coach.tariff
     });
     this.isEditModalOpen = true;
   }
@@ -202,21 +286,18 @@ export class CoachesComponent implements OnInit {
   }
 
   onEditCoachSubmit() {
-    if (this.editForm.invalid || !this.coachToEdit) {
-      return;
-    }
+    if (this.editForm.invalid || !this.coachToEdit) return;
 
     this.isLoading = true;
     const formVal = this.editForm.value;
-    const updatePayload = {
-      experience: formVal.experience,
-      certifications: formVal.certifications,
-      speciality: formVal.speciality,
-      tariff: formVal.tariff,
-      clubId: this.clubId
-    };
 
-    this.coachService.updateCoachProfile(this.coachToEdit.id, updatePayload).subscribe({
+    this.coachService.updateCoachProfile(this.coachToEdit.id, {
+      experience:     formVal.experience,
+      certifications: formVal.certifications,
+      speciality:     formVal.speciality,
+      tariff:         formVal.tariff,
+      clubId:         this.clubId
+    }).subscribe({
       next: () => {
         this.isLoading = false;
         this.closeEditModal();
@@ -230,7 +311,6 @@ export class CoachesComponent implements OnInit {
     });
   }
 
-  // DELETE ACTIONS
   confirmDeleteCoach(coach: CoachProfileResponse) {
     this.coachToDelete = coach;
     this.isDeleteConfirmOpen = true;
@@ -259,7 +339,6 @@ export class CoachesComponent implements OnInit {
     });
   }
 
-  // HELPERS
   showNotification(message: string, type: 'success' | 'error') {
     if (type === 'success') {
       this.successMessage = message;
