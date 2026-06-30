@@ -3,8 +3,14 @@ import {
 } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { ActivatedRoute } from '@angular/router';
+import { forkJoin, of, switchMap } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ClientService } from '../../../../core/services/client.service';
+import { ExerciseService } from '../../../../core/services/exercise.service';
+import { Exercise as ApiExercise } from '../../../../core/models/exercise.model';
+import { ProgrammeResponse, ProgrammeService } from '../../../../core/services/programme.service';
 
-/* ─── Types ─── */
 export type SetStatus = 'pending' | 'active' | 'done';
 
 export interface ExSet {
@@ -36,7 +42,7 @@ export interface WorkoutProgram {
   phase: string;
   week: number;
   name: string;
-  estTime: number; // minutes
+  estTime: number;
   exercises: Exercise[];
 }
 
@@ -48,236 +54,30 @@ export interface WorkoutProgram {
   styleUrl: './workouts.component.scss'
 })
 export class WorkoutsComponent implements OnInit, OnDestroy {
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object,
+    private authService: AuthService,
+    private clientService: ClientService,
+    private programmeService: ProgrammeService,
+    private exerciseService: ExerciseService,
+    private route: ActivatedRoute
+  ) {}
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  activeProgramId = signal<number>(0);
+  isLoading = false;
+  errorMessage = '';
 
-  /* ── Program Selector ── */
-  activeProgramId = signal<number>(1);
+  programs: WorkoutProgram[] = [];
 
-  programs: WorkoutProgram[] = [
-    {
-      id: 1,
-      phase: 'PHASE 2: HYPERTROPHY',
-      week: 3,
-      name: 'Upper/Lower Hypertrophy Split',
-      estTime: 65,
-      exercises: [
-        {
-          id: 101, name: 'Barbell Bench Press',
-          image: 'images/exercises/bench_press.png',
-          muscles: ['Chest', 'Triceps', 'Front Delt'], muscleColor: '#2563EB',
-          targetSets: 4, targetReps: '8–10', rpe: 8,
-          coachNote: '"Keep your shoulder blades retracted. Control the eccentric — 3 seconds down, explode up."',
-          expanded: true, restSeconds: 90, restRemaining: null,
-          sets: [
-            { index: 1, prev: '185 × 10', lbs: 185, reps: 10, status: 'done'    },
-            { index: 2, prev: '185 × 10', lbs: 185, reps: null, status: 'active' },
-            { index: 3, prev: '185 × 8',  lbs: null, reps: null, status: 'pending'},
-            { index: 4, prev: '185 × 8',  lbs: null, reps: null, status: 'pending'},
-          ]
-        },
-        {
-          id: 102, name: 'Barbell Overhead Press',
-          image: 'images/exercises/overhead_press.png',
-          muscles: ['Shoulders', 'Triceps', 'Traps'], muscleColor: '#7C3AED',
-          targetSets: 4, targetReps: '6–8', rpe: 8,
-          coachNote: '"Brace your core like a plank. Do not overarch your lower back — squeeze glutes at lockout."',
-          expanded: false, restSeconds: 120, restRemaining: null,
-          sets: [
-            { index: 1, prev: '115 × 8', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '115 × 8', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '115 × 6', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '115 × 6', lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 103, name: 'Incline Dumbbell Press',
-          image: 'images/exercises/incline_press.png',
-          muscles: ['Upper Chest', 'Front Delt'], muscleColor: '#0891B2',
-          targetSets: 3, targetReps: '10–12', rpe: 7,
-          coachNote: '"Set bench at 30–45°. Drive dumbbells up and slightly inward for maximum upper pec tension."',
-          expanded: false, restSeconds: 75, restRemaining: null,
-          sets: [
-            { index: 1, prev: '70 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '70 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '70 × 10', lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 104, name: 'Lateral Raise',
-          image: 'images/exercises/lateral_raise.png',
-          muscles: ['Lateral Deltoid'], muscleColor: '#059669',
-          targetSets: 4, targetReps: '15–20', rpe: 7,
-          coachNote: '"Lead with your elbows, not hands. Stop at shoulder height to avoid trap engagement."',
-          expanded: false, restSeconds: 60, restRemaining: null,
-          sets: [
-            { index: 1, prev: '20 × 18', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '20 × 17', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '20 × 15', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '20 × 15', lbs: null, reps: null, status: 'pending' },
-          ]
-        }
-      ]
-    },
-    {
-      id: 2,
-      phase: 'PHASE 2: STRENGTH',
-      week: 1,
-      name: 'Lower Body Power Block',
-      estTime: 70,
-      exercises: [
-        {
-          id: 201, name: 'Barbell Back Squat',
-          image: 'images/exercises/squat.png',
-          muscles: ['Quadriceps', 'Glutes', 'Core'], muscleColor: '#7C3AED',
-          targetSets: 5, targetReps: '5', rpe: 9,
-          coachNote: '"Break at hips and knees simultaneously. Drive through the whole foot — heels especially."',
-          expanded: true, restSeconds: 180, restRemaining: null,
-          sets: [
-            { index: 1, prev: '225 × 5', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '225 × 5', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '225 × 5', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '225 × 5', lbs: null, reps: null, status: 'pending' },
-            { index: 5, prev: '225 × 5', lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 202, name: 'Romanian Deadlift',
-          image: 'images/exercises/rdl.png',
-          muscles: ['Hamstrings', 'Glutes', 'Lower Back'], muscleColor: '#DC2626',
-          targetSets: 4, targetReps: '8–10', rpe: 8,
-          coachNote: '"Push hips back as far as possible. Feel the hamstring stretch before driving forward."',
-          expanded: false, restSeconds: 90, restRemaining: null,
-          sets: [
-            { index: 1, prev: '185 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '185 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '185 × 8',  lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '185 × 8',  lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 203, name: 'Leg Press Machine',
-          image: 'images/exercises/leg_press.png',
-          muscles: ['Quads', 'Glutes', 'Hamstrings'], muscleColor: '#D97706',
-          targetSets: 4, targetReps: '12–15', rpe: 7,
-          coachNote: '"Place feet high and wide for glute bias, or low and close for quad dominance."',
-          expanded: false, restSeconds: 90, restRemaining: null,
-          sets: [
-            { index: 1, prev: '360 × 15', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '360 × 14', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '360 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '360 × 12', lbs: null, reps: null, status: 'pending' },
-          ]
-        }
-      ]
-    },
-    {
-      id: 3,
-      phase: 'PHASE 1: VOLUME',
-      week: 2,
-      name: 'Shoulder Sculptor Protocol',
-      estTime: 50,
-      exercises: [
-        {
-          id: 301, name: 'Seated Overhead Press',
-          image: 'images/exercises/overhead_press.png',
-          muscles: ['All Three Delt Heads'], muscleColor: '#0891B2',
-          targetSets: 4, targetReps: '8–10', rpe: 8,
-          coachNote: '"Press to full lockout. Keep elbows slightly in front of body at bottom to protect the joint."',
-          expanded: true, restSeconds: 90, restRemaining: null,
-          sets: [
-            { index: 1, prev: '95 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '95 × 9',  lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '95 × 8',  lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '95 × 8',  lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 302, name: 'Lateral Raise Superset',
-          image: 'images/exercises/lateral_raise.png',
-          muscles: ['Lateral Deltoid'], muscleColor: '#059669',
-          targetSets: 4, targetReps: '15 + 12 + 10', rpe: 8,
-          coachNote: '"Cable lateral first for constant tension, then finish with dumbbells to failure."',
-          expanded: false, restSeconds: 60, restRemaining: null,
-          sets: [
-            { index: 1, prev: '20 × 15', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '20 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '18 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '18 × 10', lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 303, name: 'Arnold Press',
-          image: 'images/exercises/overhead_press.png',
-          muscles: ['Front & Lateral Delt'], muscleColor: '#7C3AED',
-          targetSets: 3, targetReps: '10–12', rpe: 7,
-          coachNote: '"Rotate palms outward as you press — this hits both anterior and lateral delt with wider ROM."',
-          expanded: false, restSeconds: 75, restRemaining: null,
-          sets: [
-            { index: 1, prev: '40 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '40 × 11', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '40 × 10', lbs: null, reps: null, status: 'pending' },
-          ]
-        }
-      ]
-    },
-    {
-      id: 4,
-      phase: 'PHASE 3: VOLUME',
-      week: 4,
-      name: 'Chest Blast — Volume Phase',
-      estTime: 55,
-      exercises: [
-        {
-          id: 401, name: 'Flat Barbell Bench Press',
-          image: 'images/exercises/bench_press.png',
-          muscles: ['Mid Chest', 'Triceps'], muscleColor: '#DC2626',
-          targetSets: 5, targetReps: '8–12', rpe: 8,
-          coachNote: '"3-second eccentric on every rep. Touch chest gently — no bounce. Maximum time under tension."',
-          expanded: true, restSeconds: 90, restRemaining: null,
-          sets: [
-            { index: 1, prev: '185 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '185 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '185 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '185 × 8',  lbs: null, reps: null, status: 'pending' },
-            { index: 5, prev: '185 × 8',  lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 402, name: 'Incline Dumbbell Press',
-          image: 'images/exercises/incline_press.png',
-          muscles: ['Upper Chest', 'Front Delt'], muscleColor: '#2563EB',
-          targetSets: 4, targetReps: '10–15', rpe: 7,
-          coachNote: '"Full ROM — lower until you feel a deep pec stretch, then explode upward with control."',
-          expanded: false, restSeconds: 75, restRemaining: null,
-          sets: [
-            { index: 1, prev: '65 × 14', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '65 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '65 × 10', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '65 × 10', lbs: null, reps: null, status: 'pending' },
-          ]
-        },
-        {
-          id: 403, name: 'Cable Chest Fly',
-          image: 'images/exercises/cable_fly.png',
-          muscles: ['Inner Chest', 'Pec Minor'], muscleColor: '#059669',
-          targetSets: 4, targetReps: '12–15', rpe: 7,
-          coachNote: '"Hug a tree motion — soft bend in elbows. Squeeze hard at center for full pec contraction."',
-          expanded: false, restSeconds: 60, restRemaining: null,
-          sets: [
-            { index: 1, prev: '40 × 15', lbs: null, reps: null, status: 'pending' },
-            { index: 2, prev: '40 × 14', lbs: null, reps: null, status: 'pending' },
-            { index: 3, prev: '40 × 12', lbs: null, reps: null, status: 'pending' },
-            { index: 4, prev: '40 × 12', lbs: null, reps: null, status: 'pending' },
-          ]
-        }
-      ]
-    }
-  ];
-
-  /* ── Reactive state ── */
   get currentProgram(): WorkoutProgram {
-    return this.programs.find(p => p.id === this.activeProgramId()) ?? this.programs[0];
+    return this.programs.find(p => p.id === this.activeProgramId()) ?? this.programs[0] ?? {
+      id: 0,
+      phase: 'PROGRAMME',
+      week: 1,
+      name: 'Aucun programme',
+      estTime: 0,
+      exercises: []
+    };
   }
 
   get completedSets(): number {
@@ -311,7 +111,6 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
     return this.totalSets === 0 ? 0 : Math.round((this.completedSets / this.totalSets) * 100);
   }
 
-  /* ── Session Timer ── */
   sessionSeconds = 0;
   timerRunning = false;
   private timerInterval: any = null;
@@ -334,16 +133,61 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.loadWorkouts();
     if (isPlatformBrowser(this.platformId)) {
       this.toggleTimer();
     }
   }
+
   ngOnDestroy(): void {
     clearInterval(this.timerInterval);
     clearInterval(this.restInterval);
   }
 
-  /* ── Interactions ── */
+  loadWorkouts(): void {
+    const user = this.authService.currentUser();
+    if (!user?.id) {
+      this.errorMessage = 'Client connecte introuvable.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.clientService.getClientByUserId(user.id).pipe(
+      switchMap(client => forkJoin({
+        programmes: this.programmeService.getAll(),
+        exercises: this.exerciseService.getAllExercises()
+      }).pipe(
+        switchMap(result => of({ clientId: client.id, ...result }))
+      ))
+    ).subscribe({
+      next: ({ clientId, programmes, exercises }) => {
+        const assignedProgrammes = programmes
+          .filter(programme => programme.clientIds?.includes(clientId ?? -1));
+        this.programs = assignedProgrammes.map((programme, index) => this.mapProgramme(programme, exercises, index));
+        
+        const queryProgramId = this.route.snapshot.queryParamMap.get('programId');
+        if (queryProgramId) {
+          const id = Number(queryProgramId);
+          if (this.programs.some(p => p.id === id)) {
+            this.activeProgramId.set(id);
+          } else {
+            this.activeProgramId.set(this.programs[0]?.id ?? 0);
+          }
+        } else {
+          this.activeProgramId.set(this.programs[0]?.id ?? 0);
+        }
+        
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Impossible de charger vos workouts depuis l API.';
+        this.isLoading = false;
+      }
+    });
+  }
+
   selectProgram(id: number): void {
     this.activeProgramId.set(id);
     clearInterval(this.restInterval);
@@ -353,11 +197,10 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   markDone(ex: Exercise, set: ExSet): void {
     if (set.status === 'done') { set.status = 'pending'; return; }
-    if (set.lbs === null) set.lbs = parseInt(set.prev) || 0;
-    if (set.reps === null) set.reps = parseInt(set.prev.split('×')[1]) || 0;
+    if (set.lbs === null) set.lbs = parseInt(set.prev, 10) || 0;
+    if (set.reps === null) set.reps = parseInt(set.prev.split('x')[1], 10) || 0;
     set.status = 'done';
 
-    // Activate next set
     const next = ex.sets.find(s => s.status === 'pending');
     if (next) {
       next.status = 'active';
@@ -398,5 +241,70 @@ export class WorkoutsComponent implements OnInit, OnDestroy {
 
   getPhaseName(): string {
     return this.currentProgram.phase.split(':')[0].trim();
+  }
+
+  private mapProgramme(programme: ProgrammeResponse, allExercises: ApiExercise[], index: number): WorkoutProgram {
+    const exerciseIds = programme.exerciseIds ?? [];
+    const exercises = exerciseIds
+      .map(id => allExercises.find(ex => ex.id === id))
+      .filter((ex): ex is ApiExercise => Boolean(ex))
+      .map((exercise, exerciseIndex) => this.mapExercise(exercise, exerciseIndex));
+
+    return {
+      id: programme.id,
+      phase: `PHASE ${index + 1}: ${programme.objective || 'TRAINING'}`.toUpperCase(),
+      week: this.getCurrentWeek(programme),
+      name: programme.title,
+      estTime: Math.round(exercises.reduce((sum, ex) => sum + Math.max(ex.restSeconds / 60, 1) * ex.targetSets, 0) || (programme.duration * 30)),
+      exercises
+    };
+  }
+
+  private mapExercise(exercise: ApiExercise, index: number): Exercise {
+    const targetSets = Math.max(exercise.series || 1, 1);
+    return {
+      id: exercise.id,
+      name: exercise.name,
+      image: exercise.imageUrl || 'images/exercises/bench_press.png',
+      muscles: this.splitMuscles(exercise.musclesGroup),
+      muscleColor: this.getMuscleColor(index),
+      targetSets,
+      targetReps: `${exercise.repetition || 10}`,
+      rpe: this.getRpe(exercise.difficulty),
+      coachNote: exercise.description || 'Respectez la technique et gardez un tempo controle.',
+      expanded: index === 0,
+      restSeconds: this.getRestSeconds(exercise.difficulty),
+      restRemaining: null,
+      sets: Array.from({ length: targetSets }, (_, setIndex) => ({
+        index: setIndex + 1,
+        prev: '-',
+        lbs: null,
+        reps: null,
+        status: setIndex === 0 ? 'active' : 'pending'
+      }))
+    };
+  }
+
+  private getCurrentWeek(programme: ProgrammeResponse): number {
+    if (!programme.createdAt || !programme.duration) return 1;
+    const days = Math.max(0, Date.now() - new Date(programme.createdAt).getTime()) / 86400000;
+    return Math.max(1, Math.min(programme.duration, Math.ceil(days / 7)));
+  }
+
+  private splitMuscles(value?: string): string[] {
+    if (!value) return ['General'];
+    return value.split(/[,&/]/).map(part => part.trim()).filter(Boolean);
+  }
+
+  private getRpe(difficulty: ApiExercise['difficulty']): number {
+    return { EASY: 6, MEDIUM: 7, HARD: 9 }[difficulty] ?? 7;
+  }
+
+  private getRestSeconds(difficulty: ApiExercise['difficulty']): number {
+    return { EASY: 60, MEDIUM: 90, HARD: 150 }[difficulty] ?? 90;
+  }
+
+  private getMuscleColor(index: number): string {
+    return ['#2563EB', '#7C3AED', '#0891B2', '#059669', '#DC2626', '#D97706'][index % 6];
   }
 }

@@ -1,0 +1,230 @@
+<div class="profile-root" *ngIf="!isLoading; else loadingTpl">
+
+  <!-- ══════════════ HERO BANNER ══════════════ -->
+  <div class="hero-banner">
+    <div class="hero-glow hero-glow--blue"></div>
+    <div class="hero-glow hero-glow--purple"></div>
+
+    <!-- Back button -->
+    <a routerLink="/client/dashboard" class="back-btn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+      Dashboard
+    </a>
+
+    <!-- Avatar + Name -->
+    <div class="hero-content">
+      <div class="hero-avatar">
+        <span class="avatar-initials">{{ getUserInitials() }}</span>
+        <div class="avatar-ring"></div>
+        <!-- Muscle icon badge -->
+        <div class="avatar-badge">💪</div>
+      </div>
+      <div class="hero-info">
+        <h1 class="hero-name">{{ getFullName() }}</h1>
+        <p class="hero-email">{{ user?.email }}</p>
+        <div class="hero-tags">
+          <span class="hero-tag hero-tag--plan">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="tag-icon"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            {{ client?.subscriptionPlan ?? 'FREEMIUM' }}
+          </span>
+          <span class="hero-tag hero-tag--level" *ngIf="client?.niveau">
+            🏅 {{ getLevelLabel(client!.niveau) }}
+          </span>
+          <span class="hero-tag hero-tag--goal" *ngIf="client?.but">
+            {{ getGoalIcon(client!.but) }} {{ getGoalLabel(client!.but) }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ STAT CARDS ══════════════ -->
+  <div class="stats-row">
+    <div class="stat-card" *ngFor="let s of stats">
+      <div class="stat-icon-wrap" [style.background]="s.color + '18'" [style.color]="s.color">
+        {{ s.icon }}
+      </div>
+      <div>
+        <div class="stat-value">{{ s.value }}</div>
+        <div class="stat-label">{{ s.label }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════ ALERTS ══════════════ -->
+  <div class="alert alert--success" *ngIf="successMessage">
+    <span>✅ {{ successMessage }}</span>
+  </div>
+  <div class="alert alert--error" *ngIf="errorMessage">
+    <span>⚠️ {{ errorMessage }}</span>
+  </div>
+
+  <!-- ══════════════ MAIN GRID ══════════════ -->
+  <div class="main-grid">
+
+    <!-- ── LEFT: Profile Card ── -->
+    <div class="profile-card">
+      <div class="card-header">
+        <div class="card-header-left">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#2563EB" stroke-width="2" class="card-header-icon">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <h2 class="card-title">Personal Info</h2>
+        </div>
+        <button class="edit-btn" (click)="startEditing()" *ngIf="!isEditing()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          Edit Profile
+        </button>
+      </div>
+
+      <!-- View mode -->
+      <div class="info-grid" *ngIf="!isEditing()">
+        <div class="info-item">
+          <span class="info-label">🎂 Age</span>
+          <span class="info-value">{{ client?.age ?? '—' }} years</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">⚖️ Weight</span>
+          <span class="info-value">{{ client?.poids ?? '—' }} kg</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">📏 Height</span>
+          <span class="info-value">{{ client?.taille ?? '—' }} cm</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🎯 Goal</span>
+          <span class="info-value">{{ getGoalIcon(client?.but ?? '') }} {{ getGoalLabel(client?.but ?? '') }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">🏅 Level</span>
+          <span class="info-value">{{ getLevelLabel(client?.niveau ?? '') }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">📊 BMI (IMC)</span>
+          <span class="info-value info-value--bmi">{{ (client?.imc ?? 0).toFixed(1) }}</span>
+        </div>
+      </div>
+
+      <!-- Edit mode -->
+      <form class="edit-form" *ngIf="isEditing()" (ngSubmit)="saveProfile()">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">🎂 Age</label>
+            <input type="number" class="form-input" [(ngModel)]="form.age" name="age" min="10" max="100">
+          </div>
+          <div class="form-group">
+            <label class="form-label">⚖️ Weight (kg)</label>
+            <input type="number" class="form-input" [(ngModel)]="form.poids" name="poids" min="30" max="300" step="0.1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">📏 Height (cm)</label>
+            <input type="number" class="form-input" [(ngModel)]="form.taille" name="taille" min="100" max="250">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">🎯 Fitness Goal</label>
+          <div class="goal-grid">
+            <button type="button" *ngFor="let g of goals"
+              class="goal-btn" [class.goal-btn--active]="form.but === g.value"
+              (click)="form.but = g.value">
+              <span class="goal-emoji">{{ g.icon }}</span>
+              <span class="goal-name">{{ g.label }}</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">🏅 Fitness Level</label>
+          <div class="level-row">
+            <button type="button" *ngFor="let l of levels"
+              class="level-btn" [class.level-btn--active]="form.niveau === l.value"
+              (click)="form.niveau = l.value">
+              {{ l.label }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="cancelEditing()">Cancel</button>
+          <button type="submit" class="save-btn" [disabled]="isSaving">
+            {{ isSaving ? 'Saving…' : '✅ Save Changes' }}
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- ── RIGHT: Activity & Motivation ── -->
+    <div class="right-col">
+
+      <!-- Motivation card -->
+      <div class="moti-card">
+        <div class="moti-header">
+          <span class="moti-icon">🏋️</span>
+          <h3 class="moti-title">Keep Going!</h3>
+        </div>
+        <p class="moti-text">
+          Every rep counts. Every session matters. Your body is a reflection of your dedication. Push past your limits and become the strongest version of yourself.
+        </p>
+        <div class="moti-bar-wrap">
+          <div class="moti-bar-label">
+            <span>Weekly Goal Progress</span>
+            <span class="moti-pct">68%</span>
+          </div>
+          <div class="moti-bar">
+            <div class="moti-bar-fill" style="width: 68%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick tips -->
+      <div class="tips-card">
+        <div class="tips-title">⚡ Quick Tips for {{ getLevelLabel(client?.niveau ?? 'DEBUTANT') }}s</div>
+        <ul class="tips-list">
+          <li *ngIf="(client?.niveau ?? '') === 'DEBUTANT'">Start with compound movements: squat, bench, deadlift</li>
+          <li *ngIf="(client?.niveau ?? '') === 'DEBUTANT'">Rest 48–72h between training the same muscle group</li>
+          <li *ngIf="(client?.niveau ?? '') === 'INTERMEDIAIRE'">Increase load by 2.5–5% each week</li>
+          <li *ngIf="(client?.niveau ?? '') === 'INTERMEDIAIRE'">Track your lifts and aim for progressive overload</li>
+          <li *ngIf="(client?.niveau ?? '') === 'AVANCE'">Periodization is key — alternate hypertrophy & strength blocks</li>
+          <li *ngIf="(client?.niveau ?? '') === 'AVANCE'">Optimize recovery: sleep 8h, manage stress, deload every 4–6 weeks</li>
+          <li>Stay hydrated — aim for 35ml/kg of body weight daily 💧</li>
+          <li>Protein intake: {{ ((client?.poids ?? 70) * 2).toFixed(0) }}g/day based on your weight 🥩</li>
+        </ul>
+      </div>
+
+      <!-- Muscles card -->
+      <div class="muscles-card">
+        <div class="muscles-title">🔥 Focus Muscles</div>
+        <div class="muscles-grid">
+          <div class="muscle-chip">
+            <span>🦵</span><span>Legs</span>
+          </div>
+          <div class="muscle-chip">
+            <span>💪</span><span>Arms</span>
+          </div>
+          <div class="muscle-chip">
+            <span>🫀</span><span>Chest</span>
+          </div>
+          <div class="muscle-chip">
+            <span>🏋️</span><span>Back</span>
+          </div>
+          <div class="muscle-chip">
+            <span>🔺</span><span>Shoulders</span>
+          </div>
+          <div class="muscle-chip">
+            <span>🏃</span><span>Core</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Loading template -->
+<ng-template #loadingTpl>
+  <div class="loading-wrap">
+    <div class="spinner"></div>
+    <p>Loading your profile…</p>
+  </div>
+</ng-template>

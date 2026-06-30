@@ -47,6 +47,34 @@ public class ProgressService {
     }
 
     @Transactional
+    public ProgressResponse calculate(Long clientId) {
+        ClientProfile client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new RuntimeException("Client not found"));
+
+        if (client.getPoids() == null || client.getTaille() == null || client.getAge() <= 0) {
+            throw new RuntimeException("Client profile is missing weight, height, or age for calculation");
+        }
+
+        double imc = client.calculateIMC();
+        
+        // Approximate Fat Mass calculation (Deurenberg formula generic average)
+        double fatPercentage = (1.20 * imc) + (0.23 * client.getAge()) - 10.8;
+        if (fatPercentage < 5) fatPercentage = 5;
+        
+        double fatMasse = client.getPoids() * (fatPercentage / 100.0);
+        double leanBodyMass = client.getPoids() - fatMasse;
+        double muscleMasse = leanBodyMass * 0.50; // Muscle mass is roughly 50% of lean mass
+
+        Progress progress = new Progress();
+        progress.setClient(client);
+        progress.setFatMasse(Math.round(fatMasse * 100.0) / 100.0);
+        progress.setMuscleMasse(Math.round(muscleMasse * 100.0) / 100.0);
+        progress.setPerformance("Calculated from IMC");
+
+        return progressMapper.toResponse(progressRepository.save(progress));
+    }
+
+    @Transactional
     public ProgressResponse update(Long id, ProgressRequest request) {
         Progress progress = progressRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Progress not found"));

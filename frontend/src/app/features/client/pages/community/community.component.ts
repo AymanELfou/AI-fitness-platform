@@ -211,6 +211,31 @@ export class ClientCommunityComponent implements OnInit {
         });
 
         this.posts = mappedPosts.sort((a, b) => b.id - a.id);
+        
+        // Derive top members from posts if club fallback didn't find any
+        if (this.topMembers.length === 0 && this.posts.length > 0) {
+          const membersMap = new Map<string, any>();
+          this.posts.forEach(p => {
+            if (!membersMap.has(p.authorName)) {
+              membersMap.set(p.authorName, {
+                name: p.authorName,
+                initial: p.authorInitial,
+                color: p.authorColor,
+                role: p.role,
+                posts: 1,
+                likes: p.likes
+              });
+            } else {
+              const m = membersMap.get(p.authorName);
+              m.posts += 1;
+              m.likes += p.likes;
+            }
+          });
+          this.topMembers = Array.from(membersMap.values())
+            .sort((a, b) => b.posts - a.posts)
+            .slice(0, 5);
+        }
+
         this.isLoading = false;
       },
       error: (err) => {
