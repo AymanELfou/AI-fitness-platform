@@ -18,7 +18,7 @@ public class AvailabilityController {
     private final AvailabilityService service;
 
     @PostMapping
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<AvailabilityResponse> create(
             @RequestBody AvailabilityRequest request) {
         return ResponseEntity.ok(service.create(request));
@@ -37,7 +37,7 @@ public class AvailabilityController {
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<AvailabilityResponse> update(
             @PathVariable Long id,
             @RequestBody AvailabilityRequest request) {
@@ -45,7 +45,7 @@ public class AvailabilityController {
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

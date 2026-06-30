@@ -88,7 +88,7 @@ public class CoachProfileService {
         coach.setExperience(request.getExperience());
         coach.setCertifications(request.getCertifications());
         coach.setSpeciality(request.getSpeciality());
-        coach.setTariff(request.getTariff());
+        coach.setTarif(request.getTariff());
 
         CoachProfile updated = coachRepository.save(coach);
 

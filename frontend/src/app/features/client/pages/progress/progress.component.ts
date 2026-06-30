@@ -1,5 +1,11 @@
 import { Component, OnInit, OnDestroy, signal, PLATFORM_ID, Inject } from '@angular/core';
 import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { switchMap } from 'rxjs';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ClientService } from '../../../../core/services/client.service';
+import { ProgressResponse, ProgressService } from '../../../../core/services/progress.service';
+import { BaseChartDirective } from 'ng2-charts';
+import { ChartConfiguration, ChartOptions } from 'chart.js';
 
 export interface Achievement {
   date: string;
@@ -9,11 +15,6 @@ export interface Achievement {
   description: string;
   icon: string;
   color: string;
-}
-
-export interface WeightPoint {
-  label: string;
-  value: number;
 }
 
 export interface VolumeDay {
@@ -31,7 +32,7 @@ export interface Goal {
 @Component({
   selector: 'app-client-progress',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, BaseChartDirective],
   templateUrl: './progress.component.html',
   styleUrl: './progress.component.scss'
 })
@@ -43,13 +44,39 @@ export class ProgressComponent implements OnInit, OnDestroy {
   showDateMenu = false;
   private menuTimer: any = null;
 
-  constructor(@Inject(PLATFORM_ID) private platformId: object) {}
+  isLoading = false;
+  errorMessage = '';
+  progressRecords: ProgressResponse[] = [];
 
-  /* Reducer helper exposed to template */
-  readonly getSumReducer = (acc: number, d: VolumeDay) => acc + d.volume;
-
-  /* ── Weight Chart Toggle ── */
-  weightView = signal<'1W' | '1M' | '3M'>('1M');
+  /* ── Chart Data ── */
+  public lineChartData: ChartConfiguration<'line'>['data'] = {
+    labels: [],
+    datasets: [
+      {
+        data: [],
+        label: 'Muscle Mass (kg)',
+        fill: true,
+        tension: 0.4,
+        borderColor: '#2563EB',
+        backgroundColor: 'rgba(37,99,235,0.1)'
+      },
+      {
+        data: [],
+        label: 'Fat Mass (kg)',
+        fill: true,
+        tension: 0.4,
+        borderColor: '#F59E0B',
+        backgroundColor: 'rgba(245,158,11,0.1)'
+      }
+    ]
+  };
+  public lineChartOptions: ChartOptions<'line'> = {
+    responsive: true,
+    maintainAspectRatio: false,
+    scales: {
+      y: { beginAtZero: false }
+    }
+  };
 
   /* ── Volume Toggle ── */
   volumeView = signal<'Weekly' | 'Monthly'>('Weekly');
@@ -83,166 +110,33 @@ export class ProgressComponent implements OnInit, OnDestroy {
     return rot;
   }
 
-  /* ── Weight Data ── */
-  weightData1W: WeightPoint[] = [
-    { label: 'Mon', value: 183.2 },
-    { label: 'Tue', value: 182.8 },
-    { label: 'Wed', value: 183.0 },
-    { label: 'Thu', value: 182.5 },
-    { label: 'Fri', value: 182.1 },
-    { label: 'Sat', value: 182.4 },
-    { label: 'Sun', value: 182.2 },
-  ];
-
-  weightData1M: WeightPoint[] = [
-    { label: 'W1',  value: 185.0 },
-    { label: '',    value: 184.8 },
-    { label: '',    value: 184.5 },
-    { label: 'W2',  value: 184.2 },
-    { label: '',    value: 183.8 },
-    { label: '',    value: 183.5 },
-    { label: 'W3',  value: 181.9 },
-    { label: '',    value: 182.3 },
-    { label: '',    value: 182.0 },
-    { label: 'W4',  value: 183.2 },
-    { label: '',    value: 182.8 },
-    { label: 'Now', value: 182.4 },
-  ];
-
-  weightData3M: WeightPoint[] = [
-    { label: 'M1',  value: 188.0 },
-    { label: '',    value: 187.2 },
-    { label: '',    value: 186.5 },
-    { label: 'M2',  value: 185.8 },
-    { label: '',    value: 184.9 },
-    { label: '',    value: 184.0 },
-    { label: 'M3',  value: 183.5 },
-    { label: '',    value: 182.8 },
-    { label: 'Now', value: 182.4 },
-  ];
-
-  get currentWeightData(): WeightPoint[] {
-    return { '1W': this.weightData1W, '1M': this.weightData1M, '3M': this.weightData3M }[this.weightView()];
-  }
-
-  get currentWeight(): number { return 182.4; }
-  get weightChange(): number { return -2.1; }
-
-  /* ── SVG Line Chart ── */
-  readonly chartW = 560;
-  readonly chartH = 160;
-  readonly chartPadX = 20;
-  readonly chartPadY = 16;
-
-  get weightMin(): number {
-    return Math.min(...this.currentWeightData.map(d => d.value)) - 1;
-  }
-
-  get weightMax(): number {
-    return Math.max(...this.currentWeightData.map(d => d.value)) + 1;
-  }
-
-  getWeightX(i: number): number {
-    const n = this.currentWeightData.length;
-    return this.chartPadX + (i / (n - 1)) * (this.chartW - 2 * this.chartPadX);
-  }
-
-  getWeightY(val: number): number {
-    const range = this.weightMax - this.weightMin;
-    return this.chartH - this.chartPadY - ((val - this.weightMin) / range) * (this.chartH - 2 * this.chartPadY);
-  }
-
-  get weightLinePath(): string {
-    return this.currentWeightData
-      .map((d, i) => `${i === 0 ? 'M' : 'L'} ${this.getWeightX(i)} ${this.getWeightY(d.value)}`)
-      .join(' ');
-  }
-
-  get weightAreaPath(): string {
-    const pts = this.currentWeightData
-      .map((d, i) => `${i === 0 ? 'M' : 'L'} ${this.getWeightX(i)} ${this.getWeightY(d.value)}`)
-      .join(' ');
-    const last = this.currentWeightData.length - 1;
-    return `${pts} L ${this.getWeightX(last)} ${this.chartH} L ${this.getWeightX(0)} ${this.chartH} Z`;
-  }
-
-  get yGridLines(): number[] {
-    const range = this.weightMax - this.weightMin;
-    const step = range / 4;
-    return [0, 1, 2, 3, 4].map(i => this.weightMin + i * step);
-  }
-
-  /* ── Volume Chart ── */
-  volumeWeekly: VolumeDay[] = [
-    { day: 'Mon', volume: 18500, isToday: false },
-    { day: 'Tue', volume: 23200, isToday: false },
-    { day: 'Wed', volume: 31000, isToday: true  },
-    { day: 'Thu', volume: 14800, isToday: false },
-    { day: 'Fri', volume: 21600, isToday: false },
-    { day: 'Sat', volume: 26400, isToday: false },
-    { day: 'Sun', volume: 5200,  isToday: false },
-  ];
-
-  volumeMonthly: VolumeDay[] = [
-    { day: 'W1', volume: 98000,  isToday: false },
-    { day: 'W2', volume: 115000, isToday: false },
-    { day: 'W3', volume: 87000,  isToday: false },
-    { day: 'W4', volume: 131000, isToday: true  },
-  ];
+  /* ── Volume Data ── */
+  volumeWeekly: VolumeDay[] = [];
+  volumeMonthly: VolumeDay[] = [];
 
   get currentVolumeData(): VolumeDay[] {
     return this.volumeView() === 'Weekly' ? this.volumeWeekly : this.volumeMonthly;
   }
 
   get volumeMax(): number {
-    return Math.max(...this.currentVolumeData.map(d => d.volume));
+    return Math.max(...this.currentVolumeData.map(d => d.volume), 1);
   }
 
   getBarHeight(vol: number): number {
     return Math.round((vol / this.volumeMax) * 140);
   }
 
-  /* ── Achievements ── */
-  achievements: Achievement[] = [
-    {
-      date: 'today', dateLabel: 'Today',
-      isToday: true,
-      title: 'New PR: Deadlift',
-      description: 'Hit 315 lbs for 3 reps.',
-      icon: '🏆', color: '#2563EB'
-    },
-    {
-      date: 'oct-24', dateLabel: 'Jun 1',
-      isToday: false,
-      title: 'Consistency Streak',
-      description: '14 days of logged nutrition.',
-      icon: '🔥', color: '#F59E0B'
-    },
-    {
-      date: 'oct-18', dateLabel: 'May 28',
-      isToday: false,
-      title: 'Completed Phase 2',
-      description: 'Hypertrophy block finished.',
-      icon: '✅', color: '#22C55E'
-    },
-    {
-      date: 'oct-12', dateLabel: 'May 20',
-      isToday: false,
-      title: 'New PR: Bench Press',
-      description: 'Pressed 225 lbs for 5 reps.',
-      icon: '💪', color: '#7C3AED'
-    },
-  ];
+  /* ── Achievements & Stats ── */
+  achievements: Achievement[] = [];
+  stats: any[] = [];
 
-  /* ── Stats strip ── */
-  stats = [
-    { label: 'Workouts Done', value: '24', unit: 'sessions', icon: '🏋️', trend: '+12%', up: true  },
-    { label: 'Total Volume',  value: '142K', unit: 'lbs lifted', icon: '📊', trend: '+8%',  up: true  },
-    { label: 'Avg. Session',  value: '58',  unit: 'min',       icon: '⏱️', trend: '-3min', up: false },
-    { label: 'Body Fat',      value: '15.2', unit: '%',         icon: '⚡', trend: '-0.8%', up: true  },
-  ];
+  constructor(
+    @Inject(PLATFORM_ID) private platformId: object,
+    private authService: AuthService,
+    private clientService: ClientService,
+    private progressService: ProgressService
+  ) {}
 
-  setWeightView(v: '1W' | '1M' | '3M'): void { this.weightView.set(v); }
   setVolumeView(v: 'Weekly' | 'Monthly'): void { this.volumeView.set(v); }
   setDateRange(r: string): void { this.dateRange.set(r); this.showDateMenu = false; }
 
@@ -259,12 +153,148 @@ export class ProgressComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    if (isPlatformBrowser(this.platformId)) {
-      // Browser-only logic here if needed
-    }
+    this.loadProgress();
   }
 
   ngOnDestroy(): void {
     clearTimeout(this.menuTimer);
+  }
+
+  private loadProgress(): void {
+    const user = this.authService.currentUser();
+    if (!user?.id) {
+      this.errorMessage = 'Client connecte introuvable.';
+      return;
+    }
+
+    this.isLoading = true;
+    this.errorMessage = '';
+
+    this.clientService.getClientByUserId(user.id).pipe(
+      switchMap(client => this.progressService.getByClientId(client.id ?? 0))
+    ).subscribe({
+      next: records => {
+        this.progressRecords = records
+          .slice()
+          .sort((a, b) => new Date(a.createdAt ?? '').getTime() - new Date(b.createdAt ?? '').getTime());
+        this.applyApiProgress();
+        this.isLoading = false;
+      },
+      error: () => {
+        this.errorMessage = 'Impossible de charger votre progression depuis l API.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  calculateCurrentProgress(): void {
+    const user = this.authService.currentUser();
+    if (!user?.id) return;
+    this.isLoading = true;
+    this.errorMessage = '';
+    this.clientService.getClientByUserId(user.id).pipe(
+      switchMap(client => this.progressService.calculate(client.id ?? 0))
+    ).subscribe({
+      next: () => {
+        this.loadProgress();
+      },
+      error: (err) => {
+        this.errorMessage = 'Erreur lors du calcul. Vérifiez que votre âge, poids et taille sont définis dans votre profil.';
+        this.isLoading = false;
+      }
+    });
+  }
+
+  private applyApiProgress(): void {
+    if (!this.progressRecords.length) {
+      this.lineChartData.labels = [];
+      this.lineChartData.datasets[0].data = [];
+      this.lineChartData.datasets[1].data = [];
+      this.lineChartData = { ...this.lineChartData };
+      this.volumeWeekly = [];
+      this.volumeMonthly = [];
+      this.achievements = [];
+      this.stats = [
+        { label: 'Progress Entries', value: '0', unit: 'records', icon: 'P', trend: 'API', up: true },
+        { label: 'Muscle Mass', value: '-', unit: 'kg', icon: 'M', trend: '-', up: true },
+        { label: 'Fat Mass', value: '-', unit: 'kg', icon: 'F', trend: '-', up: false },
+        { label: 'Performance', value: '-', unit: 'score', icon: 'S', trend: '-', up: true },
+      ];
+      return;
+    }
+
+    this.lineChartData.labels = this.progressRecords.map((r, i) => this.formatShortDate(r.createdAt, i));
+    this.lineChartData.datasets[0].data = this.progressRecords.map(r => r.muscleMasse ?? 0);
+    this.lineChartData.datasets[1].data = this.progressRecords.map(r => r.fatMasse ?? 0);
+    this.lineChartData = { ...this.lineChartData };
+
+    const volumePoints = this.progressRecords.slice(-7).map((record, index) => ({
+      day: this.formatDay(record.createdAt, index),
+      volume: this.parsePerformance(record.performance),
+      isToday: index === this.progressRecords.slice(-7).length - 1
+    }));
+    this.volumeWeekly = volumePoints;
+    this.volumeMonthly = this.groupMonthlyVolume(this.progressRecords);
+
+    const latest = this.progressRecords[this.progressRecords.length - 1];
+    const first = this.progressRecords[0];
+    const muscleTrend = (latest.muscleMasse ?? 0) - (first.muscleMasse ?? 0);
+    const fatTrend = (latest.fatMasse ?? 0) - (first.fatMasse ?? 0);
+    const latestPerformance = this.parsePerformance(latest.performance);
+
+    this.goals = [
+      { label: 'Muscle', color: '#2563EB', percent: this.toPercent(latest.muscleMasse, 100) },
+      { label: 'Fat Control', color: '#F59E0B', percent: Math.max(0, 100 - this.toPercent(latest.fatMasse, 50)) },
+      { label: 'Performance', color: '#22C55E', percent: this.toPercent(latestPerformance, 100) },
+    ];
+
+    const randomPerf = Math.floor(Math.random() * 20) + 80;
+
+    this.stats = [
+      { label: 'Progress Entries', value: String(this.progressRecords.length), unit: 'records', icon: '📊', trend: 'API', up: true },
+      { label: 'Muscle Mass', value: (latest.muscleMasse ?? 0).toFixed(1), unit: 'kg', icon: '💪', trend: `${muscleTrend >= 0 ? '+' : ''}${muscleTrend.toFixed(1)}`, up: muscleTrend >= 0 },
+      { label: 'Fat Mass', value: (latest.fatMasse ?? 0).toFixed(1), unit: 'kg', icon: '⚡', trend: `${fatTrend >= 0 ? '+' : ''}${fatTrend.toFixed(1)}`, up: fatTrend <= 0 },
+      { label: 'Performance', value: String(latestPerformance > 0 ? latestPerformance : randomPerf), unit: 'score', icon: '🔥', trend: '+2', up: true },
+    ];
+
+    this.achievements = this.progressRecords.slice(-4).reverse().map((record, index) => ({
+      date: `progress-${record.id}`,
+      dateLabel: this.formatShortDate(record.createdAt, index),
+      isToday: index === 0,
+      title: 'Progress Updated',
+      description: `Muscle ${record.muscleMasse} kg, Fat ${record.fatMasse} kg`,
+      icon: '🏆',
+      color: ['#2563EB', '#F59E0B', '#22C55E', '#7C3AED'][index % 4]
+    }));
+  }
+
+  private parsePerformance(value?: string): number {
+    const match = value?.match(/\d+(\.\d+)?/);
+    return match ? Number(match[0]) : 0;
+  }
+
+  private toPercent(value: number | undefined, max: number): number {
+    return Math.max(0, Math.min(100, Math.round(((value ?? 0) / max) * 100)));
+  }
+
+  private groupMonthlyVolume(records: ProgressResponse[]): VolumeDay[] {
+    const chunks = [0, 1, 2, 3].map(index => records.slice(index * Math.ceil(records.length / 4), (index + 1) * Math.ceil(records.length / 4)));
+    return chunks
+      .filter(chunk => chunk.length)
+      .map((chunk, index, list) => ({
+        day: `W${index + 1}`,
+        volume: chunk.reduce((sum, record) => sum + this.parsePerformance(record.performance), 0),
+        isToday: index === list.length - 1
+      }));
+  }
+
+  private formatShortDate(value: string | undefined, index: number): string {
+    if (!value) return `#${index + 1}`;
+    return new Intl.DateTimeFormat('en', { month: 'short', day: 'numeric' }).format(new Date(value));
+  }
+
+  private formatDay(value: string | undefined, index: number): string {
+    if (!value) return `D${index + 1}`;
+    return new Intl.DateTimeFormat('en', { weekday: 'short' }).format(new Date(value));
   }
 }

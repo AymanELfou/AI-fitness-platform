@@ -47,7 +47,11 @@
   </div>
 
   <!-- ══════════════ MAIN 2-COL LAYOUT ══════════════ -->
-  <div class="wp-body">
+  <div class="client-alert client-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="client-loading" *ngIf="isLoading">Chargement des workouts...</div>
+  <div class="client-empty" *ngIf="!isLoading && programs.length === 0">Aucun workout assigne pour le moment.</div>
+
+  <div class="wp-body" *ngIf="!isLoading && programs.length > 0">
 
     <!-- ── LEFT: Exercise List ── -->
     <div class="ex-col">

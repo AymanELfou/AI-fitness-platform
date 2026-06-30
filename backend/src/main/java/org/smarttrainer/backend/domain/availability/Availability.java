@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class Availability extends BaseEntity {
 
-    // 🔗 Coach
+    // Coach
     @ManyToOne
     @JoinColumn(name = "coach_id", nullable = false)
     private CoachProfile coach;

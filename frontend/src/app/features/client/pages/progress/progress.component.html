@@ -7,30 +7,43 @@
       <p class="pp-subtitle">Track your transformation and performance metrics.</p>
     </div>
 
-    <!-- Date Picker -->
-    <div class="date-picker" (click)="showDateMenu = !showDateMenu">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cal-icon">
-        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
-        <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-      </svg>
-      <span class="date-range-label">{{ dateRange() }}</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="caret-icon">
-        <polyline points="6 9 12 15 18 9"/>
-      </svg>
-      <!-- Dropdown -->
-      <div class="date-dropdown" *ngIf="showDateMenu" (click)="$event.stopPropagation()">
-        <button *ngFor="let opt of dateOptions"
-          class="date-opt"
-          [class.date-opt--active]="dateRange() === opt"
-          (click)="setDateRange(opt)">
-          {{ opt }}
-        </button>
+    <div style="display: flex; gap: 16px; align-items: center;">
+      <!-- Calculate Button -->
+      <button style="padding: 8px 16px; background: #2563EB; color: white; border: none; border-radius: 8px; font-weight: 500; cursor: pointer; transition: background 0.2s;" 
+              (click)="calculateCurrentProgress()" [disabled]="isLoading"
+              onmouseover="this.style.background='#1D4ED8'" onmouseout="this.style.background='#2563EB'">
+        {{ isLoading ? 'Calcul en cours...' : 'Mettre à jour mon progrès' }}
+      </button>
+
+      <!-- Date Picker -->
+      <div class="date-picker" (click)="showDateMenu = !showDateMenu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="cal-icon">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/>
+          <line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        <span class="date-range-label">{{ dateRange() }}</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="caret-icon">
+          <polyline points="6 9 12 15 18 9"/>
+        </svg>
+        <!-- Dropdown -->
+        <div class="date-dropdown" *ngIf="showDateMenu" (click)="$event.stopPropagation()">
+          <button *ngFor="let opt of dateOptions"
+            class="date-opt"
+            [class.date-opt--active]="dateRange() === opt"
+            (click)="setDateRange(opt)">
+            {{ opt }}
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
   <!-- ══════════════ STAT STRIP ══════════════ -->
-  <div class="stat-strip">
+  <div class="client-alert client-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="client-loading" *ngIf="isLoading">Chargement de la progression...</div>
+  <div class="client-empty" *ngIf="!isLoading && progressRecords.length === 0">Aucune progression enregistree pour le moment.</div>
+
+  <div class="stat-strip" *ngIf="!isLoading">
     <div class="stat-item" *ngFor="let s of stats">
       <div class="stat-item__left">
         <span class="stat-emoji">{{ s.icon }}</span>
@@ -50,7 +63,7 @@
   </div>
 
   <!-- ══════════════ ROW 1: Goals + Weight Trend ══════════════ -->
-  <div class="grid-row grid-row--top">
+  <div class="grid-row grid-row--top" *ngIf="!isLoading && progressRecords.length > 0">
 
     <!-- ── Goals Donut Card ── -->
     <div class="card card--goals">
@@ -98,76 +111,28 @@
       </div>
     </div>
 
-    <!-- ── Body Weight Trend ── -->
+    <!-- ── Body Composition Trend ── -->
     <div class="card card--weight">
       <div class="weight-card-head">
         <div>
-          <div class="card-section-title">Body Weight Trend</div>
-          <div class="weight-row">
-            <span class="weight-value">{{ currentWeight }}</span>
-            <span class="weight-unit">lbs</span>
-            <span class="weight-change" [class.weight-change--down]="weightChange < 0">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="change-arrow">
-                <polyline *ngIf="weightChange < 0" points="18 15 12 9 6 15"/>
-                <polyline *ngIf="weightChange >= 0" points="6 9 12 15 18 9"/>
-              </svg>
-              {{ weightChange < 0 ? weightChange : '+' + weightChange }} lbs
-            </span>
-          </div>
-        </div>
-        <div class="view-toggle">
-          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '1W'" (click)="setWeightView('1W')">1W</button>
-          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '1M'" (click)="setWeightView('1M')">1M</button>
-          <button class="toggle-btn" [class.toggle-btn--active]="weightView() === '3M'" (click)="setWeightView('3M')">3M</button>
+          <div class="card-section-title">Body Composition Trend</div>
         </div>
       </div>
 
-      <!-- SVG Line Chart -->
-      <div class="chart-wrap">
-        <svg [attr.viewBox]="'0 0 ' + chartW + ' ' + chartH" class="line-chart" preserveAspectRatio="none">
-          <defs>
-            <linearGradient id="weightGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"   stop-color="#2563EB" stop-opacity="0.18"/>
-              <stop offset="100%" stop-color="#2563EB" stop-opacity="0"/>
-            </linearGradient>
-          </defs>
-
-          <!-- Y-axis grid lines -->
-          <line *ngFor="let y of yGridLines"
-            [attr.x1]="chartPadX" [attr.x2]="chartW - chartPadX"
-            [attr.y1]="getWeightY(y)" [attr.y2]="getWeightY(y)"
-            stroke="#E2E8F0" stroke-width="1"/>
-
-          <!-- Area fill -->
-          <path [attr.d]="weightAreaPath" fill="url(#weightGrad)"/>
-
-          <!-- Line -->
-          <path [attr.d]="weightLinePath"
-            fill="none" stroke="#2563EB" stroke-width="2.5"
-            stroke-linecap="round" stroke-linejoin="round"/>
-
-          <!-- Data points -->
-          <g *ngFor="let d of currentWeightData; let i = index">
-            <circle [attr.cx]="getWeightX(i)" [attr.cy]="getWeightY(d.value)"
-              r="5" fill="white" stroke="#2563EB" stroke-width="2.5"/>
-          </g>
-        </svg>
-
-        <!-- X-axis labels -->
-        <div class="x-axis">
-          <span *ngFor="let d of currentWeightData"
-            class="x-label"
-            [class.x-label--hidden]="!d.label">
-            {{ d.label }}
-          </span>
-        </div>
+      <!-- ng2-charts Canvas -->
+      <div class="chart-wrap" style="height: 250px; position: relative;">
+        <canvas baseChart
+          [data]="lineChartData"
+          [options]="lineChartOptions"
+          [type]="'line'">
+        </canvas>
       </div>
     </div>
 
   </div>
 
   <!-- ══════════════ ROW 2: Volume Bar + Achievements ══════════════ -->
-  <div class="grid-row grid-row--bottom">
+  <div class="grid-row grid-row--bottom" *ngIf="!isLoading && progressRecords.length > 0">
 
     <!-- ── Volume Output ── -->
     <div class="card card--volume">
@@ -196,12 +161,12 @@
       <div class="vol-summary">
         <div class="vol-sum-item">
           <span class="vol-sum-val">{{ (volumeMax / 1000).toFixed(0) }}K</span>
-          <span class="vol-sum-lbl">Peak (lbs)</span>
+          <span class="vol-sum-lbl">Peak score</span>
         </div>
         <div class="vol-sum-sep"></div>
         <div class="vol-sum-item">
           <span class="vol-sum-val">{{ currentVolumeTotal }}</span>
-          <span class="vol-sum-lbl">Total (lbs)</span>
+          <span class="vol-sum-lbl">Total score</span>
         </div>
         <div class="vol-sum-sep"></div>
         <div class="vol-sum-item">

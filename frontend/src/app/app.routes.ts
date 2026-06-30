@@ -56,6 +56,7 @@ import { WorkoutsComponent as ClientWorkoutsComponent } from './features/client/
 import { ProgressComponent as ClientProgressComponent } from './features/client/pages/progress/progress.component';
 import { ClientCommunityComponent } from './features/client/pages/community/community.component';
 import { ClientChatComponent } from './features/client/pages/chat/chat.component';
+import { ClientProfileComponent } from './features/client/pages/profile/profile.component';
 
 import { authGuard } from './core/guards/auth.guard';
 
@@ -133,6 +134,7 @@ export const routes: Routes = [
       { path: 'progress',   component: ClientProgressComponent  },
       { path: 'community',  component: ClientCommunityComponent },
       { path: 'chat',       component: ClientChatComponent      },
+      { path: 'profile',    component: ClientProfileComponent   },
       { path: '',           redirectTo: 'dashboard', pathMatch: 'full' }
     ]
   },

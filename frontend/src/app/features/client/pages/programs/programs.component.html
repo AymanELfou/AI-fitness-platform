@@ -55,7 +55,10 @@
   </div>
 
   <!-- ══════════════ PROGRAMS GRID ══════════════ -->
-  <div class="programs-grid">
+  <div class="client-alert client-alert--error" *ngIf="errorMessage">{{ errorMessage }}</div>
+  <div class="client-loading" *ngIf="isLoading">Chargement des programmes...</div>
+
+  <div class="programs-grid" *ngIf="!isLoading">
     <div
       *ngFor="let p of filteredPrograms"
       class="program-card"
@@ -124,12 +127,11 @@
           </div>
         </div>
 
-        <!-- Footer: tags + CTA -->
         <div class="card-footer">
           <div class="tags">
             <span *ngFor="let tag of p.tags" class="tag">{{ tag }}</span>
           </div>
-          <button class="action-btn" [class.btn--completed]="p.status === 'COMPLETED'" [class.btn--upcoming]="p.status === 'UPCOMING'">
+          <button class="action-btn" [class.btn--completed]="p.status === 'COMPLETED'" [class.btn--upcoming]="p.status === 'UPCOMING'" (click)="viewProgram(p.id)">
             <!-- PLAY -->
             <svg *ngIf="getActionIcon(p.status) === 'play'" viewBox="0 0 24 24" fill="currentColor">
               <path d="M8 5v14l11-7L8 5z"/>
@@ -151,7 +153,7 @@
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="filteredPrograms.length === 0" class="empty-state">
+  <div *ngIf="!isLoading && filteredPrograms.length === 0" class="empty-state">
     <div class="empty-icon">🏋️</div>
     <h3 class="empty-title">No programs found</h3>
     <p class="empty-sub">No programs match this filter yet.</p>

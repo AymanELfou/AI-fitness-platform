@@ -23,6 +23,8 @@ $panel-h: calc(100vh - 70px); /* subtract navbar height */
   display: grid;
   grid-template-columns: 280px 1fr;
   height: $panel-h;
+  max-width: 1000px;
+  margin: 0 auto;
   background: $bg;
   font-family: 'Inter', sans-serif;
   overflow: hidden;

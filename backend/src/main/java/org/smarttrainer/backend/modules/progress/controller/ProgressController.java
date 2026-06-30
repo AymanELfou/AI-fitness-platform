@@ -37,6 +37,12 @@ public class ProgressController {
         return ResponseEntity.ok(service.getByClientId(clientId));
     }
 
+    @PostMapping("client/{clientId}/calculate")
+    @PreAuthorize("hasAnyAuthority('ROLE_CLIENT')")
+    public ResponseEntity<ProgressResponse> calculateProgress(@PathVariable Long clientId) {
+        return ResponseEntity.ok(service.calculate(clientId));
+    }
+
     @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('ROLE_CLIENT', 'ROLE_COACH')")
     public ResponseEntity<ProgressResponse> update(
