@@ -18,7 +18,7 @@ public class AvailabilityController {
     private final AvailabilityService service;
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('ROLE_COACH')")
+    @PreAuthorize("hasAnyAuthority('ROLE_COACH', 'ROLE_CLUB')")
     public ResponseEntity<AvailabilityResponse> create(
             @RequestBody AvailabilityRequest request) {
         return ResponseEntity.ok(service.create(request));
