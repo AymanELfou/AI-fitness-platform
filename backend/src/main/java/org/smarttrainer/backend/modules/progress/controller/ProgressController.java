@@ -13,7 +13,6 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/progress")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 
 public class ProgressController {
 

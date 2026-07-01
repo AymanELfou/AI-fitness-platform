@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("api/v1/config")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:4200")
 public class SystemConfigController {
 
     private final SystemConfigService service;
