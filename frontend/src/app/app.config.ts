@@ -6,6 +6,7 @@ import { provideCharts, withDefaultRegisterables } from 'ng2-charts';
 import { routes } from './app.routes';
 import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
 import { jwtInterceptor } from './core/interceptors/jwt.interceptor';
+import { apiUrlInterceptor } from './core/interceptors/api-url.interceptor';
   
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -13,7 +14,7 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     provideClientHydration(withEventReplay()),
     provideHttpClient(
-      withInterceptors([jwtInterceptor])
+      withInterceptors([apiUrlInterceptor, jwtInterceptor])
     ),
     provideCharts(withDefaultRegisterables())
   ]
