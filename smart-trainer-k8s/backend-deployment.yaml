@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: backend
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/path: "/actuator/prometheus"
+        prometheus.io/port: "8082"
     spec:
       containers:
         - name: backend
@@ -65,11 +69,14 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
+  labels:                  # ?? AJOUTE CE BLOC
+    app: backend           # ?? C'est ce label précis que le ServiceMonitor recherche !
 spec:
   selector:
     app: backend
   ports:
-    - protocol: TCP
+    - name: http-metrics
+      protocol: TCP
       port: 8082
       targetPort: 8082
   type: ClusterIP

@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: backend-monitor
+  namespace: monitoring # <--- Changement crucial : Prometheus va maintenant le détecter
+  labels:
+    release: promo-stack
+spec:
+  selector:
+    matchLabels:
+      app: backend # Cible toujours le label de votre service
+  namespaceSelector:
+    matchNames:
+      - default # <--- Dit à Prometheus de chercher le service dans le namespace 'default'
+  endpoints:
+  - port: http-metrics
+    path: /actuator/prometheus
+    interval: 15s
