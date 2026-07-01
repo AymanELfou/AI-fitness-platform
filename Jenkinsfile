@@ -64,10 +64,10 @@ pipeline {
                 sh "docker build -t ${DOCKER_USER}/smart-trainer-frontend:latest ./frontend"
 
 
-                echo '🛡️ Analyse de sécurité Trivy - Backend...'
+                echo ' Analyse de sécurité Trivy - Backend...'
                 sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-backend:latest"
 
-                echo '🛡️ Analyse de sécurité Trivy - Frontend...'
+                echo ' Analyse de sécurité Trivy - Frontend...'
                 sh "docker run --rm -v /var/run/docker.sock:/var/run/docker.sock aquasec/trivy:latest image --severity CRITICAL --exit-code 1 ${DOCKER_USER}/smart-trainer-frontend:latest"
 
 
@@ -138,7 +138,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
                     sh """
                         curl -X POST -H 'Content-type: application/json' \
-                        --data '{"text":"✅ *Build Réussi !*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Lien :* ${env.BUILD_URL}"}' \
+                        --data '{"text":" *Build Réussi !*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Lien :* ${env.BUILD_URL}"}' \
                         \$SLACK_URL
                     """
                 }
@@ -150,7 +150,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'SLACK_WEBHOOK_URL', variable: 'SLACK_URL')]) {
                     sh """
                         curl -X POST -H 'Content-type: application/json' \
-                        --data '{"text":"❌ *Le Build a Échoué...*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Vérifie les logs ici :* ${env.BUILD_URL}console"}' \
+                        --data '{"text":" *Le Build a Échoué...*\\n*Projet :* ${env.JOB_NAME}\\n*Build :* #${env.BUILD_NUMBER}\\n*Vérifie les logs ici :* ${env.BUILD_URL}console"}' \
                         \$SLACK_URL
                     """
                 }
